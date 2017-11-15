@@ -28,6 +28,11 @@
             <artifactId>webhunger-entity</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>me.shenchao.webhunger</groupId>
+            <artifactId>webhunger-util</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
 
         <!--Spring Web + Spring MVC-->
         <dependency>
