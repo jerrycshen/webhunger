@@ -28,8 +28,6 @@
             <version>0.1-SNAPSHOT</version>
         </dependency>
 
-
-
         <!-- log -->
         <dependency>
             <groupId>org.slf4j</groupId>

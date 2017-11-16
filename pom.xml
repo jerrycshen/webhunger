@@ -16,6 +16,7 @@
         <module>webhunger-handler</module>
         <module>webhunger-util</module>
         <module>webhunger-web</module>
+        <module>webhunger-assembly</module>
     </modules>
 
     <developers>
@@ -45,23 +46,11 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.4.1</version>
-                <executions>
-                    <execution>
-                        <id>webhunger-release</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                           <descriptors>
-                               <descriptor>assembly/descriptors/assembly.xml</descriptor>
-                           </descriptors>
-                        </configuration>
-                    </execution>
-                </executions>
+                <version>3.1.0</version>
+                <configuration>
+                    <tarLongFileMode>gnu</tarLongFileMode>
+                </configuration>
             </plugin>
         </plugins>
     </build>
