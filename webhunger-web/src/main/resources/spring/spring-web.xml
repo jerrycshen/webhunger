@@ -17,7 +17,7 @@
     <mvc:resources mapping="/framework/**" location="/framework/"/>
 
     <!-- 启动包扫描功能，以便注册带有@Controller、@service、@repository、@Component等注解的类成为spring的bean -->
-    <context:component-scan base-package="me.shenchao.webhunger.core.web.controller" />
+    <context:component-scan base-package="me.shenchao.webhunger.web.controller" />
 
     <!-- 对模型视图名称的解析，在请求时模型视图名称添加前后缀 -->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">

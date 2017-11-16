@@ -1,0 +1,23 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+    <id>webhunger-release</id>
+    <formats>
+        <format>dir</format>
+    </formats>
+    <!--<moduleSets>-->
+        <!--<moduleSet>-->
+            <!--&lt;!&ndash; Enable access to all projects in the current multimodule build! &ndash;&gt;-->
+            <!--<useAllReactorProjects>true</useAllReactorProjects>-->
+
+            <!--&lt;!&ndash; Now, select which projects to include in this module-set. &ndash;&gt;-->
+            <!--<includes>-->
+                <!--<include>org.test:child1</include>-->
+            <!--</includes>-->
+            <!--<binaries>-->
+                <!--<outputDirectory>modules/maven-assembly-plugin</outputDirectory>-->
+                <!--<unpack>false</unpack>-->
+            <!--</binaries>-->
+        <!--</moduleSet>-->
+    <!--</moduleSets>-->
+</assembly>

@@ -1,4 +1,4 @@
-package me.shenchao.webhunger.core.web;
+package me.shenchao.webhunger.web;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;

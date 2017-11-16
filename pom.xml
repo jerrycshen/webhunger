@@ -15,6 +15,7 @@
         <module>webhunger-client</module>
         <module>webhunger-handler</module>
         <module>webhunger-util</module>
+        <module>webhunger-web</module>
     </modules>
 
     <developers>
@@ -27,6 +28,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <spring-version>4.3.9.RELEASE</spring-version>
     </properties>
 
     <build>
@@ -41,9 +43,28 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4.1</version>
+                <executions>
+                    <execution>
+                        <id>webhunger-release</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                           <descriptors>
+                               <descriptor>assembly/descriptors/assembly.xml</descriptor>
+                           </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
-
 
 
 </project>
