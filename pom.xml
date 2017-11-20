@@ -15,7 +15,6 @@
         <module>webhunger-client</module>
         <module>webhunger-handler</module>
         <module>webhunger-util</module>
-        <module>webhunger-web</module>
         <module>webhunger-assembly</module>
     </modules>
 

@@ -4,6 +4,7 @@
     <id>release</id>
     <formats>
         <format>tar.gz</format>
+        <format>dir</format>
     </formats>
 
     <files>
@@ -12,6 +13,18 @@
             <outputDirectory>/</outputDirectory>
         </file>
     </files>
+
+    <fileSets>
+        <fileSet>
+            <directory>src/main/java/release/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>0755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>../webhunger-core/src/main/resources</directory>
+            <outputDirectory>conf</outputDirectory>
+        </fileSet>
+    </fileSets>
 
     <dependencySets>
         <dependencySet>

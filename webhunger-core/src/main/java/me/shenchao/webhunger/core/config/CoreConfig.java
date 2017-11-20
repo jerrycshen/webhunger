@@ -3,6 +3,7 @@ package me.shenchao.webhunger.core.config;
 import me.shenchao.webhunger.exception.ConfigException;
 import me.shenchao.webhunger.util.FileUtil;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -15,29 +16,25 @@ import java.util.Properties;
  */
 public class CoreConfig {
 
-    private static final String DEFAULT_PORT = "5572";
+    private static final String PORT = "5572";
 
-    private static final String DEFAULT_CONTEXT_PATH = "/webhunger";
-
-    private int port;
-
-    private String contextPath;
+    private static final String CONTEXT_PATH = "/webhunger";
 
     private boolean isStandalone = true;
 
     private String dataDir;
 
-    public void parse(String fileName) throws ConfigException {
-        try {
-            Properties properties = new Properties();
-            try (InputStream in = CoreConfig.class.getClassLoader().getResourceAsStream(fileName)) {
-                properties.load(in);
-            }
-            parseProperties(properties);
-            validateDataDirExist();
-        } catch (IOException e) {
-            throw new ConfigException("Processing failed......");
+    private int port;
+
+    private String contextPath;
+
+    public void parse(String fileName) throws ConfigException, IOException {
+        Properties properties = new Properties();
+        try (InputStream in = new FileInputStream(fileName)) {
+            properties.load(in);
         }
+        parseProperties(properties);
+        validateDataDirExist();
     }
 
     private void validateDataDirExist() throws ConfigException {
@@ -47,18 +44,10 @@ public class CoreConfig {
     }
 
     private void parseProperties(Properties properties) {
-        port = Integer.parseInt(properties.getProperty("port", DEFAULT_PORT));
-        contextPath = properties.getProperty("contextPath", DEFAULT_CONTEXT_PATH);
         isStandalone = Boolean.parseBoolean(properties.getProperty("standalone", "true"));
         dataDir = properties.getProperty("dataDir");
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
+        port = Integer.parseInt(properties.getProperty("port", PORT));
+        contextPath = properties.getProperty("contextPath", CONTEXT_PATH);
     }
 
     public boolean iStandalone() {
@@ -69,19 +58,27 @@ public class CoreConfig {
         this.isStandalone = isStandalone;
     }
 
-    public String getContextPath() {
-        return contextPath;
-    }
-
-    public void setContextPath(String contextPath) {
-        this.contextPath = contextPath;
-    }
-
     public String getDataDir() {
         return dataDir;
     }
 
     public void setDataDir(String dataDir) {
         this.dataDir = dataDir;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getContextPath() {
+        return contextPath;
+    }
+
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
     }
 }

@@ -1,13 +1,23 @@
 package me.shenchao.webhunger.web;
 
+import me.shenchao.webhunger.core.util.SystemUtil;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 
+/**
+ * start Jetty
+ * @author Jerry Shen
+ * @since 0.1
+ */
 public class WebConsoleStarter {
 
-    private static final String DEFAULT_WEBAPP_PATH = "webhunger-core/src/main/webapp";
+    private static final String DEFAULT_WEBAPP_PATH;
+
+    static {
+        DEFAULT_WEBAPP_PATH = SystemUtil.getWebHungerHome() + "/webapp";
+    }
 
     public void startServer(int port, String context) throws Exception {
         // 创建Server
@@ -29,7 +39,6 @@ public class WebConsoleStarter {
         server.setConnectors(new Connector[] { connector });
 
         server.start();
-        server.join();
     }
 
 }
