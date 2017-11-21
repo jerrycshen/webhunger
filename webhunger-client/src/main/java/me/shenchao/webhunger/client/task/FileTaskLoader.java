@@ -57,6 +57,7 @@ public class FileTaskLoader implements TaskLoader {
      * @return parsed task
      */
     private Task parseTask(File taskFile) throws TaskParseException {
+        logger.info("解析{}......", taskFile.getName());
         SAXReader reader = new SAXReader();
         try {
             Document document = reader.read(new FileInputStream(taskFile));
@@ -162,6 +163,8 @@ public class FileTaskLoader implements TaskLoader {
             logger.error("未找到task文件......");
             return new File[]{};
         }
+
+        logger.info("找到{}个task文件", taskFiles.length);
         return taskFiles;
     }
 
