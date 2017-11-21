@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+    <author>Jerry Shen</author>
+    <description>
+        Demo
+    </description>
+    <startTime>2017-11-21 00:00:00</startTime>
+    <finishTime>2017-12-31 23:59:59</finishTime>
+
+    <config>
+        <depth></depth>
+        <interval></interval>
+    </config>
+
+    <hosts>
+        <host>
+            <hostName></hostName>
+            <hostIndex></hostIndex>
+            <config>
+                <depth></depth>
+                <interval></interval>
+            </config>
+        </host>
+    </hosts>
+</task>

@@ -11,5 +11,12 @@
 
     <artifactId>webhunger-entity</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>me.shenchao.webhunger</groupId>
+            <artifactId>webhunger-util</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
 </project>

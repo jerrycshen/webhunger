@@ -1,7 +1,7 @@
 package me.shenchao.webhunger.core;
 
-import me.shenchao.webhunger.core.config.CoreConfig;
-import me.shenchao.webhunger.core.util.SystemUtil;
+import me.shenchao.webhunger.config.WebHungerConfig;
+import me.shenchao.webhunger.util.SystemUtil;
 import me.shenchao.webhunger.web.WebConsoleStarter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,21 +20,25 @@ public class CoreBootstrap {
 
     private static final String CONF_NAME = "webhunger.conf";
 
-    private CoreConfig coreConfig;
+    private WebHungerConfig webHungerConfig;
 
-    public void parseCoreConfig() {
-        coreConfig = new CoreConfig();
+    private void parseCoreConfig() {
+        webHungerConfig = new WebHungerConfig();
         try {
-            coreConfig.parse(SystemUtil.getWebHungerConfig() + File.separator + CONF_NAME);
+            webHungerConfig.parse(SystemUtil.getWebHungerConfigDir() + File.separator + CONF_NAME);
         } catch (Exception e) {
             logger.error("配置文件解析失败，程序退出......", e);
             System.exit(1);
         }
     }
 
-    public void start() {
+    private void start() {
+        // 读取任务数据
+        
+
+        // 启动web控制台
         try {
-            new WebConsoleStarter().startServer(coreConfig.getPort(), coreConfig.getContextPath());
+            new WebConsoleStarter().startServer(webHungerConfig);
         } catch (Exception e) {
             logger.error("Web控制台启动失败，程序退出......", e);
             System.exit(1);

@@ -12,4 +12,14 @@ public class FileUtil {
         File file = new File(filePath);
         return file.exists();
     }
+
+    /**
+     * @param file file
+     * @return 获得去掉后缀名的文件名称
+     */
+    public static String getFileName(File file) {
+        String fileName = file.getName();
+        int dotIndex = fileName.lastIndexOf(".");
+        return fileName.substring(0, dotIndex);
+    }
 }
