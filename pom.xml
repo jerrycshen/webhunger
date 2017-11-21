@@ -13,7 +13,7 @@
         <module>webhunger-crawler</module>
         <module>webhunger-entity</module>
         <module>webhunger-client</module>
-        <module>webhunger-handler</module>
+        <module>webhunger-process</module>
         <module>webhunger-util</module>
         <module>webhunger-assembly</module>
     </modules>

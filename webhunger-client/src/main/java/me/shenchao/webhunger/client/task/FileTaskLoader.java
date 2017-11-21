@@ -89,6 +89,7 @@ public class FileTaskLoader implements TaskLoader {
 
             return task;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new TaskParseException("task配置文件解析失败......");
         }
     }
@@ -110,11 +111,11 @@ public class FileTaskLoader implements TaskLoader {
     }
 
     private List<Host> parseHost(Task task, Element hostsElement) throws TaskParseException {
-        if (hostsElement == null || hostsElement.elements("hosts").size() == 0)
+        if (hostsElement == null || hostsElement.elements("host").size() == 0)
             return new ArrayList<>();
 
         Set<Host> hosts = new HashSet<>();
-        List<Element> hostElements = hostsElement.elements("hosts");
+        List<Element> hostElements = hostsElement.elements("host");
         for (Element hostElement : hostElements) {
             Element hostNameElement = hostElement.element("hostName");
             Element hostIndexElement = hostElement.element("hostIndex");
@@ -123,6 +124,7 @@ public class FileTaskLoader implements TaskLoader {
             }
             Host host = new Host();
             host.setTask(task);
+            host.setHostId(SystemUtil.generateRandomId());
             host.setHostIndex(hostIndexElement.getText());
             host.setHostName(hostNameElement.getText());
             hosts.add(host);

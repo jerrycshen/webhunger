@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>webhunger-handler</artifactId>
+    <artifactId>webhunger-process</artifactId>
 
 
 </project>

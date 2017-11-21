@@ -8,18 +8,22 @@
     <finishTime>2017-12-31 23:59:59</finishTime>
 
     <config>
-        <depth></depth>
-        <interval></interval>
+        <depth>2</depth>
+        <interval>2000</interval>
     </config>
 
     <hosts>
         <host>
-            <hostName>????</hostName>
+            <hostName>嘉兴残联</hostName>
             <hostIndex>http://www.jxdpf.org.cn</hostIndex>
             <config>
                 <depth>2</depth>
                 <interval>3000</interval>
             </config>
+        </host>
+        <host>
+            <hostName>浙江残联</hostName>
+            <hostIndex>http://www.zjdpf.org.cn</hostIndex>
         </host>
     </hosts>
 </task>

@@ -35,7 +35,7 @@
         </dependency>
         <dependency>
             <groupId>me.shenchao.webhunger</groupId>
-            <artifactId>webhunger-handler</artifactId>
+            <artifactId>webhunger-process</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
