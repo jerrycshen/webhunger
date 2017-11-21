@@ -1,6 +1,6 @@
 package me.shenchao.webhunger.client.task;
 
-import me.shenchao.webhunger.client.TaskLoader;
+import me.shenchao.webhunger.client.api.TaskLoader;
 import me.shenchao.webhunger.config.WebHungerConfig;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostConfig;
@@ -31,7 +31,7 @@ public class FileTaskLoader implements TaskLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(FileTaskLoader.class);
 
-    private static final String DEFAULT_TASK_PATH = SystemUtil.getWebHungerUserDir() + File.separator + "task";
+    private static final String DEFAULT_TASK_PATH = SystemUtil.getWebHungerDefaultDir() + File.separator + "task";
 
     @Override
     public List<Task> loadTasks(WebHungerConfig webHungerConfig) {
@@ -82,6 +82,10 @@ public class FileTaskLoader implements TaskLoader {
             Element finishTimeElement = root.element("finishTime");
             if (finishTimeElement != null) {
                 task.setFinishTime(transferDate(finishTimeElement.getText()));
+            }
+            Element clientJarDirElement = root.element("clientJarDir");
+            if (clientJarDirElement != null) {
+                task.setClientJarDir(clientJarDirElement.getText());
             }
 
             task.setHostConfig(parseHostConfig(root.element("config")));
@@ -144,7 +148,7 @@ public class FileTaskLoader implements TaskLoader {
      * @return 所有以task为后缀的文件
      */
     private File[] getTaskFiles(WebHungerConfig webHungerConfig) {
-        String taskDir = webHungerConfig.getConfMap().getOrDefault("task.dir", DEFAULT_TASK_PATH);
+        String taskDir = webHungerConfig.getConfMap().getOrDefault("taskDataDir", DEFAULT_TASK_PATH);
         File taskDirFile = new File(taskDir);
 
         File[] taskFiles = taskDirFile.listFiles(new FileFilter() {

@@ -14,12 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>me.shenchao.webhunger</groupId>
-            <artifactId>webhunger-entity</artifactId>
-            <version>0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>me.shenchao.webhunger</groupId>
-            <artifactId>webhunger-util</artifactId>
+            <artifactId>webhunger-client-api</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
 

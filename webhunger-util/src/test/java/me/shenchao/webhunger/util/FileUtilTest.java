@@ -1,9 +1,9 @@
 package me.shenchao.webhunger.util;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Created on 2017-11-21
@@ -13,8 +13,12 @@ import java.io.File;
 public class FileUtilTest {
 
     @Test
-    public void getFileName() throws Exception {
-        String fileName = "D:\\IdeaIU\\IdeaProjects\\webhunger\\conf\\webhunger.conf";
-        Assert.assertEquals("webhunger", FileUtil.getFileName(new File(fileName)));
+    public void getAllSuffixFilesInCurrentDir() {
+        String dir = "/Users/jerry/IdeaProjects/webhunger";
+        List<File> files = FileUtil.getAllSuffixFilesInCurrentDir(dir, ".java");
+        System.out.println(files.size());
+        for (File file : files) {
+            System.out.println(file.getName());
+        }
     }
 }

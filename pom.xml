@@ -16,6 +16,7 @@
         <module>webhunger-process</module>
         <module>webhunger-util</module>
         <module>webhunger-assembly</module>
+        <module>webhunger-client-api</module>
     </modules>
 
     <developers>

@@ -3,6 +3,9 @@ package me.shenchao.webhunger.util;
 import org.apache.commons.codec.binary.Base64;
 
 import java.io.File;
+import java.net.JarURLConnection;
+import java.net.URI;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
@@ -11,7 +14,17 @@ public class SystemUtil {
     public static String getWebHungerHomeDir() {
         String homeDir = System.getProperty("webhunger.home");
         if (homeDir == null) {
-            throw new RuntimeException("未指定项目路径，程序退出......");
+            URL url = SystemUtil.class.getClassLoader().getResource("me.shenchao.webhunger.core.CoreBootstrap");
+            if (url != null) {
+                try {
+                    JarURLConnection jarConnection = (JarURLConnection)url.openConnection();
+                    url = jarConnection.getJarFileURL();
+                    URI baseURI = new URI(url.toString()).resolve("..");
+                    homeDir = baseURI.toString();
+                    System.setProperty("webhunger.home", homeDir);
+                } catch (Exception ignored) {
+                }
+            }
         }
         return homeDir;
     }
@@ -24,10 +37,10 @@ public class SystemUtil {
         return configDir;
     }
 
-    public static String getWebHungerUserDir() {
-        String userDir = System.getProperty("webhunger.user");
+    public static String getWebHungerDefaultDir() {
+        String userDir = System.getProperty("webhunger.default");
         if (userDir == null) {
-            return getWebHungerHomeDir() + File.separator + "user";
+            return getWebHungerHomeDir() + File.separator + "default";
         }
         return userDir;
     }

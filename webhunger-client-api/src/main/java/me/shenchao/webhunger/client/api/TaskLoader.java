@@ -1,4 +1,4 @@
-package me.shenchao.webhunger.client;
+package me.shenchao.webhunger.client.api;
 
 import me.shenchao.webhunger.config.WebHungerConfig;
 import me.shenchao.webhunger.entity.Task;

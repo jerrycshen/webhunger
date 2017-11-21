@@ -48,6 +48,11 @@ public class Task {
      */
     private int state;
 
+    /**
+     * 该目录用于存放用户自定义的Jar，例如自定义数据加载器、页面处理器等
+     */
+    private String clientJarDir;
+
     public String getTaskId() {
         return taskId;
     }
@@ -110,5 +115,13 @@ public class Task {
 
     public void setState(int state) {
         this.state = state;
+    }
+
+    public String getClientJarDir() {
+        return clientJarDir;
+    }
+
+    public void setClientJarDir(String clientJarDir) {
+        this.clientJarDir = clientJarDir;
     }
 }

@@ -26,10 +26,6 @@ public class FileTaskLoaderTest {
 
     private Method parseTask;
 
-    static {
-        System.setProperty("webhunger.home", "D:\\IdeaIU\\IdeaProjects\\webhunger");
-    }
-
     @Before
     public void setUp() throws IOException, NoSuchMethodException {
         webHungerConfig = new WebHungerConfig();
@@ -54,11 +50,6 @@ public class FileTaskLoaderTest {
         Task task = (Task) parseTask.invoke(fileTaskLoader, taskFile[0]);
         Assert.assertEquals("Jerry Shen", task.getAuthor());
         Assert.assertEquals(2, task.getHosts().size());
-    }
-
-    @Test
-    public void loadTasks() throws Exception {
-        fileTaskLoader.loadTasks(webHungerConfig);
     }
 
 }
