@@ -1,63 +1,35 @@
 package me.shenchao.webhunger.client.task;
 
-import me.shenchao.webhunger.client.api.TaskLoader;
-import me.shenchao.webhunger.config.WebHungerConfig;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostConfig;
 import me.shenchao.webhunger.entity.Task;
 import me.shenchao.webhunger.exception.TaskParseException;
 import me.shenchao.webhunger.util.FileUtil;
-import me.shenchao.webhunger.util.SystemUtil;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
- * 从文件中读取任务信息
+ * Created on 2017-11-22
  *
  * @author Jerry Shen
- * @since 0.1
  */
-public class FileTaskLoader implements TaskLoader {
-
-    private static final Logger logger = LoggerFactory.getLogger(FileTaskLoader.class);
-
-    private static final String DEFAULT_TASK_PATH = SystemUtil.getWebHungerDefaultDir() + File.separator + "task";
-
-    @Override
-    public List<Task> loadTasks(WebHungerConfig webHungerConfig) {
-        List<Task> tasks = new ArrayList<>();
-        // 1. 获取task配置文件
-        File[] taskFiles = getTaskFiles(webHungerConfig);
-
-        // 2. 解析task配置文件
-        for (File taskFile : taskFiles) {
-            try {
-                tasks.add(parseTask(taskFile));
-            } catch (TaskParseException e) {
-                logger.error("解析{}失败，请检查文件格式......{}", taskFile.getAbsoluteFile(), e);
-                e.printStackTrace();
-            }
-        }
-        return tasks;
-    }
+class FileParser {
 
     /**
      * 解析task文件
      * @param taskFile *.task
      * @return parsed task
      */
-    private Task parseTask(File taskFile) throws TaskParseException {
-        logger.info("解析{}......", taskFile.getName());
+    Task parseTask(File taskFile) throws TaskParseException {
+
         SAXReader reader = new SAXReader();
         try {
             Document document = reader.read(new FileInputStream(taskFile));
@@ -78,11 +50,11 @@ public class FileTaskLoader implements TaskLoader {
             }
             Element startTimeElement = root.element("startTime");
             if (startTimeElement != null) {
-                task.setStartTime(transferDate(startTimeElement.getText()));
+                task.setStartTime(FileAccessSupport.transferDate(startTimeElement.getText()));
             }
             Element finishTimeElement = root.element("finishTime");
             if (finishTimeElement != null) {
-                task.setFinishTime(transferDate(finishTimeElement.getText()));
+                task.setFinishTime(FileAccessSupport.transferDate(finishTimeElement.getText()));
             }
             Element clientJarDirElement = root.element("clientJarDir");
             if (clientJarDirElement != null) {
@@ -129,9 +101,10 @@ public class FileTaskLoader implements TaskLoader {
             }
             Host host = new Host();
             host.setTask(task);
-            host.setHostId(SystemUtil.generateRandomId());
             host.setHostIndex(hostIndexElement.getText());
             host.setHostName(hostNameElement.getText());
+            host.setHostId(FileAccessSupport.createHostId(FileAccessSupport.createReadableHostId(host)));
+            host.setState(fileSupport.getLatestHostState(host));
             hosts.add(host);
 
             host.setHostConfig(parseHostConfig(hostElement.element("config")));
@@ -143,38 +116,5 @@ public class FileTaskLoader implements TaskLoader {
         return hostList;
     }
 
-    /**
-     * 从指定目录下找到所有以task为后缀的文件
-     * @param webHungerConfig config
-     * @return 所有以task为后缀的文件
-     */
-    private File[] getTaskFiles(WebHungerConfig webHungerConfig) {
-        String taskDir = webHungerConfig.getConfMap().getOrDefault("taskDataDir", DEFAULT_TASK_PATH);
-        File taskDirFile = new File(taskDir);
-
-        File[] taskFiles = taskDirFile.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return pathname.getName().endsWith(".task");
-            }
-        });
-
-        if (taskFiles == null || taskFiles.length == 0) {
-            logger.error("未找到task文件......");
-            return new File[]{};
-        }
-
-        logger.info("找到{}个task文件", taskFiles.length);
-        return taskFiles;
-    }
-
-    private Date transferDate(String dateStr) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        try {
-            return formatter.parse(dateStr);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+    void parseSnapshot()
 }

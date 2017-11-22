@@ -14,15 +14,17 @@ public class SystemUtil {
     public static String getWebHungerHomeDir() {
         String homeDir = System.getProperty("webhunger.home");
         if (homeDir == null) {
-            URL url = SystemUtil.class.getClassLoader().getResource("me.shenchao.webhunger.core.CoreBootstrap");
+            URL url = SystemUtil.class.getClassLoader().getResource("me/shenchao/webhunger/core/CoreBootstrap.class");
             if (url != null) {
                 try {
                     JarURLConnection jarConnection = (JarURLConnection)url.openConnection();
                     url = jarConnection.getJarFileURL();
                     URI baseURI = new URI(url.toString()).resolve("..");
                     homeDir = baseURI.toString();
+                    System.out.println(homeDir);
                     System.setProperty("webhunger.home", homeDir);
-                } catch (Exception ignored) {
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -48,8 +50,8 @@ public class SystemUtil {
     /**
      * 使用Base64 压缩UUID 生成唯一ID
      */
-    public static String generateRandomId() {
-        UUID uuid = UUID.randomUUID();
+    public static String generateId(String idString) {
+        UUID uuid = UUID.fromString(idString);
         ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
         bb.putLong(uuid.getMostSignificantBits());
         bb.putLong(uuid.getLeastSignificantBits());

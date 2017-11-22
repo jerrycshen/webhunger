@@ -16,11 +16,11 @@ import java.lang.reflect.Method;
  *
  * @author Jerry Shen
  */
-public class FileTaskLoaderTest {
+public class FileTaskAccessorTest {
 
     private WebHungerConfig webHungerConfig;
 
-    private FileTaskLoader fileTaskLoader = new FileTaskLoader();
+    private FileTaskAccessor fileTaskLoader = new FileTaskAccessor();
 
     private Method getTaskFiles;
 
@@ -29,12 +29,12 @@ public class FileTaskLoaderTest {
     @Before
     public void setUp() throws IOException, NoSuchMethodException {
         webHungerConfig = new WebHungerConfig();
-        webHungerConfig.parse(FileTaskLoaderTest.class.getClassLoader().getResourceAsStream("webhunger.conf"));
+        webHungerConfig.parse(FileTaskAccessorTest.class.getClassLoader().getResourceAsStream("webhunger.conf"));
 
-        getTaskFiles = FileTaskLoader.class.getDeclaredMethod("getTaskFiles", WebHungerConfig.class);
+        getTaskFiles = FileTaskAccessor.class.getDeclaredMethod("getTaskFiles", WebHungerConfig.class);
         getTaskFiles.setAccessible(true);
 
-        parseTask = FileTaskLoader.class.getDeclaredMethod("parseTask", File.class);
+        parseTask = FileTaskAccessor.class.getDeclaredMethod("parseTask", File.class);
         parseTask.setAccessible(true);
     }
 
