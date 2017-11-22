@@ -8,8 +8,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * Created on 2017-11-21
@@ -22,34 +21,17 @@ public class FileTaskAccessorTest {
 
     private FileTaskAccessor fileTaskLoader = new FileTaskAccessor();
 
-    private Method getTaskFiles;
-
-    private Method parseTask;
 
     @Before
     public void setUp() throws IOException, NoSuchMethodException {
         webHungerConfig = new WebHungerConfig();
         webHungerConfig.parse(FileTaskAccessorTest.class.getClassLoader().getResourceAsStream("webhunger.conf"));
-
-        getTaskFiles = FileTaskAccessor.class.getDeclaredMethod("getTaskFiles", WebHungerConfig.class);
-        getTaskFiles.setAccessible(true);
-
-        parseTask = FileTaskAccessor.class.getDeclaredMethod("parseTask", File.class);
-        parseTask.setAccessible(true);
     }
 
     @Test
-    public void getTaskFiles() throws InvocationTargetException, IllegalAccessException {
-        File[] taskFiles = (File[]) getTaskFiles.invoke(fileTaskLoader, webHungerConfig);
-        Assert.assertEquals(1,taskFiles.length);
-    }
-
-    @Test
-    public void parseTask() throws InvocationTargetException, IllegalAccessException {
-        File[] taskFile = (File[]) getTaskFiles.invoke(fileTaskLoader, webHungerConfig);
-        Task task = (Task) parseTask.invoke(fileTaskLoader, taskFile[0]);
-        Assert.assertEquals("Jerry Shen", task.getAuthor());
-        Assert.assertEquals(2, task.getHosts().size());
+    public void loadTasks() {
+        List<Task> tasks = fileTaskLoader.loadTasks(webHungerConfig);
+        Assert.assertEquals(1, tasks.size());
     }
 
 }

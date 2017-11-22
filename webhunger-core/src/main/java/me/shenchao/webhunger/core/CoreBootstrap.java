@@ -5,6 +5,7 @@ import me.shenchao.webhunger.config.WebHungerConfig;
 import me.shenchao.webhunger.entity.Task;
 import me.shenchao.webhunger.util.FileUtil;
 import me.shenchao.webhunger.util.SystemUtil;
+import me.shenchao.webhunger.web.WebConsoleStarter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,15 +82,17 @@ public class CoreBootstrap {
     private void start() {
         // 读取任务数据
         TaskAccessor taskAccessor = getTaskLoader();
-        List<Task> tasks = taskAccessor.loadTasks(webHungerConfig);
+
+
 
         // 启动web控制台
-//        try {
-//            new WebConsoleStarter().startServer(webHungerConfig);
-//        } catch (Exception e) {
-//            logger.error("Web控制台启动失败，程序退出......", e);
-//            System.exit(1);
-//        }
+        try {
+            new WebConsoleStarter().startServer(webHungerConfig);
+        } catch (Exception e) {
+            logger.error("Web控制台启动失败，程序退出......", e);
+            System.exit(1);
+        }
+        logger.info("Web控制台启动完成......");
     }
 
     public static void main(String[] args) {

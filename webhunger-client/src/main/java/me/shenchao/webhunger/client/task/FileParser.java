@@ -2,6 +2,7 @@ package me.shenchao.webhunger.client.task;
 
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostConfig;
+import me.shenchao.webhunger.entity.HostSnapshot;
 import me.shenchao.webhunger.entity.Task;
 import me.shenchao.webhunger.exception.TaskParseException;
 import me.shenchao.webhunger.util.FileUtil;
@@ -28,7 +29,7 @@ class FileParser {
      * @param taskFile *.task
      * @return parsed task
      */
-    Task parseTask(File taskFile) throws TaskParseException {
+    static Task parseTask(File taskFile) throws TaskParseException {
 
         SAXReader reader = new SAXReader();
         try {
@@ -71,7 +72,7 @@ class FileParser {
         }
     }
 
-    private HostConfig parseHostConfig(Element configElement) {
+    private static HostConfig parseHostConfig(Element configElement) {
         HostConfig hostConfig = null;
         if (configElement != null) {
             hostConfig = new HostConfig();
@@ -87,7 +88,7 @@ class FileParser {
         return hostConfig;
     }
 
-    private List<Host> parseHost(Task task, Element hostsElement) throws TaskParseException {
+    private static List<Host> parseHost(Task task, Element hostsElement) throws TaskParseException {
         if (hostsElement == null || hostsElement.elements("host").size() == 0)
             return new ArrayList<>();
 
@@ -103,8 +104,6 @@ class FileParser {
             host.setTask(task);
             host.setHostIndex(hostIndexElement.getText());
             host.setHostName(hostNameElement.getText());
-            host.setHostId(FileAccessSupport.createHostId(FileAccessSupport.createReadableHostId(host)));
-            host.setState(fileSupport.getLatestHostState(host));
             hosts.add(host);
 
             host.setHostConfig(parseHostConfig(hostElement.element("config")));
@@ -116,5 +115,16 @@ class FileParser {
         return hostList;
     }
 
-    void parseSnapshot()
+    static HostSnapshot parseSnapshot(String snapshotStr) {
+        String[] fields = snapshotStr.split("\t");
+        HostSnapshot hostSnapshot = new HostSnapshot();
+        hostSnapshot.setHostId(fields[0]);
+        hostSnapshot.setSuccessPageNum(Integer.parseInt(fields[1]));
+        hostSnapshot.setErrorPageNum(Integer.parseInt(fields[2]));
+        hostSnapshot.setProcessedPageNum(Integer.parseInt(fields[3]));
+        hostSnapshot.setState(Integer.parseInt(fields[4]));
+        hostSnapshot.setCreateTime(FileAccessSupport.transferDate(fields[5]));
+
+        return hostSnapshot;
+    }
 }

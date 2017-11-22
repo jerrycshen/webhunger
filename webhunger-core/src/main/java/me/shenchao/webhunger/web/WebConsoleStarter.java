@@ -21,7 +21,7 @@ public class WebConsoleStarter {
     private static final String CONTEXT_PATH = "/webhunger";
 
     static {
-        DEFAULT_WEBAPP_PATH = SystemUtil.getWebHungerHomeDir() + "/webapp";
+        DEFAULT_WEBAPP_PATH = SystemUtil.getWebHungerHomeDir() + "/webhunger-core/src/main/webapp";
     }
 
     public void startServer(int port, String context) throws Exception {

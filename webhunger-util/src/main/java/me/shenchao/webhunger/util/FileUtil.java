@@ -1,8 +1,6 @@
 package me.shenchao.webhunger.util;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 
 import javax.annotation.Nullable;

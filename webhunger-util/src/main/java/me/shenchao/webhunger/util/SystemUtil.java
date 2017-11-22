@@ -47,14 +47,4 @@ public class SystemUtil {
         return userDir;
     }
 
-    /**
-     * 使用Base64 压缩UUID 生成唯一ID
-     */
-    public static String generateId(String idString) {
-        UUID uuid = UUID.fromString(idString);
-        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-        bb.putLong(uuid.getMostSignificantBits());
-        bb.putLong(uuid.getLeastSignificantBits());
-        return Base64.encodeBase64URLSafeString(bb.array());
-    }
 }
