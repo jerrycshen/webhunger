@@ -11,14 +11,14 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="${AppContext}task/list">WAE Crawler</a>
+            <a class="navbar-brand" href="${AppContext}task/list">WebHunger</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <%--<li><a href="${AppContext}task/list">Tasks</a></li>--%>
+                <li><a href="${AppContext}task/list">Task</a></li>
             </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="http://114.247.63.139:8080/accessibilitycheck/index" target="_blank">Go to AccessibilityCheck</a></li>
+            <ul class="nav navbar-nav">
+                <li><a href="#">Crawler</a></li>
             </ul>
         </div><!--/.nav-collapse -->
     </div>

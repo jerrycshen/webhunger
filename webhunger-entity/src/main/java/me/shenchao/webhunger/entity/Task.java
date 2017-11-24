@@ -29,7 +29,7 @@ public class Task {
     /**
      * 此次任务要爬取的站点
      */
-    private List<Host> hosts;
+    private transient List<Host> hosts;
 
     private HostConfig hostConfig;
 
@@ -44,7 +44,12 @@ public class Task {
     private Date finishTime;
 
     /**
-     * 任务状态
+     * 任务状态:<br>
+     *     <ul>
+     *         <li>0: 还未开始</li>
+     *         <li>1: 正在进行</li>
+     *         <li>2: 已结束</li>
+     *     </ul>
      */
     private int state;
 
@@ -110,10 +115,19 @@ public class Task {
     }
 
     public int getState() {
+        Date today = new Date();
+        if (this.startTime != null && this.startTime.after(today)) {
+            setState(0);
+        } else if (this.finishTime != null && this.finishTime.before(today)) {
+            setState(2);
+        } else {
+            setState(1);
+        }
+
         return state;
     }
 
-    public void setState(int state) {
+    private void setState(int state) {
         this.state = state;
     }
 

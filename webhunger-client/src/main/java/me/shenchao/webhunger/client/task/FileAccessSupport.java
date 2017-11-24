@@ -35,7 +35,7 @@ class FileAccessSupport {
     }
 
     static Date transferDate(String dateStr) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         try {
             return formatter.parse(dateStr);
         } catch (ParseException e) {
