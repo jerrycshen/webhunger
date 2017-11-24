@@ -1,7 +1,8 @@
-package me.shenchao.webhunger.controller;
+package me.shenchao.webhunger.core.controller;
 
 import me.shenchao.webhunger.client.api.TaskAccessor;
 import me.shenchao.webhunger.config.WebHungerConfig;
+import me.shenchao.webhunger.entity.Task;
 import me.shenchao.webhunger.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 控制器辅助类
@@ -23,10 +25,26 @@ class ControllerSupport {
 
     private static final Logger logger = LoggerFactory.getLogger(ControllerSupport.class);
 
+    private TaskAccessor taskAccessor;
+
+    private WebHungerConfig webHungerConfig;
+
+    ControllerSupport(WebHungerConfig webHungerConfig) {
+        this.webHungerConfig = webHungerConfig;
+        taskAccessor = getTaskLoader(webHungerConfig);
+    }
+
+    /**
+     * 每次重新向数据源读取数据
+     */
+    Map<String, Task> getTasks() {
+        return taskAccessor.loadTasks(webHungerConfig);
+    }
+
     /**
      * 加载用户自定义的Jar
      */
-    TaskAccessor getTaskLoader(WebHungerConfig webHungerConfig) {
+    private TaskAccessor getTaskLoader(WebHungerConfig webHungerConfig) {
         String taskAccessorJarDir = webHungerConfig.getConfMap().get("taskAccessorJarDir");
         String taskAccessorClass = webHungerConfig.getConfMap().get("taskAccessorClass");
 

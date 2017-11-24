@@ -17,6 +17,12 @@ public class Task {
     private String taskId;
 
     /**
+     * 任务名称<br>
+     *     实现时，该字段为非空字段
+     */
+    private String taskName;
+
+    /**
      * 任务描述
      */
     private String description;
@@ -64,6 +70,14 @@ public class Task {
 
     public void setTaskId(String taskId) {
         this.taskId = taskId;
+    }
+
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
     }
 
     public String getDescription() {

@@ -40,7 +40,7 @@ public class WebConsoleStarter {
         ServerConnector connector = new ServerConnector(server);
         connector.setPort(port);
         // 解决Windows下重复启动Jetty居然不报告端口冲突的问题.
-        connector.setReuseAddress(false);
+//        connector.setReuseAddress(false);
         server.setConnectors(new Connector[] { connector });
 
         server.start();

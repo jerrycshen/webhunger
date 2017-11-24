@@ -6,9 +6,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Created on 2017-11-21
@@ -30,8 +29,8 @@ public class FileTaskAccessorTest {
 
     @Test
     public void loadTasks() {
-        List<Task> tasks = fileTaskLoader.loadTasks(webHungerConfig);
-        Assert.assertEquals(1, tasks.size());
+        Map<String, Task> taskMap = fileTaskLoader.loadTasks(webHungerConfig);
+        Assert.assertEquals(1, taskMap.size());
     }
 
 }

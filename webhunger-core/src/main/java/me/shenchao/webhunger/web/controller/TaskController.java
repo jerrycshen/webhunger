@@ -1,8 +1,8 @@
 package me.shenchao.webhunger.web.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import me.shenchao.webhunger.controller.MasterController;
-import me.shenchao.webhunger.controller.ControllerFactory;
+import me.shenchao.webhunger.core.controller.MasterController;
+import me.shenchao.webhunger.core.controller.ControllerFactory;
 import me.shenchao.webhunger.entity.Task;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
 
 /**
- * Created on 2017-06-11
- *
  * @author Jerry Shen
- * @since 3.0
+ * @since 0.1
  */
 @Controller
 @RequestMapping("/task")

@@ -27,7 +27,7 @@
     <table id="task_table" class="table table-hover" cellspacing="0" width="100%">
         <thead>
         <tr>
-            <th width="20%">Task ID</th>
+            <th width="20%">Task Name</th>
             <th>Task Description</th>
             <th width="15%">Task Status</th>
             <th width="15%">Task Owner</th>
@@ -51,9 +51,9 @@
         },
         "columns": [
             {
-                "data": "taskId",
-                "render": function (data) {
-                    return "<a href='${AppContext}task/"+data+"/host/list'>"+data+"</a>";
+                "data": "taskName",
+                "render": function (data, type, row) {
+                    return "<a href='${AppContext}task/"+row.taskId+"/host/list'>"+data+"</a>";
                 }
             },
             {

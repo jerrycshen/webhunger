@@ -1,4 +1,4 @@
-package me.shenchao.webhunger.controller;
+package me.shenchao.webhunger.core.controller;
 
 import me.shenchao.webhunger.config.WebHungerConfig;
 import org.slf4j.Logger;

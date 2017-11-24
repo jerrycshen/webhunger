@@ -6,6 +6,7 @@ import me.shenchao.webhunger.entity.HostSnapshot;
 import me.shenchao.webhunger.entity.Task;
 import me.shenchao.webhunger.exception.TaskParseException;
 import me.shenchao.webhunger.util.FileUtil;
+import me.shenchao.webhunger.util.MD5Util;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -39,8 +40,13 @@ class FileParser {
                 throw new TaskParseException("该文件不是task配置文件......");
             }
             Task task = new Task();
-            // 使用task文件名作为task的 ID
-            task.setTaskId(FileUtil.getFileName(taskFile));
+            // 计算task文件名的MD5 作为task的 ID
+            String fileName = FileUtil.getFileName(taskFile);
+            task.setTaskId(MD5Util.get16bitMD5(fileName));
+            Element nameElement = root.element("name");
+            if (nameElement != null) {
+                task.setTaskName(nameElement.getText());
+            }
             Element authorElement = root.element("author");
             if (authorElement != null) {
                 task.setAuthor(authorElement.getText());
@@ -104,6 +110,8 @@ class FileParser {
             host.setTask(task);
             host.setHostIndex(hostIndexElement.getText());
             host.setHostName(hostNameElement.getText());
+            // 根据host name 的MD5 值作为HOST ID
+            host.setHostId(MD5Util.get16bitMD5(host.getHostName()));
             hosts.add(host);
 
             host.setHostConfig(parseHostConfig(hostElement.element("config")));

@@ -28,10 +28,10 @@ public class FileTaskAccessor implements TaskAccessor {
     private WebHungerConfig webHungerConfig;
 
     @Override
-    public List<Task> loadTasks(WebHungerConfig webHungerConfig) {
+    public Map<String, Task> loadTasks(WebHungerConfig webHungerConfig) {
         this.webHungerConfig = webHungerConfig;
 
-        List<Task> tasks = new ArrayList<>();
+        Map<String, Task> taskMap = new HashMap<>();
         // 1. 获取task配置文件
         File[] taskFiles = FileAccessSupport.getTaskFiles(getTaskDataDir());
         logger.info("共找到{}个task文件", taskFiles.length);
@@ -40,18 +40,19 @@ public class FileTaskAccessor implements TaskAccessor {
         for (File taskFile : taskFiles) {
             try {
                 logger.info("解析{}......", taskFile.getName());
-                tasks.add(FileParser.parseTask(taskFile));
+                Task task = FileParser.parseTask(taskFile);
+                taskMap.put(task.getTaskId(), task);
             } catch (TaskParseException e) {
                 logger.error("解析{}失败，请检查文件格式......{}", taskFile.getAbsoluteFile(), e);
                 e.printStackTrace();
             }
         }
 
-        // 3. 设置Task中所有Host的状态信息
-        for (Task task : tasks) {
+        // 3. 从快照日志中恢复站点状态
+        for (Map.Entry<String, Task> entry : taskMap.entrySet()) {
+            Task task = entry.getValue();
             List<Host> hosts = task.getHosts();
             for (Host host : hosts) {
-                host.setHostId(FileAccessSupport.createHostId(host));
                 HostSnapshot hostSnapshot = FileAccessSupport.getLatestSnapshot(getHostResultDir(host));
                 if (hostSnapshot != null) {
                     host.setState(hostSnapshot.getState());
@@ -61,7 +62,7 @@ public class FileTaskAccessor implements TaskAccessor {
             }
         }
 
-        return tasks;
+        return taskMap;
     }
 
     @Override
@@ -74,14 +75,16 @@ public class FileTaskAccessor implements TaskAccessor {
 
     }
 
+
+
     private String getTaskDataDir() {
         return webHungerConfig.getConfMap().getOrDefault("taskDataDir", DEFAULT_TASK_PATH);
     }
 
 
     private String getHostResultDir(Host host) {
-        return getTaskDataDir() + File.separator + "result" + File.separator + host.getTask().getTaskId() +
-                File.separator + FileAccessSupport.createHostId(host);
+        return getTaskDataDir() + File.separator + "result" + File.separator + host.getTask().getTaskName() +
+                File.separator + FileAccessSupport.getHostFolderName(host);
     }
 
 }

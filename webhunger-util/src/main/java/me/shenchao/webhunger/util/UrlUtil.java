@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
  * @author Jerry Shen
  * @since 0.1
  */
-public class UrlUtils {
+public class UrlUtil {
 
     private static Pattern patternForProtocal = Pattern.compile("[\\w]+://");
 

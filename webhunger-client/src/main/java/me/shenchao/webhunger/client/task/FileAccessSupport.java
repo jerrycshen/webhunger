@@ -66,11 +66,11 @@ class FileAccessSupport {
     }
 
     /**
-     * 根据taskId 与 站点域名 生成一个唯一id
-     * @return taskId-host.index
+     * 根据task name 与 站点域名 生成站点文件夹名称
+     * @return taskName-hostDomain.index
      */
-    static String createHostId(Host host) {
-        return host.getTask().getTaskId() + "-" + host.getHostDomain();
+    static String getHostFolderName(Host host) {
+        return host.getTask().getTaskName() + "-" + host.getHostDomain();
     }
 
 }

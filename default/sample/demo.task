@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <task>
     <author>Jerry Shen</author>
+    <name>Demo</name>
     <description>
-        Demo
+        sample demo
     </description>
-    <startTime>2017-11-21 00:00:00</startTime>
-    <finishTime>2017-12-31 23:59:59</finishTime>
+    <startTime>2017-11-21</startTime>
+    <finishTime>2017-12-31</finishTime>
 
     <clientJarDir></clientJarDir>
 
     <hosts>
         <host>
-            <hostName>????</hostName>
+            <hostName>嘉兴残联</hostName>
             <hostIndex>http://www.jxdpf.org.cn</hostIndex>
             <config>
                 <depth>2</depth>

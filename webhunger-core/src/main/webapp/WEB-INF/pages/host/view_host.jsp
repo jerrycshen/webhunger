@@ -101,11 +101,11 @@
             "type": "POST"
         },
         "columns": [
-            {"data": "create_time"},
+            {"data": "hostId"},
             {
-                "data": "host_name",
+                "data": "hostName",
                 "render": function (data, type, row) {
-                    return "<a target='_blank' href='"+row.host_index+"'>"+data+"</a>";
+                    return "<a target='_blank' href='"+row.hostIndex+"'>"+data+"</a>";
                 }
             },
             {
@@ -127,7 +127,7 @@
                 }
             },
             {
-                "data": "host_id",
+                "data": "hostId",
                 "render": function (data, type, row) {
                     var buttonStr = "";
                     if (row.state === 0) {
@@ -165,7 +165,7 @@
                 }
             },
             {
-                "data": "host_id",
+                "data": "hostId",
                 "render": function (data, type, row) {
                     var buttonStr = "";
                     if (row.state === 0) {

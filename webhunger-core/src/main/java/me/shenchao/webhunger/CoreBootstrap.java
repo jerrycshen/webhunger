@@ -1,7 +1,7 @@
-package me.shenchao.webhunger.core;
+package me.shenchao.webhunger;
 
 import me.shenchao.webhunger.config.WebHungerConfig;
-import me.shenchao.webhunger.controller.ControllerFactory;
+import me.shenchao.webhunger.core.controller.ControllerFactory;
 import me.shenchao.webhunger.util.SystemUtil;
 import me.shenchao.webhunger.web.WebConsoleStarter;
 import org.slf4j.Logger;
