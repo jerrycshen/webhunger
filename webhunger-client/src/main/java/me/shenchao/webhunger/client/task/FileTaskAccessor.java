@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -23,6 +24,8 @@ public class FileTaskAccessor implements TaskAccessor {
     private static final Logger logger = LoggerFactory.getLogger(FileTaskAccessor.class);
 
     private static final String DEFAULT_TASK_PATH = SystemUtil.getWebHungerDefaultDir() + File.separator + "tasks";
+
+    private static final String SNAPSHOT_NAME = "host.snapshot";
 
     @Override
     public List<Task> loadTasks() {
@@ -39,7 +42,6 @@ public class FileTaskAccessor implements TaskAccessor {
                 tasks.add(task);
             } catch (TaskParseException e) {
                 logger.error("解析{}失败，请检查文件格式......{}", taskFile.getAbsoluteFile(), e);
-                e.printStackTrace();
             }
         }
 
@@ -47,7 +49,12 @@ public class FileTaskAccessor implements TaskAccessor {
         for (Task task : tasks) {
             List<Host> hosts = task.getHosts();
             for (Host host : hosts) {
-                HostSnapshot hostSnapshot = FileAccessSupport.getLatestSnapshot(getHostResultDir(host));
+                HostSnapshot hostSnapshot = null;
+                try {
+                    hostSnapshot = FileAccessSupport.getLatestSnapshot(getSnapshotPath(host));
+                } catch (IOException e) {
+                    logger.error("读取：{} 快照文件失败......{}", getSnapshotPath(host), e);
+                }
                 if (hostSnapshot != null) {
                     host.setState(hostSnapshot.getState());
                 } else {
@@ -61,7 +68,11 @@ public class FileTaskAccessor implements TaskAccessor {
 
     @Override
     public void createSnapshot(HostSnapshot snapshot) {
-
+        try {
+            FileAccessSupport.addSnapshot(getSnapshotPath(snapshot.getHost()), snapshot);
+        } catch (IOException e) {
+            logger.error("写入：{} 快照文件失败......{}", getSnapshotPath(snapshot.getHost()), e);
+        }
     }
 
     @Override
@@ -69,9 +80,21 @@ public class FileTaskAccessor implements TaskAccessor {
 
     }
 
-    private String getHostResultDir(Host host) {
+    private String getSnapshotPath(Host host) {
+        return getHostDir(host) + File.separator + SNAPSHOT_NAME;
+    }
+
+    private String getHostDir(Host host) {
         return DEFAULT_TASK_PATH + File.separator + "result" + File.separator + host.getTask().getTaskName() +
-                File.separator + FileAccessSupport.getHostFolderName(host);
+                File.separator + getHostFolderName(host);
+    }
+
+    /**
+     * 根据task name 与 站点域名 生成站点文件夹名称
+     * @return taskName-hostDomain.index
+     */
+    private String getHostFolderName(Host host) {
+        return host.getTask().getTaskName() + "-" + host.getHostDomain();
     }
 
 }

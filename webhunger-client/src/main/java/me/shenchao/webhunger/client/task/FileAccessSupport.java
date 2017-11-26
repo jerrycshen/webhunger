@@ -1,6 +1,8 @@
 package me.shenchao.webhunger.client.task;
 
-import me.shenchao.webhunger.entity.Host;
+import com.google.common.base.Charsets;
+import com.google.common.io.FileWriteMode;
+import com.google.common.io.Files;
 import me.shenchao.webhunger.entity.HostSnapshot;
 
 import java.io.*;
@@ -13,6 +15,8 @@ import java.util.Date;
  * @since 0.1
  */
 class FileAccessSupport {
+
+
 
     /**
      * 从指定目录下找到所有以task为后缀的文件
@@ -34,7 +38,7 @@ class FileAccessSupport {
         return taskFiles;
     }
 
-    static Date transferDate(String dateStr) {
+    static Date parseDate(String dateStr) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         try {
             return formatter.parse(dateStr);
@@ -44,33 +48,51 @@ class FileAccessSupport {
         return null;
     }
 
-    static HostSnapshot getLatestSnapshot(String hostSnapshotDir) {
-        File hostSnapshotFile = new File(hostSnapshotDir + File.separator + "host.snapshot");
-        if (hostSnapshotFile.exists()) {
-            try {
-                BufferedReader bufferedReader = new BufferedReader(new FileReader(hostSnapshotFile));
-                String line;
-                String prev = null;
-                while ((line = bufferedReader.readLine()) != null) {
-                    prev = line;
-                }
-                if (prev == null) {
-                    return null;
-                }
-                return FileParser.parseSnapshot(prev);
-            } catch (IOException e) {
-                e.printStackTrace();
+    static Date parsePreciseDate(String dateStr) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        try {
+            return formatter.parse(dateStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    static String formatPreciseDate(Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        return formatter.format(date);
+    }
+
+    /**
+     * 获取最新的快照记录
+     */
+    static HostSnapshot getLatestSnapshot(String snapshotPath) throws IOException {
+        File snapshotFile = new File(snapshotPath);
+        if (snapshotFile.exists()) {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(snapshotFile));
+            String line;
+            String prev = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                prev = line;
             }
+            if (prev == null) {
+                return null;
+            }
+            return FileParser.parseSnapshot(prev);
         }
         return null;
     }
 
     /**
-     * 根据task name 与 站点域名 生成站点文件夹名称
-     * @return taskName-hostDomain.index
+     * 添加新快照记录
      */
-    static String getHostFolderName(Host host) {
-        return host.getTask().getTaskName() + "-" + host.getHostDomain();
+    static void addSnapshot(String snapshotPath, HostSnapshot snapshot) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(snapshot.getHost().getHostId()).append("\t")
+            .append(snapshot.getState()).append("\t")
+            .append(formatPreciseDate(snapshot.getCreateTime()))
+            .append("\n");
+        Files.asCharSink(new File(snapshotPath), Charsets.UTF_8, FileWriteMode.APPEND).write(sb.toString());
     }
 
 }

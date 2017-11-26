@@ -4,6 +4,7 @@ import me.shenchao.webhunger.config.ControlConfig;
 import me.shenchao.webhunger.control.scheduler.HostScheduler;
 import me.shenchao.webhunger.control.scheduler.QueueHostScheduler;
 import me.shenchao.webhunger.entity.Host;
+import me.shenchao.webhunger.entity.HostState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +54,10 @@ class StandaloneController extends MasterController {
         Host host = hostMap.get(hostId);
         // 清理数据，准备环境 todo
 //        crawlersControlSupport.rollbackHost(host);
+        // 修改host状态
+        host.setState(HostState.Waiting.getState());
+        // 生成host快照，记录当前状态情况
+        controllerSupport.createSnapshot(host);
         hostScheduler.push(host);
 //        crawlersControlSupport.markHostWaitingState(host);
 //        signalNewHost();

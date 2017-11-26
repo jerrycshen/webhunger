@@ -57,11 +57,11 @@ class FileParser {
             }
             Element startTimeElement = root.element("startTime");
             if (startTimeElement != null) {
-                task.setStartTime(FileAccessSupport.transferDate(startTimeElement.getText()));
+                task.setStartTime(FileAccessSupport.parseDate(startTimeElement.getText()));
             }
             Element finishTimeElement = root.element("finishTime");
             if (finishTimeElement != null) {
-                task.setFinishTime(FileAccessSupport.transferDate(finishTimeElement.getText()));
+                task.setFinishTime(FileAccessSupport.parseDate(finishTimeElement.getText()));
             }
             Element parallelismElement  = root.element("parallelism");
             if (parallelismElement != null) {
@@ -129,14 +129,11 @@ class FileParser {
 
     static HostSnapshot parseSnapshot(String snapshotStr) {
         String[] fields = snapshotStr.split("\t");
-        HostSnapshot hostSnapshot = new HostSnapshot();
-        hostSnapshot.setHostId(fields[0]);
-        hostSnapshot.setSuccessPageNum(Integer.parseInt(fields[1]));
-        hostSnapshot.setErrorPageNum(Integer.parseInt(fields[2]));
-        hostSnapshot.setProcessedPageNum(Integer.parseInt(fields[3]));
-        hostSnapshot.setState(Integer.parseInt(fields[4]));
-        hostSnapshot.setCreateTime(FileAccessSupport.transferDate(fields[5]));
-
-        return hostSnapshot;
+        Host host = new Host();
+        host.setHostId(fields[0]);
+        return HostSnapshot.build()
+                .setHost(host)
+                .setState(Integer.parseInt(fields[1]))
+                .setCreateTime(FileAccessSupport.parsePreciseDate(fields[2]));
     }
 }

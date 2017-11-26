@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class HostSnapshot {
 
-    private String hostId;
+    private Host host;
 
     private int successPageNum;
 
@@ -22,51 +22,63 @@ public class HostSnapshot {
 
     private Date createTime;
 
-    public String getHostId() {
-        return hostId;
+    private HostSnapshot() {}
+
+    public static HostSnapshot build() {
+        return new HostSnapshot();
     }
 
-    public void setHostId(String hostId) {
-        this.hostId = hostId;
+    public Host getHost() {
+        return host;
+    }
+
+    public HostSnapshot setHost(Host host) {
+        this.host = host;
+        return this;
     }
 
     public int getSuccessPageNum() {
         return successPageNum;
     }
 
-    public void setSuccessPageNum(int successPageNum) {
+    public HostSnapshot setSuccessPageNum(int successPageNum) {
         this.successPageNum = successPageNum;
+        return this;
     }
 
     public int getErrorPageNum() {
         return errorPageNum;
     }
 
-    public void setErrorPageNum(int errorPageNum) {
+    public HostSnapshot setErrorPageNum(int errorPageNum) {
         this.errorPageNum = errorPageNum;
+        return this;
     }
 
     public int getProcessedPageNum() {
         return processedPageNum;
     }
 
-    public void setProcessedPageNum(int processedPageNum) {
+    public HostSnapshot setProcessedPageNum(int processedPageNum) {
         this.processedPageNum = processedPageNum;
+        return this;
     }
 
     public int getState() {
         return state;
     }
 
-    public void setState(int state) {
+    public HostSnapshot setState(int state) {
         this.state = state;
+        return this;
     }
 
     public Date getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Date createTime) {
+    public HostSnapshot setCreateTime(Date createTime) {
         this.createTime = createTime;
+        return this;
     }
 }

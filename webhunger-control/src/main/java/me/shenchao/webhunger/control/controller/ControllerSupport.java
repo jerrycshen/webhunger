@@ -2,6 +2,8 @@ package me.shenchao.webhunger.control.controller;
 
 import me.shenchao.webhunger.client.api.TaskAccessor;
 import me.shenchao.webhunger.config.ControlConfig;
+import me.shenchao.webhunger.entity.Host;
+import me.shenchao.webhunger.entity.HostSnapshot;
 import me.shenchao.webhunger.entity.Task;
 import me.shenchao.webhunger.util.FileUtil;
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -68,4 +71,11 @@ class ControllerSupport {
         return taskAccessor;
     }
 
+    void createSnapshot(Host host) {
+        HostSnapshot snapshot = HostSnapshot.build()
+                .setCreateTime(new Date())
+                .setHost(host)
+                .setState(host.getState());
+        taskAccessor.createSnapshot(snapshot);
+    }
 }
