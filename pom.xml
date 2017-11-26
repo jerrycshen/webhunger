@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
     <version>0.1-SNAPSHOT</version>
     <modules>
-        <module>webhunger-core</module>
+        <module>webhunger-control</module>
         <module>webhunger-crawler</module>
         <module>webhunger-entity</module>
         <module>webhunger-client</module>

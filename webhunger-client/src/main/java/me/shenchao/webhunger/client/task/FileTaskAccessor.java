@@ -1,7 +1,6 @@
 package me.shenchao.webhunger.client.task;
 
 import me.shenchao.webhunger.client.api.TaskAccessor;
-import me.shenchao.webhunger.config.WebHungerConfig;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostSnapshot;
 import me.shenchao.webhunger.entity.Task;
@@ -23,17 +22,13 @@ public class FileTaskAccessor implements TaskAccessor {
 
     private static final Logger logger = LoggerFactory.getLogger(FileTaskAccessor.class);
 
-    private static final String DEFAULT_TASK_PATH = SystemUtil.getWebHungerDefaultDir() + File.separator + "sample";
-
-    private WebHungerConfig webHungerConfig;
+    private static final String DEFAULT_TASK_PATH = SystemUtil.getWebHungerDefaultDir() + File.separator + "tasks";
 
     @Override
-    public Map<String, Task> loadTasks(WebHungerConfig webHungerConfig) {
-        this.webHungerConfig = webHungerConfig;
-
-        Map<String, Task> taskMap = new HashMap<>();
+    public List<Task> loadTasks() {
+        List<Task> tasks = new ArrayList<>();
         // 1. 获取task配置文件
-        File[] taskFiles = FileAccessSupport.getTaskFiles(getTaskDataDir());
+        File[] taskFiles = FileAccessSupport.getTaskFiles(DEFAULT_TASK_PATH);
         logger.info("共找到{}个task文件", taskFiles.length);
 
         // 2. 解析task配置文件
@@ -41,7 +36,7 @@ public class FileTaskAccessor implements TaskAccessor {
             try {
                 logger.info("解析{}......", taskFile.getName());
                 Task task = FileParser.parseTask(taskFile);
-                taskMap.put(task.getTaskId(), task);
+                tasks.add(task);
             } catch (TaskParseException e) {
                 logger.error("解析{}失败，请检查文件格式......{}", taskFile.getAbsoluteFile(), e);
                 e.printStackTrace();
@@ -49,8 +44,7 @@ public class FileTaskAccessor implements TaskAccessor {
         }
 
         // 3. 从快照日志中恢复站点状态
-        for (Map.Entry<String, Task> entry : taskMap.entrySet()) {
-            Task task = entry.getValue();
+        for (Task task : tasks) {
             List<Host> hosts = task.getHosts();
             for (Host host : hosts) {
                 HostSnapshot hostSnapshot = FileAccessSupport.getLatestSnapshot(getHostResultDir(host));
@@ -62,7 +56,7 @@ public class FileTaskAccessor implements TaskAccessor {
             }
         }
 
-        return taskMap;
+        return tasks;
     }
 
     @Override
@@ -75,15 +69,8 @@ public class FileTaskAccessor implements TaskAccessor {
 
     }
 
-
-
-    private String getTaskDataDir() {
-        return webHungerConfig.getConfMap().getOrDefault("taskDataDir", DEFAULT_TASK_PATH);
-    }
-
-
     private String getHostResultDir(Host host) {
-        return getTaskDataDir() + File.separator + "result" + File.separator + host.getTask().getTaskName() +
+        return DEFAULT_TASK_PATH + File.separator + "result" + File.separator + host.getTask().getTaskName() +
                 File.separator + FileAccessSupport.getHostFolderName(host);
     }
 

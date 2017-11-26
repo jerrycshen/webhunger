@@ -60,9 +60,14 @@ public class Task {
     private int state;
 
     /**
-     * 该目录用于存放用户自定义的Jar，例如自定义数据加载器、页面处理器等
+     * 支持几个站点同时爬取。 默认-1，表示支持该task下所有站点同时爬取
      */
-    private String clientJarDir;
+    private int parallelism = -1;
+
+    /**
+     * 该目录用于存放用户自定义的处理器Jar，例如URL处理器，页面处理器，站点处理器
+     */
+    private String processorJarDir;
 
     public String getTaskId() {
         return taskId;
@@ -145,11 +150,19 @@ public class Task {
         this.state = state;
     }
 
-    public String getClientJarDir() {
-        return clientJarDir;
+    public int getParallelism() {
+        return parallelism;
     }
 
-    public void setClientJarDir(String clientJarDir) {
-        this.clientJarDir = clientJarDir;
+    public void setParallelism(int parallelism) {
+        this.parallelism = parallelism;
+    }
+
+    public String getProcessorJarDir() {
+        return processorJarDir;
+    }
+
+    public void setProcessorJarDir(String processorJarDir) {
+        this.processorJarDir = processorJarDir;
     }
 }

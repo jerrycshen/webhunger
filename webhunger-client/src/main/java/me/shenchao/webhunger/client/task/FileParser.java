@@ -63,9 +63,13 @@ class FileParser {
             if (finishTimeElement != null) {
                 task.setFinishTime(FileAccessSupport.transferDate(finishTimeElement.getText()));
             }
-            Element clientJarDirElement = root.element("clientJarDir");
-            if (clientJarDirElement != null) {
-                task.setClientJarDir(clientJarDirElement.getText());
+            Element parallelismElement  = root.element("parallelism");
+            if (parallelismElement != null) {
+                task.setParallelism(Integer.parseInt(parallelismElement.getText()));
+            }
+            Element processorJarDirElement = root.element("processorJarDir");
+            if (processorJarDirElement != null) {
+                task.setProcessorJarDir(processorJarDirElement.getText());
             }
 
             task.setHostConfig(parseHostConfig(root.element("config")));

@@ -20,7 +20,7 @@
         </dependency>
         <dependency>
             <groupId>me.shenchao.webhunger</groupId>
-            <artifactId>webhunger-core</artifactId>
+            <artifactId>webhunger-control</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
