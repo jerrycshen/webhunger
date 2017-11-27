@@ -1,4 +1,4 @@
-package me.shenchao.webhunger.util;
+package me.shenchao.webhunger.util.common;
 
 import org.apache.commons.lang3.StringUtils;
 import java.util.regex.Pattern;

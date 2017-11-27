@@ -5,7 +5,7 @@ package me.shenchao.webhunger.entity;
  *     <ul>
  *         <li>Ready</li>
  *         <li>Waiting</li>
- *         <li>Running</li>
+ *         <li>Crawling</li>
  *         <li>Completed</li>
  *         <li>Suspend</li>
  *         <li>Processing</li>
@@ -21,7 +21,7 @@ package me.shenchao.webhunger.entity;
  */
 public enum HostState {
 
-    Ready(0), Waiting(-1), Running(1), Completed(5),  Suspend(3), Processing(2);
+    Ready(0), Waiting(-1), Crawling(1), Completed(5),  Suspend(3), Processing(2);
 
     HostState(int state) {
         this.state = state;

@@ -1,4 +1,4 @@
-package me.shenchao.webhunger.util;
+package me.shenchao.webhunger.util.common;
 
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;

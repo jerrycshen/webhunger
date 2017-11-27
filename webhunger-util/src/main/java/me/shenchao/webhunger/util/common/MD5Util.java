@@ -1,4 +1,4 @@
-package me.shenchao.webhunger.util;
+package me.shenchao.webhunger.util.common;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

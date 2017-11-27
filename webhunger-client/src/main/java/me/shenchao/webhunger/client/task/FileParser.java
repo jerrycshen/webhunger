@@ -5,8 +5,8 @@ import me.shenchao.webhunger.entity.HostConfig;
 import me.shenchao.webhunger.entity.HostSnapshot;
 import me.shenchao.webhunger.entity.Task;
 import me.shenchao.webhunger.exception.TaskParseException;
-import me.shenchao.webhunger.util.FileUtil;
-import me.shenchao.webhunger.util.MD5Util;
+import me.shenchao.webhunger.util.common.FileUtil;
+import me.shenchao.webhunger.util.common.MD5Util;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -62,10 +62,6 @@ class FileParser {
             Element finishTimeElement = root.element("finishTime");
             if (finishTimeElement != null) {
                 task.setFinishTime(FileAccessSupport.parseDate(finishTimeElement.getText()));
-            }
-            Element parallelismElement  = root.element("parallelism");
-            if (parallelismElement != null) {
-                task.setParallelism(Integer.parseInt(parallelismElement.getText()));
             }
 
             task.setHostConfig(parseHostConfig(root.element("config")));

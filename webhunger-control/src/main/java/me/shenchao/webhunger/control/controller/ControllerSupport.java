@@ -5,7 +5,7 @@ import me.shenchao.webhunger.config.ControlConfig;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostSnapshot;
 import me.shenchao.webhunger.entity.Task;
-import me.shenchao.webhunger.util.FileUtil;
+import me.shenchao.webhunger.util.common.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 控制器辅助类
+ * 控制器辅助类，主要用于数据访问操作
  *
  * @author Jerry Shen
  * @since 0.1

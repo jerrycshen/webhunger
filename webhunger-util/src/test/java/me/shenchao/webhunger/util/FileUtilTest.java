@@ -1,5 +1,6 @@
 package me.shenchao.webhunger.util;
 
+import me.shenchao.webhunger.util.common.FileUtil;
 import org.junit.Test;
 
 import java.io.File;

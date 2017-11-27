@@ -1,6 +1,6 @@
 package me.shenchao.webhunger.entity;
 
-import me.shenchao.webhunger.util.UrlUtil;
+import me.shenchao.webhunger.util.common.UrlUtil;
 
 import java.util.Date;
 

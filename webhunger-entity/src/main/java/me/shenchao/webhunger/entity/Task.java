@@ -59,11 +59,6 @@ public class Task {
      */
     private int state;
 
-    /**
-     * 支持几个站点同时爬取。 默认-1，表示支持该task下所有站点同时爬取
-     */
-    private int parallelism = -1;
-
     public String getTaskId() {
         return taskId;
     }
@@ -145,11 +140,4 @@ public class Task {
         this.state = state;
     }
 
-    public int getParallelism() {
-        return parallelism;
-    }
-
-    public void setParallelism(int parallelism) {
-        this.parallelism = parallelism;
-    }
 }

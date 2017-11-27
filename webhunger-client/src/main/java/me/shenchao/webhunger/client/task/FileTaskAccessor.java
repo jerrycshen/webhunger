@@ -5,7 +5,7 @@ import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostSnapshot;
 import me.shenchao.webhunger.entity.Task;
 import me.shenchao.webhunger.exception.TaskParseException;
-import me.shenchao.webhunger.util.SystemUtil;
+import me.shenchao.webhunger.util.common.SystemUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

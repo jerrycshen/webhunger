@@ -1,6 +1,6 @@
 package me.shenchao.webhunger.web;
 
-import me.shenchao.webhunger.util.SystemUtil;
+import me.shenchao.webhunger.util.common.SystemUtil;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;

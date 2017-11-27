@@ -112,7 +112,7 @@
                     } else if (data >= 5) {
                         return "<span class='label label-default'>Completed</span>";
                     } else if (data === -1) {
-                        return "<span class='label label-warn'>Waiting</span>";
+                        return "<span class='label label-warning'>Waiting</span>";
                     } else if (data === 2) {
                         return "<span class='label label-success'>Processing</span>";
                     } else if (data === 3) {
@@ -238,7 +238,7 @@
     }
 
     // 该页面每隔一分钟刷新一次，获取最新各个站点的状态
-    window.setInterval(updateHostTable, 60000);
+//    window.setInterval(updateHostTable, 60000);
 
     // 2秒后再次获取各个站点的状态，因为可能有站点从waiting 变为running
     function updateHostTableAfter2SecAgain() {
@@ -257,7 +257,7 @@
         hostTable.search("Waiting").draw();
     });
     $("#runningBtn").on("click", function () {
-        hostTable.search("Running").draw();
+        hostTable.search("Crawling").draw();
     });
     $("#completedBtn").on("click", function () {
         hostTable.search("Completed").draw();

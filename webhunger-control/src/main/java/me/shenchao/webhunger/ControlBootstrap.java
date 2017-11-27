@@ -3,7 +3,7 @@ package me.shenchao.webhunger;
 import me.shenchao.webhunger.config.ControlConfig;
 import me.shenchao.webhunger.control.controller.ControllerFactory;
 import me.shenchao.webhunger.exception.ConfigParseException;
-import me.shenchao.webhunger.util.SystemUtil;
+import me.shenchao.webhunger.util.common.SystemUtil;
 import me.shenchao.webhunger.web.WebConsoleStarter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
