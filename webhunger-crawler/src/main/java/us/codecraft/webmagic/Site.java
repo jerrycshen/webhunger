@@ -7,7 +7,6 @@ import us.codecraft.webmagic.utils.HttpConstant;
 import java.util.*;
 
 /**
- * 加入HOST<br>
  * Object contains setting for crawler.<br>
  *
  * @author code4crafter@gmail.com <br>

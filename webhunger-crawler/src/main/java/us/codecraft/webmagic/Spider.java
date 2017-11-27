@@ -92,9 +92,9 @@ public class Spider implements Runnable, Task {
     protected final static int STAT_RUNNING = 1;
 
     protected final static int STAT_STOPPED = 2;
-    // TODO 不理解该变量什么意思
+
     protected boolean spawnUrl = true;
-    // TODO 不理解该变量什么意思
+
     protected boolean destroyWhenExit = true;
 
     private ReentrantLock newUrlLock = new ReentrantLock();
