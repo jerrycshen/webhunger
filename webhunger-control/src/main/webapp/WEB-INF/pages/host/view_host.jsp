@@ -44,17 +44,17 @@
             </li>
             <li>
                 <button id="runningBtn" class="btn btn-primary" type="button" style="margin-left: 5px">
-                    Running <span id="runningBadge" class="badge"></span>
+                    Crawling <span id="runningBadge" class="badge"></span>
                 </button>
             </li>
             <li>
-                <button id="suspendBtn" class="btn btn-success" type="button" style="margin-left: 5px">
-                    Processing <span id="suspendBadge" class="badge"></span>
+                <button id="processingBtn" class="btn btn-success" type="button" style="margin-left: 5px">
+                    Processing <span id="processingBadge" class="badge"></span>
                 </button>
             </li>
             <li>
-                <button id="canceledBtn" class="btn btn-danger" type="button" style="margin-left: 5px">
-                    Suspend <span id="canceledBadge" class="badge"></span>
+                <button id="suspendedBtn" class="btn btn-danger" type="button" style="margin-left: 5px">
+                    Suspend <span id="suspendedBadge" class="badge"></span>
                 </button>
             </li>
             <li>
@@ -110,15 +110,15 @@
                     if (data === 0) {
                         return "<span class='label label-info'>Ready</span>";
                     } else if (data === 1) {
-                        return "<span class='label label-primary'>Crawing</span>";
+                        return "<span class='label label-primary'>Crawling</span>";
                     } else if (data >= 5) {
                         return "<span class='label label-default'>Completed</span>";
                     } else if (data === -1) {
-                        return "<span class='label label-success'>Waiting</span>";
-                    } else if (data === -2) {
-                        return "<span class='label label-danger'>Canceled</span>";
-                    } else if (data === -3) {
-                        return "<span class='label label-warn'>Suspend</span>";
+                        return "<span class='label label-warn'>Waiting</span>";
+                    } else if (data === 2) {
+                        return "<span class='label label-success'>Processing</span>";
+                    } else if (data === 3) {
+                        return "<span class='label label-danger'>Suspended</span>";
                     }
                 }
             },
@@ -128,7 +128,7 @@
                     var buttonStr = "";
                     // Ready
                     if (row.state === 0) {
-                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='startCrawler("+data+")'>Start</button> ";
+                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='startCrawler(\""+data+"\")'>Start</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Suspend</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Stop</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>ReStart</button>";
@@ -204,8 +204,8 @@
         var readyNum = 0;
         var waitingNum = 0;
         var runningNum = 0;
-        var canceledNum = 0;
-        var suspendNum = 0;
+        var processingNum = 0;
+        var suspendedNum = 0;
         var completedNum = 0;
         for (var i = 0; i < json.data.length; ++i) {
             var state = json.data[i].state;
@@ -213,21 +213,21 @@
                 ++readyNum;
             else if (state === 1)
                 ++runningNum;
-            else if (state >= 5)
+            else if (state === 5)
                 ++completedNum;
             else if (state === -1)
                 ++waitingNum;
-            else if (state === -2)
-                ++canceledNum;
-            else if (state === -3)
-                ++suspendNum;
+            else if (state === 2)
+                ++processingNum;
+            else if (state === 3)
+                ++suspendedNum;
 
         }
         $("#readyBadge").html(readyNum);
         $("#waitingBadge").html(waitingNum);
         $("#runningBadge").html(runningNum);
-        $("#suspendBadge").html(suspendNum);
-        $("#canceledBadge").html(canceledNum);
+        $("#suspendedBadge").html(suspendedNum);
+        $("#processingBadge").html(processingNum);
         $("#completedBadge").html(completedNum);
         $("#totalBadge").html(json.data.length);
     });
@@ -264,11 +264,11 @@
     $("#completedBtn").on("click", function () {
         hostTable.search("Completed").draw();
     });
-    $("#suspendBtn").on("click", function () {
-        hostTable.search("Suspend").draw();
+    $("#suspendedBtn").on("click", function () {
+        hostTable.search("Suspended").draw();
     });
-    $("#canceledBtn").on("click", function () {
-        hostTable.search("Canceled").draw();
+    $("#processingBtn").on("click", function () {
+        hostTable.search("Processing").draw();
     });
 
     function startTask(task_id) {

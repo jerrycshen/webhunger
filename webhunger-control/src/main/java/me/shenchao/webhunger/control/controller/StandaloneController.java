@@ -58,7 +58,7 @@ class StandaloneController extends MasterController {
         host.setState(HostState.Waiting.getState());
         // 生成host快照，记录当前状态情况
         controllerSupport.createSnapshot(host);
-        hostScheduler.push(host);
+//        hostScheduler.push(host);
 //        crawlersControlSupport.markHostWaitingState(host);
 //        signalNewHost();
     }

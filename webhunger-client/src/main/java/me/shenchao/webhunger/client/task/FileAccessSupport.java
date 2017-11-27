@@ -16,8 +16,6 @@ import java.util.Date;
  */
 class FileAccessSupport {
 
-
-
     /**
      * 从指定目录下找到所有以task为后缀的文件
      * @return 所有以task为后缀的文件
@@ -86,7 +84,8 @@ class FileAccessSupport {
     /**
      * 添加新快照记录
      */
-    static void addSnapshot(String snapshotPath, HostSnapshot snapshot) throws IOException {
+    static void createSnapshot(String snapshotPath, HostSnapshot snapshot) throws IOException {
+        Files.createParentDirs(new File(snapshotPath));
         StringBuilder sb = new StringBuilder();
         sb.append(snapshot.getHost().getHostId()).append("\t")
             .append(snapshot.getState()).append("\t")

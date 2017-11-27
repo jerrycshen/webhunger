@@ -25,6 +25,8 @@ public class FileTaskAccessor implements TaskAccessor {
 
     private static final String DEFAULT_TASK_PATH = SystemUtil.getWebHungerDefaultDir() + File.separator + "tasks";
 
+    private static final String DEFAULT_RESULT_PATH = SystemUtil.getWebHungerDefaultDir() + File.separator + "result";
+
     private static final String SNAPSHOT_NAME = "host.snapshot";
 
     @Override
@@ -69,9 +71,9 @@ public class FileTaskAccessor implements TaskAccessor {
     @Override
     public void createSnapshot(HostSnapshot snapshot) {
         try {
-            FileAccessSupport.addSnapshot(getSnapshotPath(snapshot.getHost()), snapshot);
+            FileAccessSupport.createSnapshot(getSnapshotPath(snapshot.getHost()), snapshot);
         } catch (IOException e) {
-            logger.error("写入：{} 快照文件失败......{}", getSnapshotPath(snapshot.getHost()), e);
+            logger.error("写入：{} 快照文件失败......", getSnapshotPath(snapshot.getHost()), e);
         }
     }
 
@@ -85,16 +87,8 @@ public class FileTaskAccessor implements TaskAccessor {
     }
 
     private String getHostDir(Host host) {
-        return DEFAULT_TASK_PATH + File.separator + "result" + File.separator + host.getTask().getTaskName() +
-                File.separator + getHostFolderName(host);
-    }
-
-    /**
-     * 根据task name 与 站点域名 生成站点文件夹名称
-     * @return taskName-hostDomain.index
-     */
-    private String getHostFolderName(Host host) {
-        return host.getTask().getTaskName() + "-" + host.getHostDomain();
+        return DEFAULT_RESULT_PATH + File.separator + host.getTask().getTaskName() +
+                File.separator + host.getHostDomain();
     }
 
 }
