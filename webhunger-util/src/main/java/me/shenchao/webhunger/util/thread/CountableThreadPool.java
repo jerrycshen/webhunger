@@ -31,6 +31,15 @@ public class CountableThreadPool {
         this.executorService = Executors.newFixedThreadPool(threadNum);
     }
 
+    public CountableThreadPool(int threadNum, ExecutorService executorService) {
+        this.threadNum = threadNum;
+        this.executorService = executorService;
+    }
+
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+
     public int getThreadAlive() {
         return threadAlive.get();
     }
