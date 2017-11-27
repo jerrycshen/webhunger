@@ -24,7 +24,8 @@ public class HostController {
 
     @RequestMapping(value = "/task/{taskId}/host/list", method = RequestMethod.GET)
     public String viewHostTable(@PathVariable("taskId") String taskId, Model model) {
-        model.addAttribute("task_id", taskId);
+        model.addAttribute("taskName", masterController.getTaskById(taskId).getTaskName());
+        model.addAttribute("taskId", taskId);
         return "host/view_host.jsp";
     }
 
@@ -48,5 +49,13 @@ public class HostController {
     public String startCrawler(@PathVariable String hostId) {
         masterController.start(hostId);
         return "success";
+    }
+
+    @RequestMapping(value = "/host/{hostId}/config/show", method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public String getHostConfig(@PathVariable String hostId) {
+        JSONObject result = new JSONObject();
+        result.put("data", masterController.getHostById(hostId));
+        return result.toJSONString();
     }
 }

@@ -30,14 +30,10 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">Setting</h4>
+                <h4 class="modal-title">Host Configuration</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal">
-                    <input type="hidden" id="task_id">
-                    <input type="hidden" id="host_id">
-                    <h3 class="host_setting">Host Info</h3>
-                    <hr class="host_setting">
                     <div class="form-group host_setting">
                         <label for="host_name" class="col-sm-3 control-label">Host Name</label>
                         <div class="col-sm-9">
@@ -50,84 +46,43 @@
                             <input type="url" class="form-control" id="host_index" placeholder="" required>
                         </div>
                     </div>
+                    <div class="form-group host_setting">
+                        <label for="time" class="col-sm-3 control-label">Time</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="time" required>
+                        </div>
+                    </div>
 
-                    <h3>Basic Setting</h3>
                     <hr>
+                    <%--<div class="form-group">--%>
+                        <%--<label class="col-sm-3 control-label">Host Type</label>--%>
+                        <%--<div class="col-sm-9">--%>
+                            <%--<label class="radio-inline">--%>
+                                <%--<input type="radio" name="type" value="0"> dynamic--%>
+                            <%--</label>--%>
+                            <%--<label class="radio-inline">--%>
+                                <%--<input type="radio" name="type" value="1"> static--%>
+                            <%--</label>--%>
+                        <%--</div>--%>
+                    <%--</div>--%>
                     <div class="form-group">
-                        <label for="snapshot_root" class="col-sm-3 control-label">Snapshot Root</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="snapshot_root" placeholder="" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Host Type</label>
-                        <div class="col-sm-9">
-                            <label class="radio-inline">
-                                <input type="radio" name="type" value="0"> dynamic
-                            </label>
-                            <label class="radio-inline">
-                                <input type="radio" name="type" value="1"> static
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="crawl_depth" class="col-sm-3 control-label">Crawl Depth</label>
-                        <div class="col-sm-9">
-                            <input type="number" class="form-control" id="crawl_depth" required>
-                            <p class="help-block">set
-                                <mark>-1</mark>
-                                to crawl the whole website
-                            </p>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="crawler_num" class="col-sm-3 control-label">Thread Number</label>
+                        <label for="crawlDepth" class="col-sm-3 control-label">Crawl Depth</label>
                         <div class="col-sm-3">
-                            <input type="number" class="form-control" min="1" max="10" id="crawler_num" required>
+                            <input type="number" class="form-control" id="crawlDepth" required>
                         </div>
-                        <label for="politeness_delay" class="col-sm-3 control-label">Crawl Interval</label>
+                        <label for="leastInterval" class="col-sm-3 control-label">Least Interval</label>
                         <div class="col-sm-3">
-                            <input type="number" class="form-control" min="1000" id="politeness_delay" required>
+                            <input type="number" class="form-control" min="1000" id="leastInterval" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="processorJarDir" class="col-sm-3 control-label">ProcessorJar Dir</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="processorJarDir" required>
                         </div>
                     </div>
 
-                    <%--Advance Setting--%>
-                    <div class="page-header">
-                        <h3>Advance Setting</h3>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-12">
-                            <textarea id="advanceSettingJson" rows="10" style="width:100%;">
-                            </textarea>
-                        </div>
-                        <div class="col-sm-6">
-                            <button id="formatJsonBtn" type="button" class="btn btn-default">Format</button>
-                            <button id="previewJsonBtn" type="button" class="btn btn-default">Preview</button>
-                            <button id="advanceSettingDocBtn" onclick="window.open('${AppContext}/doc/config.html')"
-                                    type="button" class="btn btn-default">Doc
-                            </button>
-                        </div>
-                    </div>
                 </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" id="applySettingBtn" class="btn btn-primary">Save & Apply</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="previewJsonModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title">Setting</h4>
-            </div>
-            <div class="modal-body">
-                <pre id="previewJson"></pre>
             </div>
         </div>
     </div>

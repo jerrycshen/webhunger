@@ -67,10 +67,6 @@ class FileParser {
             if (parallelismElement != null) {
                 task.setParallelism(Integer.parseInt(parallelismElement.getText()));
             }
-            Element processorJarDirElement = root.element("processorJarDir");
-            if (processorJarDirElement != null) {
-                task.setProcessorJarDir(processorJarDirElement.getText());
-            }
 
             task.setHostConfig(parseHostConfig(root.element("config")));
             task.setHosts(parseHost(task, root.element("hosts")));
@@ -90,9 +86,13 @@ class FileParser {
             if (depthElement != null) {
                 hostConfig.setDepth(Integer.parseInt(depthElement.getText()));
             }
-            Element intervalElement = configElement.element("interval");
+            Element intervalElement = configElement.element("leastInterval");
             if (intervalElement != null) {
-                hostConfig.setInterval(Integer.parseInt(intervalElement.getText()));
+                hostConfig.setLeastInterval(Integer.parseInt(intervalElement.getText()));
+            }
+            Element processorJarDirElement = configElement.element("processorJarDir");
+            if (processorJarDirElement != null) {
+                hostConfig.setProcessorJarDir(processorJarDirElement.getText());
             }
         }
         return hostConfig;

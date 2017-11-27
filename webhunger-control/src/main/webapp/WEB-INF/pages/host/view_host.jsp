@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <title>Host List</title>
+    <title>${taskName}</title>
 
     <%@include file="../common/head.jsp"%>
 
@@ -87,13 +87,11 @@
 
 <%@include file="../common/footer.jsp"%>
 <script src="${AppContext}/js/datatable_extension.js"></script>
-<!-- 自定义 -->
-<script src="${AppContext}js/setting.js"></script>
 <script type="text/javascript">
 
     hostTable = $("#host_table").DataTable({
         "ajax": {
-            "url": "${AppContext}task/${task_id}/host/list",
+            "url": "${AppContext}task/${taskId}/host/list",
             "type": "POST"
         },
         "columns": [
@@ -175,7 +173,7 @@
                     } else {
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='viewReport("+data+")'>Report</button> ";
                     }
-                    buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='viewConfig(" + row.task_id + "," + data + ")'>Config</button>";
+                    buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='viewConfig(\""+data+"\")'>Config</button>";
                     return buttonStr;
                 }
             }
@@ -285,27 +283,6 @@
         });
     }
 
-    function createHost(task_id) {
-        createHostAndApplyCofig("${AppContext}", task_id, 0);
-    }
-
-    $("#applySettingBtn").on("click", function () {
-        var data = JSON.stringify(constructConfig(0));
-        if (data == "{}") {
-            return;
-        }
-        $.ajax({
-            "url": "${AppContext}host/config/apply",
-            "type": "POST",
-            "data": data,
-            "contentType": "application/json;charset=utf-8",
-            "success": function (data) {
-                $("#settingModal").modal("hide");
-                hostTable.ajax.reload();
-            }
-        });
-    });
-
     function startCrawler(host_id) {
         $.ajax({
             "url": "${AppContext}host/" + host_id + "/start",
@@ -359,8 +336,24 @@
         window.open(url);
     }
 
-    function viewConfig(task_id, host_id) {
-        viewAndUpdateConfig("${AppContext}", task_id, host_id, 1);
+    function viewConfig(hostId) {
+        // 显示配置信息
+        $("#settingModal").modal("show");
+        $.ajax({
+            "url": ${AppContext} + "host/" + hostId + "/config/show",
+            "type": "GET",
+            "success": function (data) {
+                config = data.data;
+                // 回显基本配置
+                $("#host_name").val(config.hostName);
+                $("#host_index").val(config.hostIndex);
+                $("#time").val(moment(config.startTime).format("YYYY-MM-DD") + "  ~  " + moment(config.finishTime).format("YYYY-MM-DD"));
+
+                $("#processorJarDir").val(config.hostConfig.processorJarDir);
+                $("#crawlDepth").val(config.hostConfig.depth);
+                $("#leastInterval").val(config.hostConfig.leastInterval);
+            }
+        });
     }
 
 </script>

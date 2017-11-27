@@ -64,11 +64,6 @@ public class Task {
      */
     private int parallelism = -1;
 
-    /**
-     * 该目录用于存放用户自定义的处理器Jar，例如URL处理器，页面处理器，站点处理器
-     */
-    private String processorJarDir;
-
     public String getTaskId() {
         return taskId;
     }
@@ -156,13 +151,5 @@ public class Task {
 
     public void setParallelism(int parallelism) {
         this.parallelism = parallelism;
-    }
-
-    public String getProcessorJarDir() {
-        return processorJarDir;
-    }
-
-    public void setProcessorJarDir(String processorJarDir) {
-        this.processorJarDir = processorJarDir;
     }
 }

@@ -11,7 +11,7 @@
     <!-- 支持几个站点同时爬取，默认-1，表示该任务下所有站点同时爬取 -->
     <parallelism>3</parallelism>
     <!-- url 处理、页面处理、站点处理 类的jar包路径 -->
-    <processorJarDir>/</processorJarDir>
+
 
     <hosts>
         <host>
@@ -19,7 +19,8 @@
             <hostIndex>http://www.jxdpf.org.cn</hostIndex>
             <config>
                 <depth>2</depth>
-                <interval>3000</interval>
+                <leastInterval>3000</leastInterval>
+                <processorJarDir>/</processorJarDir>
             </config>
         </host>
     </hosts>

@@ -21,7 +21,7 @@ public abstract class MasterController {
 
     private static final Logger logger = LoggerFactory.getLogger(MasterController.class);
 
-    protected ControllerSupport controllerSupport;
+    ControllerSupport controllerSupport;
 
     /**
      * taskMap: 保存taskId 与 Task之间的映射关系<br>
@@ -35,12 +35,12 @@ public abstract class MasterController {
      *         </li>
      *     </ul>
      */
-    protected Map<String, Task> taskMap;
+    Map<String, Task> taskMap;
 
     /**
      * hostMap: 保存hostId 与 Host之间的映射关系
      */
-    protected Map<String, Host> hostMap;
+    Map<String, Host> hostMap;
 
     MasterController(ControlConfig controlConfig) {
         controllerSupport = new ControllerSupport(controlConfig);
@@ -58,6 +58,16 @@ public abstract class MasterController {
     public List<Host> getHostsByTaskId(String taskId) {
         loadTasks();
         return taskMap.get(taskId).getHosts();
+    }
+
+    public Task getTaskById(String taskId) {
+        if (taskMap == null)
+            loadTasks();
+        return taskMap.get(taskId);
+    }
+
+    public Host getHostById(String hostId) {
+        return hostMap.get(hostId);
     }
 
     public abstract void start(String hostId);

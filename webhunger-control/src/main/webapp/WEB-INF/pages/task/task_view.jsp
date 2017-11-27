@@ -40,7 +40,6 @@
 
 <%@include file="../common/footer.jsp"%>
 <script src="${AppContext}/framework/moment/moment.min.js"></script>
-<script src="${AppContext}js/setting.js"></script>
 <!-- 自定义 -->
 <script type="text/javascript">
 
