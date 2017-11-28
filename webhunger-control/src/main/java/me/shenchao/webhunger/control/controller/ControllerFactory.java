@@ -32,7 +32,7 @@ public class ControllerFactory {
                 if (masterController == null) {
                     if (!controlConfig.isDistributed()) {
                         masterController = new StandaloneController(controlConfig);
-                        logger.info("单机式控制器初始化完毕......");
+                        logger.info("单机版控制器初始化完毕......");
                     } else {
                         logger.info("分布式控制器初始化完毕......");
                     }

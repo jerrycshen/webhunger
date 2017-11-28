@@ -9,6 +9,7 @@ import java.util.Map;
 /**
  *
  * 新增nowDepth 字段，代表当前爬取深度，以便控制爬取深度<br>
+ * 新增hostId 字段，表示该请求属于哪个站点
  *  -----------------------------------------------------
  *
  * Object contains url to crawl.<br>
@@ -39,6 +40,8 @@ public class Request implements Serializable {
      * 当前爬取深度
      */
     private int nowDepth;
+
+    private String hostId;
 
     /**
      * cookies for current url, if not set use Site's cookies
@@ -155,6 +158,14 @@ public class Request implements Serializable {
 
     public void setNowDepth(int nowDepth) {
         this.nowDepth = nowDepth;
+    }
+
+    public String getHostId() {
+        return hostId;
+    }
+
+    public void setHostId(String hostId) {
+        this.hostId = hostId;
     }
 
     public String getParentUrl() {

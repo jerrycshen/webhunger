@@ -1,6 +1,6 @@
 package us.codecraft.webmagic;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  *  爬虫生命周期接口
@@ -19,6 +19,6 @@ public interface LifeCycle {
      *
      * @return sites
      */
-    public Site getSites();
+    public Map<String, Site> getSites();
 
 }

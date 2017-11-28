@@ -21,6 +21,7 @@ import us.codecraft.webmagic.utils.UrlUtils;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -112,6 +113,11 @@ public class Spider implements Runnable, LifeCycle {
     private Thread asyncThread;
 
     /**
+     * 保存站点Id与站点之间的映射
+     */
+    private Map<String, Site> siteMap = new ConcurrentHashMap<>();
+
+    /**
      * create a spider with pageProcessor.
      *
      * @param pageProcessor pageProcessor
@@ -129,7 +135,7 @@ public class Spider implements Runnable, LifeCycle {
      */
     public Spider(PageProcessor pageProcessor) {
         this.pageProcessor = pageProcessor;
-        this.site = pageProcessor.getSite();
+//        this.site = pageProcessor.getSite();
     }
 
     /**
@@ -762,8 +768,8 @@ public class Spider implements Runnable, LifeCycle {
     }
 
     @Override
-    public Site getSites() {
-        return site;
+    public Map<String, Site> getSites() {
+        return siteMap;
     }
 
     public List<SpiderListener> getSpiderListeners() {

@@ -2,6 +2,7 @@ package us.codecraft.webmagic;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import me.shenchao.webhunger.entity.Host;
 import us.codecraft.webmagic.utils.HttpConstant;
 
 import java.util.*;
@@ -14,6 +15,11 @@ import java.util.*;
  * @since 0.1.0
  */
 public class Site {
+
+    /**
+     * new
+     */
+    private Host host;
 
     private String domain;
 
@@ -100,7 +106,7 @@ public class Site {
      * @return get cookies
      */
     public Map<String, String> getCookies() {
-        return defaultCookies;
+        return host.getHostConfig().getCookies();
     }
 
     /**
@@ -118,7 +124,7 @@ public class Site {
      * @return user agent
      */
     public String getUserAgent() {
-        return userAgent;
+        return host.getHostConfig().getUserAgent();
     }
 
     /**
@@ -159,11 +165,11 @@ public class Site {
      * @return charset
      */
     public String getCharset() {
-        return charset;
+        return host.getHostConfig().getCharset();
     }
 
     public int getTimeOut() {
-        return timeOut;
+        return host.getHostConfig().getTimeout();
     }
 
     /**
@@ -232,7 +238,7 @@ public class Site {
     }
 
     public Map<String, String> getHeaders() {
-        return headers;
+        return host.getHostConfig().getHeaders();
     }
 
     /**
@@ -265,7 +271,7 @@ public class Site {
      * @return retry times when download fail
      */
     public int getCycleRetryTimes() {
-        return cycleRetryTimes;
+        return host.getHostConfig().getRetry();
     }
 
     /**
@@ -327,19 +333,6 @@ public class Site {
         return this;
     }
 
-    public LifeCycle toTask() {
-        return new LifeCycle() {
-            @Override
-            public String getUUID() {
-                return Site.this.getDomain();
-            }
-
-            @Override
-            public Site getSites() {
-                return Site.this;
-            }
-        };
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -382,16 +375,16 @@ public class Site {
     @Override
     public String toString() {
         return "Site{" +
-                "domain='" + domain + '\'' +
-                ", userAgent='" + userAgent + '\'' +
-                ", cookies=" + defaultCookies +
-                ", charset='" + charset + '\'' +
+                "domain='" + getDomain() + '\'' +
+                ", userAgent='" + getUserAgent() + '\'' +
+                ", cookies=" + getCookies() +
+                ", charset='" + getCharset() + '\'' +
                 ", sleepTime=" + sleepTime +
                 ", retryTimes=" + retryTimes +
-                ", cycleRetryTimes=" + cycleRetryTimes +
-                ", timeOut=" + timeOut +
+                ", cycleRetryTimes=" + getCycleRetryTimes() +
+                ", timeOut=" + getTimeOut() +
                 ", acceptStatCode=" + acceptStatCode +
-                ", headers=" + headers +
+                ", headers=" + getHeaders() +
                 '}';
     }
 

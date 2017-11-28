@@ -32,7 +32,7 @@ public class ControlBootstrap {
         } catch (ConfigParseException e) {
             logger.warn(e.toString());
         } catch (IOException e) {
-            logger.error("配置文件读取失败，程序退出......", e);
+            logger.error("控制模块配置文件读取失败，程序退出......", e);
             System.exit(1);
         }
         // log config info
@@ -44,7 +44,11 @@ public class ControlBootstrap {
         logger.info("Web Context Path: {}", controlConfig.getContentPath());
     }
 
-    private void start() {
+    public void start() {
+        // 解析配置
+        parseControlConfig();
+        logger.info("控制模块开始启动......");
+
         // 初始化中央控制器
         ControllerFactory.initController(controlConfig);
 
@@ -60,8 +64,6 @@ public class ControlBootstrap {
     }
 
     public static void main(String[] args) {
-        ControlBootstrap bootstrap = new ControlBootstrap();
-        bootstrap.parseControlConfig();
-        bootstrap.start();
+        new ControlBootstrap().start();
     }
 }

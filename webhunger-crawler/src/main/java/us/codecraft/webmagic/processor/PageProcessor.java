@@ -26,11 +26,4 @@ public interface PageProcessor {
      */
     public void process(Page page);
 
-    /**
-     * get the site settings
-     *
-     * @return site
-     * @see Site
-     */
-    public Site getSite();
 }

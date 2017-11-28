@@ -16,11 +16,9 @@ class StandaloneController extends MasterController {
 
     private static final Logger logger = LoggerFactory.getLogger(StandaloneController.class);
 
-    private CrawlerBootstrap crawlerBootstrap;
-
     StandaloneController(ControlConfig controlConfig) {
         super(controlConfig);
-        crawlerBootstrap = new CrawlerBootstrap();
+        new CrawlerBootstrap().start();
     }
 
     /**
@@ -28,7 +26,7 @@ class StandaloneController extends MasterController {
      */
     @Override
     void crawl(Host host) {
-        crawlerBootstrap.crawl(host);
+
     }
 
 }

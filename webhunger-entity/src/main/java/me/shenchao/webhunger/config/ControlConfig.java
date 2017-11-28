@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * core config entity for bootstrap
+ * 控制模块启动配置
  *
  * @author Jerry Shen
  * @since 0.1
