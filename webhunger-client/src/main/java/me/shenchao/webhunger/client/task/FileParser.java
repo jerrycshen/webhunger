@@ -90,6 +90,36 @@ class FileParser {
             if (processorJarDirElement != null) {
                 hostConfig.setProcessorJarDir(processorJarDirElement.getText());
             }
+            Element charsetElement = configElement.element("charset");
+            if (charsetElement != null) {
+                hostConfig.setCharset(charsetElement.getText());
+            }
+            Element retryElement = configElement.element("retry");
+            if (retryElement != null) {
+                hostConfig.setRetry(Integer.parseInt(retryElement.getText()));
+            }
+            Element timeoutElement = configElement.element("timeout");
+            if (timeoutElement != null) {
+                hostConfig.setTimeout(Integer.parseInt(timeoutElement.getText()));
+            }
+            Element userAgentElement = configElement.element("userAgent");
+            if (userAgentElement != null) {
+                hostConfig.setUserAgent(userAgentElement.getText());
+            }
+            Element headersElement = configElement.element("headers");
+            if (headersElement != null && headersElement.elements("header").size() > 0) {
+                List<Element> headerList = headersElement.elements("header");
+                for (Element headerElement : headerList) {
+                    hostConfig.addHeader(headerElement.attributeValue("key"), headerElement.attributeValue("value"));
+                }
+            }
+            Element cookiesElment = configElement.element("cookies");
+            if (cookiesElment != null && cookiesElment.elements("cookie").size() > 0) {
+                List<Element> cookieList = cookiesElment.elements("cookie");
+                for (Element cookieElement : cookieList) {
+                    hostConfig.addCookie(cookieElement.attributeValue("key"), cookieElement.attributeValue("value"));
+                }
+            }
         }
         return hostConfig;
     }
