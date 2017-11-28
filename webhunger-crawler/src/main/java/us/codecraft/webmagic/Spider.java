@@ -59,7 +59,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @see Pipeline
  * @since 0.1.0
  */
-public class Spider implements Runnable, Task {
+public class Spider implements Runnable, LifeCycle {
 
     protected Downloader downloader;
 
@@ -762,7 +762,7 @@ public class Spider implements Runnable, Task {
     }
 
     @Override
-    public Site getSite() {
+    public Site getSites() {
         return site;
     }
 

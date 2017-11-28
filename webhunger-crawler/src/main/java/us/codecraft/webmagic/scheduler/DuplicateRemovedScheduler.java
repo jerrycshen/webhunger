@@ -3,13 +3,12 @@ package us.codecraft.webmagic.scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.codecraft.webmagic.Request;
-import us.codecraft.webmagic.Task;
+import us.codecraft.webmagic.LifeCycle;
 import us.codecraft.webmagic.scheduler.component.DuplicateRemover;
 import us.codecraft.webmagic.scheduler.component.HashSetDuplicateRemover;
 
 /**
  * Remove duplicate urls and only push urls which are not duplicate.<br><br>
- * 抽象基类，提供一些模板方法
  * @author code4crafer@gmail.com
  * @since 0.5.0
  */
@@ -29,7 +28,7 @@ public abstract class DuplicateRemovedScheduler implements Scheduler {
     }
 
     @Override
-    public void push(Request request, Task task) {
+    public void push(Request request, LifeCycle task) {
         logger.trace("get a candidate url {}", request.getUrl());
         if (!duplicatedRemover.isDuplicate(request, task) || shouldReserved(request)) {
             logger.debug("push to queue {}", request.getUrl());
@@ -51,7 +50,7 @@ public abstract class DuplicateRemovedScheduler implements Scheduler {
      * @param request
      * @param task
      */
-    protected void pushWhenNoDuplicate(Request request, Task task) {
+    protected void pushWhenNoDuplicate(Request request, LifeCycle task) {
 
     }
 }

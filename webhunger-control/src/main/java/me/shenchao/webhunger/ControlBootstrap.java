@@ -9,9 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
- * Core Control module bootstrap
+ * 控制模块启动类
  *
  * @author Jerry Shen
  * @since 0.1
@@ -30,8 +31,8 @@ public class ControlBootstrap {
             controlConfig.parse(SystemUtil.getWebHungerConfigDir() + File.separator + CONF_NAME);
         } catch (ConfigParseException e) {
             logger.warn(e.toString());
-        } catch (Exception e) {
-            logger.error("配置文件解析失败，程序退出......", e);
+        } catch (IOException e) {
+            logger.error("配置文件读取失败，程序退出......", e);
             System.exit(1);
         }
         // log config info

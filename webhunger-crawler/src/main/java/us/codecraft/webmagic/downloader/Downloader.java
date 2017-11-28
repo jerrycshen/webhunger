@@ -2,7 +2,7 @@ package us.codecraft.webmagic.downloader;
 
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Request;
-import us.codecraft.webmagic.Task;
+import us.codecraft.webmagic.LifeCycle;
 
 /**
  * Downloader is the part that downloads web pages and store in Page object. <br>
@@ -21,7 +21,7 @@ public interface Downloader {
      * @param task task
      * @return page
      */
-    public Page download(Request request, Task task);
+    public Page download(Request request, LifeCycle task);
 
     /**
      * Tell the downloader how many threads the spider used.

@@ -2,7 +2,7 @@ package us.codecraft.webmagic.scheduler;
 
 import org.apache.http.annotation.ThreadSafe;
 import us.codecraft.webmagic.Request;
-import us.codecraft.webmagic.Task;
+import us.codecraft.webmagic.LifeCycle;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -21,22 +21,22 @@ public class QueueScheduler extends DuplicateRemovedScheduler implements Monitor
     private BlockingQueue<Request> queue = new LinkedBlockingQueue<Request>();
 
     @Override
-    public void pushWhenNoDuplicate(Request request, Task task) {
+    public void pushWhenNoDuplicate(Request request, LifeCycle task) {
         queue.add(request);
     }
 
     @Override
-    public synchronized Request poll(Task task) {
+    public synchronized Request poll(LifeCycle task) {
         return queue.poll();
     }
 
     @Override
-    public int getLeftRequestsCount(Task task) {
+    public int getLeftRequestsCount(LifeCycle task) {
         return queue.size();
     }
 
     @Override
-    public int getTotalRequestsCount(Task task) {
+    public int getTotalRequestsCount(LifeCycle task) {
         return getDuplicateRemover().getTotalRequestsCount(task);
     }
 }

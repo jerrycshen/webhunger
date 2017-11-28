@@ -1,7 +1,7 @@
 package us.codecraft.webmagic.scheduler;
 
 import us.codecraft.webmagic.Request;
-import us.codecraft.webmagic.Task;
+import us.codecraft.webmagic.LifeCycle;
 
 /**
  * Scheduler is the part of url management.<br>
@@ -20,7 +20,7 @@ public interface Scheduler {
      * @param request request
      * @param task task
      */
-    public void push(Request request, Task task);
+    public void push(Request request, LifeCycle task);
 
     /**
      * get an url to crawl
@@ -28,6 +28,6 @@ public interface Scheduler {
      * @param task the task of spider
      * @return the url to crawl
      */
-    public Request poll(Task task);
+    public Request poll(LifeCycle task);
 
 }

@@ -3,7 +3,7 @@ package us.codecraft.webmagic.scheduler.component;
 import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnels;
 import us.codecraft.webmagic.Request;
-import us.codecraft.webmagic.Task;
+import us.codecraft.webmagic.LifeCycle;
 
 import java.nio.charset.Charset;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,7 +45,7 @@ public class BloomFilterDuplicateRemover implements DuplicateRemover {
     private final BloomFilter<CharSequence> bloomFilter;
 
     @Override
-    public boolean isDuplicate(Request request, Task task) {
+    public boolean isDuplicate(Request request, LifeCycle task) {
         boolean isDuplicate = bloomFilter.mightContain(getUrl(request));
         if (!isDuplicate) {
             bloomFilter.put(getUrl(request));
@@ -59,12 +59,12 @@ public class BloomFilterDuplicateRemover implements DuplicateRemover {
     }
 
     @Override
-    public void resetDuplicateCheck(Task task) {
+    public void resetDuplicateCheck(LifeCycle task) {
         rebuildBloomFilter();
     }
 
     @Override
-    public int getTotalRequestsCount(Task task) {
+    public int getTotalRequestsCount(LifeCycle task) {
         return counter.get();
     }
 }

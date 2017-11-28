@@ -77,7 +77,6 @@ public class Request implements Serializable {
     }
 
     /**
-     * TODO 试验阶段
      * Set the priority of request for sorting.<br>
      * Need a scheduler supporting priority.<br>
      *

@@ -1,7 +1,7 @@
 package us.codecraft.webmagic.pipeline;
 
 import us.codecraft.webmagic.ResultItems;
-import us.codecraft.webmagic.Task;
+import us.codecraft.webmagic.LifeCycle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class ResultItemsCollectorPipeline implements CollectorPipeline<ResultIte
     }
 
     @Override
-    public void process(ResultItems resultItems, Task task) {
+    public void process(ResultItems resultItems, LifeCycle task) {
         collector.add(resultItems);
     }
 }

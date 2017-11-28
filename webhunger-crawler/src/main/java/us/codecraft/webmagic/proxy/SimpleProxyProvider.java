@@ -1,7 +1,7 @@
 package us.codecraft.webmagic.proxy;
 
 import us.codecraft.webmagic.Page;
-import us.codecraft.webmagic.Task;
+import us.codecraft.webmagic.LifeCycle;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,12 +40,12 @@ public class SimpleProxyProvider implements ProxyProvider {
     }
 
     @Override
-    public void returnProxy(Proxy proxy, Page page, Task task) {
+    public void returnProxy(Proxy proxy, Page page, LifeCycle task) {
         //Donothing
     }
 
     @Override
-    public Proxy getProxy(Task task) {
+    public Proxy getProxy(LifeCycle task) {
         return proxies.get(incrForLoop());
     }
 

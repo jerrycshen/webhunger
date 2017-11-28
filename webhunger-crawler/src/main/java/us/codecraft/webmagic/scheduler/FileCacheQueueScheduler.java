@@ -4,7 +4,7 @@ package us.codecraft.webmagic.scheduler;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import us.codecraft.webmagic.Request;
-import us.codecraft.webmagic.Task;
+import us.codecraft.webmagic.LifeCycle;
 import us.codecraft.webmagic.scheduler.component.DuplicateRemover;
 
 import java.io.*;
@@ -27,7 +27,7 @@ public class FileCacheQueueScheduler extends DuplicateRemovedScheduler implement
 
     private String fileUrlAllName = ".urls.txt";
 
-    private Task task;
+    private LifeCycle task;
 
     private String fileCursor = ".cursor.txt";
 
@@ -58,7 +58,7 @@ public class FileCacheQueueScheduler extends DuplicateRemovedScheduler implement
         fileCursorWriter.flush();
     }
 
-    private void init(Task task) {
+    private void init(LifeCycle task) {
         this.task = task;
         File file = new File(filePath);
         if (!file.exists()) {
@@ -75,7 +75,7 @@ public class FileCacheQueueScheduler extends DuplicateRemovedScheduler implement
         setDuplicateRemover(
                 new DuplicateRemover() {
                     @Override
-                    public boolean isDuplicate(Request request, Task task) {
+                    public boolean isDuplicate(Request request, LifeCycle task) {
                         if (!inited.get()) {
                             init(task);
                         }
@@ -83,12 +83,12 @@ public class FileCacheQueueScheduler extends DuplicateRemovedScheduler implement
                     }
 
                     @Override
-                    public void resetDuplicateCheck(Task task) {
+                    public void resetDuplicateCheck(LifeCycle task) {
                         urls.clear();
                     }
 
                     @Override
-                    public int getTotalRequestsCount(Task task) {
+                    public int getTotalRequestsCount(LifeCycle task) {
                         return urls.size();
                     }
                 });
@@ -175,7 +175,7 @@ public class FileCacheQueueScheduler extends DuplicateRemovedScheduler implement
     }
 
     @Override
-    protected void pushWhenNoDuplicate(Request request, Task task) {
+    protected void pushWhenNoDuplicate(Request request, LifeCycle task) {
         if (!inited.get()) {
             init(task);
         }
@@ -184,7 +184,7 @@ public class FileCacheQueueScheduler extends DuplicateRemovedScheduler implement
     }
 
     @Override
-    public synchronized Request poll(Task task) {
+    public synchronized Request poll(LifeCycle task) {
         if (!inited.get()) {
             init(task);
         }
@@ -193,12 +193,12 @@ public class FileCacheQueueScheduler extends DuplicateRemovedScheduler implement
     }
 
     @Override
-    public int getLeftRequestsCount(Task task) {
+    public int getLeftRequestsCount(LifeCycle task) {
         return queue.size();
     }
 
     @Override
-    public int getTotalRequestsCount(Task task) {
+    public int getTotalRequestsCount(LifeCycle task) {
         return getDuplicateRemover().getTotalRequestsCount(task);
     }
 }

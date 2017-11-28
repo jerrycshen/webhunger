@@ -1,6 +1,6 @@
 package us.codecraft.webmagic.scheduler;
 
-import us.codecraft.webmagic.Task;
+import us.codecraft.webmagic.LifeCycle;
 
 /**
  * The scheduler whose requests can be counted for cn.edu.zju.eagle.monitor.
@@ -10,8 +10,8 @@ import us.codecraft.webmagic.Task;
  */
 public interface MonitorableScheduler extends Scheduler {
 
-    public int getLeftRequestsCount(Task task);
+    public int getLeftRequestsCount(LifeCycle task);
 
-    public int getTotalRequestsCount(Task task);
+    public int getTotalRequestsCount(LifeCycle task);
 
 }

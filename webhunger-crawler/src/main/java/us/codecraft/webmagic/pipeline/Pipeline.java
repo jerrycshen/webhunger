@@ -1,7 +1,7 @@
 package us.codecraft.webmagic.pipeline;
 
 import us.codecraft.webmagic.ResultItems;
-import us.codecraft.webmagic.Task;
+import us.codecraft.webmagic.LifeCycle;
 
 /**
  * 重构Pipeline去掉ResultItem类
@@ -20,5 +20,5 @@ public interface Pipeline {
      * @param resultItems resultItems
      * @param task task
      */
-    void process(ResultItems resultItems, Task task);
+    void process(ResultItems resultItems, LifeCycle task);
 }

@@ -51,10 +51,11 @@ public abstract class MasterController {
      * 更新时机: <br>
      *     <ul>
      *         <li>
-     *              只有在页面中点击刷新按钮时，会触发重新从数据源读取
+     *              只有在<b>任务页面</b>中点击刷新按钮时，会触发重新从数据源读取
      *         </li>
      *         <li>
-     *              其余操作，例如启动爬虫，停止等操作，只会从缓冲中读取，所以在程序运行过程中手动修改了数据源，请通过刷新按钮重新加载数据，保证数据一致性
+     *              其余操作，例如读取站点列表、启动爬虫，停止等操作，只会从缓冲中读取，所以在程序运行过程中手动修改了数据源，
+     *              请在任务显示页面刷新重新加载数据
      *         </li>
      *     </ul>
      */
@@ -73,9 +74,6 @@ public abstract class MasterController {
         schedulerThread.start();
     }
 
-    /**
-     * <note>只有在任务页面刷新界面才会触发一次重新从数据源加载数据</note>
-     */
     public List<Task> getTasks() {
         loadTasks();
         List<Task> tasks = new ArrayList<>();
@@ -123,10 +121,16 @@ public abstract class MasterController {
         host.setState(HostState.Waiting.getState());
         // 生成host快照，记录当前状态情况
         controllerSupport.createSnapshot(host);
-//        hostScheduler.push(host);
+        hostScheduler.push(host);
         logger.info("站点：{} 加入待爬站点队列......", host.getHostName());
-//        signalNewHost();
+        signalNewHost();
     }
+
+    /**
+     * 向爬虫发送种子URL，开始爬取
+     * @param host host
+     */
+    abstract void crawl(Host host);
 
     class SchedulerThread implements Runnable {
 
@@ -144,6 +148,7 @@ public abstract class MasterController {
                             logger.info("站点：{} 开始爬取......", host.getHostName());
                             host.setState(HostState.Crawling.getState());
 
+                            crawl(host);
                         }
                     });
                 }

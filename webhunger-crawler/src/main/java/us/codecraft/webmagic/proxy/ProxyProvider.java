@@ -1,7 +1,7 @@
 package us.codecraft.webmagic.proxy;
 
 import us.codecraft.webmagic.Page;
-import us.codecraft.webmagic.Task;
+import us.codecraft.webmagic.LifeCycle;
 
 /**
  * Proxy provider. <br>
@@ -17,7 +17,7 @@ public interface ProxyProvider {
      * @param page  the download result
      * @param task  the download task
      */
-    void returnProxy(Proxy proxy, Page page, Task task);
+    void returnProxy(Proxy proxy, Page page, LifeCycle task);
 
     /**
      * Get a proxy for task by some strategy.
@@ -25,6 +25,6 @@ public interface ProxyProvider {
      * @param task the download task
      * @return proxy
      */
-    Proxy getProxy(Task task);
+    Proxy getProxy(LifeCycle task);
 
 }

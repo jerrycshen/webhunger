@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.Site;
-import us.codecraft.webmagic.Task;
+import us.codecraft.webmagic.LifeCycle;
 import us.codecraft.webmagic.proxy.Proxy;
 import us.codecraft.webmagic.proxy.ProxyProvider;
 import us.codecraft.webmagic.utils.CharsetUtils;
@@ -69,24 +69,24 @@ public class HttpClientDownloader extends AbstractDownloader {
     }
 
     @Override
-    public Page download(Request request, Task task) {
-        if (task == null || task.getSite() == null) {
+    public Page download(Request request, LifeCycle task) {
+        if (task == null || task.getSites() == null) {
             throw new NullPointerException("task or site can not be null");
         }
         CloseableHttpResponse httpResponse = null;
-        CloseableHttpClient httpClient = getHttpClient(task.getSite());
+        CloseableHttpClient httpClient = getHttpClient(task.getSites());
         Proxy proxy = proxyProvider != null ? proxyProvider.getProxy(task) : null;
 
         if (proxy != null) {
             System.out.println("使用代理：" + proxy.getHost() + "---->" + proxy.getPort());
         }
 
-        HttpClientRequestContext requestContext = httpUriRequestConverter.convert(request, task.getSite(), proxy);
+        HttpClientRequestContext requestContext = httpUriRequestConverter.convert(request, task.getSites(), proxy);
         Page page = Page.fail();
 
         try {
             httpResponse = httpClient.execute(requestContext.getHttpUriRequest(), requestContext.getHttpClientContext());
-            page = handleResponse(request, request.getCharset() != null ? request.getCharset() : task.getSite().getCharset(), httpResponse, task);
+            page = handleResponse(request, request.getCharset() != null ? request.getCharset() : task.getSites().getCharset(), httpResponse, task);
             onSuccess(request);
             logger.info("downloading page success {}", request.getUrl());
             return page;
@@ -112,7 +112,7 @@ public class HttpClientDownloader extends AbstractDownloader {
         httpClientGenerator.setPoolSize(thread);
     }
 
-    protected Page handleResponse(Request request, String charset, HttpResponse httpResponse, Task task) throws IOException {
+    protected Page handleResponse(Request request, String charset, HttpResponse httpResponse, LifeCycle task) throws IOException {
         byte[] bytes = IOUtils.toByteArray(httpResponse.getEntity().getContent());
         String contentType = httpResponse.getEntity().getContentType() == null ? "" : httpResponse.getEntity().getContentType().getValue();
         Page page = new Page();

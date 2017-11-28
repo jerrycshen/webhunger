@@ -53,8 +53,10 @@ public class ControlConfig {
         }
         try {
             this.parallelism = Integer.parseInt(properties.getProperty("parallelism", "-1"));
-            if (parallelism == 0)
+            if (parallelism == 0) {
+                this.parallelism = -1;
                 throw new ConfigParseException("parallelism值不能为0，将使用默认值-1");
+            }
         } catch (Exception e) {
             throw new ConfigParseException("parallelism字段解析失败，使用默认值-1");
         }

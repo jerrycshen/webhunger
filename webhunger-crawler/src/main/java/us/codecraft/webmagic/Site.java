@@ -327,15 +327,15 @@ public class Site {
         return this;
     }
 
-    public Task toTask() {
-        return new Task() {
+    public LifeCycle toTask() {
+        return new LifeCycle() {
             @Override
             public String getUUID() {
                 return Site.this.getDomain();
             }
 
             @Override
-            public Site getSite() {
+            public Site getSites() {
                 return Site.this;
             }
         };

@@ -1,7 +1,7 @@
 package us.codecraft.webmagic.pipeline;
 
 import us.codecraft.webmagic.ResultItems;
-import us.codecraft.webmagic.Task;
+import us.codecraft.webmagic.LifeCycle;
 
 import java.util.Map;
 
@@ -15,7 +15,7 @@ import java.util.Map;
 public class ConsolePipeline implements Pipeline {
 
     @Override
-    public void process(ResultItems resultItems, Task task) {
+    public void process(ResultItems resultItems, LifeCycle task) {
         for (Map.Entry<String, Object> entry : resultItems.getAll().entrySet()) {
             System.out.println(entry.getKey() + ":\t" + entry.getValue());
         }
