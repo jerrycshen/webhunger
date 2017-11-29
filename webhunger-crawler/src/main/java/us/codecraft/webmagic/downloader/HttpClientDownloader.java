@@ -81,12 +81,12 @@ public class HttpClientDownloader extends AbstractDownloader {
             System.out.println("使用代理：" + proxy.getHost() + "---->" + proxy.getPort());
         }
 
-        HttpClientRequestContext requestContext = httpUriRequestConverter.convert(request, lifeCycle.getSites(), proxy);
+        HttpClientRequestContext requestContext = httpUriRequestConverter.convert(request, lifeCycle.getSites().get(request.getSiteId()), proxy);
         Page page = Page.fail();
 
         try {
             httpResponse = httpClient.execute(requestContext.getHttpUriRequest(), requestContext.getHttpClientContext());
-            page = handleResponse(request, request.getCharset() != null ? request.getCharset() : lifeCycle.getSites().getCharset(), httpResponse, lifeCycle);
+            page = handleResponse(request, request.getCharset() != null ? request.getCharset() : lifeCycle.getSites().get(request.getSiteId()).getCharset(), httpResponse, lifeCycle);
             onSuccess(request);
             logger.info("downloading page success {}", request.getUrl());
             return page;

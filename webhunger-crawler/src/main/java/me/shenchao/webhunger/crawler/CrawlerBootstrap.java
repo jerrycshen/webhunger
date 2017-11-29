@@ -39,6 +39,10 @@ public class CrawlerBootstrap {
             logger.error("爬虫模块配置文件读取失败，程序退出......", e);
             System.exit(1);
         }
+
+        // log config info
+        logger.info("配置解析完成，使用如下参数启动爬虫程序：");
+        logger.info("Distributed: {}", crawlerConfig.isDistributed());
     }
 
     /**
@@ -52,9 +56,9 @@ public class CrawlerBootstrap {
      * 启动爬虫
      */
     public void start() {
+        logger.info("爬虫模块正在启动......");
         // 解析配置
         parseCrawlerConfig();
-        logger.info("爬虫模块正在启动......");
         // 配置爬虫
         Spider spider = Spider.create(new PageParser());
         // 启动站点管理类

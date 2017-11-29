@@ -1,6 +1,5 @@
 package us.codecraft.webmagic;
 
-import com.google.common.collect.Lists;
 import me.shenchao.webhunger.crawler.SiteDominate;
 import me.shenchao.webhunger.util.thread.CountableThreadPool;
 import org.apache.commons.collections.CollectionUtils;
@@ -10,10 +9,8 @@ import org.slf4j.LoggerFactory;
 import us.codecraft.webmagic.downloader.Downloader;
 import us.codecraft.webmagic.downloader.HttpClientDownloader;
 import us.codecraft.webmagic.monitor.SpiderListener;
-import us.codecraft.webmagic.pipeline.CollectorPipeline;
 import us.codecraft.webmagic.pipeline.ConsolePipeline;
 import us.codecraft.webmagic.pipeline.Pipeline;
-import us.codecraft.webmagic.pipeline.ResultItemsCollectorPipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.scheduler.QueueScheduler;
 import us.codecraft.webmagic.scheduler.Scheduler;
@@ -22,9 +19,7 @@ import us.codecraft.webmagic.utils.UrlUtils;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Condition;

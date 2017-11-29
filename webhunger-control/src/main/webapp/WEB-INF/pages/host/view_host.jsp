@@ -351,7 +351,7 @@
 
                 $("#processorJarDir").val(config.hostConfig.processorJarDir);
                 $("#crawlDepth").val(config.hostConfig.depth);
-                $("#leastInterval").val(config.hostConfig.leastInterval);
+                $("#leastInterval").val(config.hostConfig.interval);
             }
         });
     }

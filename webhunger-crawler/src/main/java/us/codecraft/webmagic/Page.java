@@ -9,7 +9,6 @@ import java.util.Map;
 
 /**
  * 新增 encode字段表示页面所用编码<br>
- * 新增 pageId 字段表示存入数据库中的id值<br>
  *
  * Object storing extracted result and urls to fetch.<br>
  * Not runnable safe.<br>
@@ -87,20 +86,8 @@ public class Page {
     public void addTargetRequest(String requestString) {
         Request request = incrementDepth(new Request(requestString));
         request.setParentUrl(this.request.getUrl());
+        request.setSiteId(this.request.getSiteId());
         synchronized (targetRequests) {
-            targetRequests.add(request);
-        }
-    }
-
-    /**
-     * add requests to fetch
-     * TODO 发现源码是在循环爬取该页面时调用此方法，所以以后想要重试，需要对页面深度进行修改
-     *
-     * @param request request
-     */
-    public void addTargetRequest(Request request) {
-        synchronized (targetRequests) {
-//            targetRequests.add(incrementDepth(request));
             targetRequests.add(request);
         }
     }

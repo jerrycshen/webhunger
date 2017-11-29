@@ -24,7 +24,7 @@ public class SiteDominate {
         this.spider.setSiteDominate(this);
     }
 
-    public void crawl(Host host) {
+    void crawl(Host host) {
         Site site = Site.me();
         // TODO 睡眠时间应该动态变化，这里先写死
         site.setSleepTime(2000);

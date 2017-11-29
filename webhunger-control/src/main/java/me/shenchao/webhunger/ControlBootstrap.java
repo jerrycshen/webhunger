@@ -36,7 +36,7 @@ public class ControlBootstrap {
             System.exit(1);
         }
         // log config info
-        logger.info("配置解析完成，使用如下参数启动程序：");
+        logger.info("配置解析完成，使用如下参数启动控制程序：");
         logger.info("Distributed: {}", controlConfig.isDistributed());
         logger.info("Task Accessor Jar Dir: {}", controlConfig.getTaskAccessorJarDir());
         logger.info("Task Accessor Class: {}", controlConfig.getTaskAccessorClass());
@@ -45,10 +45,9 @@ public class ControlBootstrap {
     }
 
     public void start() {
+        logger.info("控制模块开始启动......");
         // 解析配置
         parseControlConfig();
-        logger.info("控制模块开始启动......");
-
         // 初始化中央控制器
         ControllerFactory.initController(controlConfig);
 

@@ -70,7 +70,7 @@
                         <div class="col-sm-3">
                             <input type="number" class="form-control" id="crawlDepth" required>
                         </div>
-                        <label for="leastInterval" class="col-sm-3 control-label">Least Interval</label>
+                        <label for="leastInterval" class="col-sm-3 control-label">Interval</label>
                         <div class="col-sm-3">
                             <input type="number" class="form-control" min="1000" id="leastInterval" required>
                         </div>

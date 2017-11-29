@@ -30,6 +30,7 @@ class StandaloneController extends MasterController {
      */
     @Override
     void crawl(Host host) {
+
         bootstrap.crawl(host);
     }
 
