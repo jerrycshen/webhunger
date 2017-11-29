@@ -8,7 +8,8 @@
 1. 移除 `getSite` 方法
 
 #### Spider
-1. 增加 `siteMap` 字段，存放站点ID与站点直接的映射关系
+1. 增加 `SiteDominate` 字段，管理当前正在爬取的所有站点
+2. 增加 `addSeed` 方法，表示爬取新站点
 
 #### Request
 1. 增加 站点ID 字段

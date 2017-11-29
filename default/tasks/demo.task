@@ -14,7 +14,7 @@
             <hostIndex>http://www.jxdpf.org.cn</hostIndex>
             <config>
                 <depth>2</depth>
-                <leastInterval>3000</leastInterval>
+                <interval>3000</interval>
                 <processorJarDir>/</processorJarDir>
                 <retry>0</retry>
                 <timeout>5000</timeout>

@@ -82,9 +82,9 @@ class FileParser {
             if (depthElement != null) {
                 hostConfig.setDepth(Integer.parseInt(depthElement.getText()));
             }
-            Element intervalElement = configElement.element("leastInterval");
+            Element intervalElement = configElement.element("interval");
             if (intervalElement != null) {
-                hostConfig.setLeastInterval(Integer.parseInt(intervalElement.getText()));
+                hostConfig.setInterval(Integer.parseInt(intervalElement.getText()));
             }
             Element processorJarDirElement = configElement.element("processorJarDir");
             if (processorJarDirElement != null) {

@@ -18,10 +18,10 @@ public interface Downloader {
      * Downloads web pages and store in Page object.
      *
      * @param request request
-     * @param task task
+     * @param lifeCycle lifeCycle
      * @return page
      */
-    public Page download(Request request, LifeCycle task);
+    public Page download(Request request, LifeCycle lifeCycle);
 
     /**
      * Tell the downloader how many threads the spider used.

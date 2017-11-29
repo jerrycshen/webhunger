@@ -69,24 +69,24 @@ public class HttpClientDownloader extends AbstractDownloader {
     }
 
     @Override
-    public Page download(Request request, LifeCycle task) {
-        if (task == null || task.getSites() == null) {
+    public Page download(Request request, LifeCycle lifeCycle) {
+        if (lifeCycle == null || lifeCycle.getSites().get(request.getSiteId()) == null) {
             throw new NullPointerException("task or site can not be null");
         }
         CloseableHttpResponse httpResponse = null;
-        CloseableHttpClient httpClient = getHttpClient(task.getSites());
-        Proxy proxy = proxyProvider != null ? proxyProvider.getProxy(task) : null;
+        CloseableHttpClient httpClient = getHttpClient(lifeCycle.getSites().get(request.getSiteId()));
+        Proxy proxy = proxyProvider != null ? proxyProvider.getProxy(lifeCycle) : null;
 
         if (proxy != null) {
             System.out.println("使用代理：" + proxy.getHost() + "---->" + proxy.getPort());
         }
 
-        HttpClientRequestContext requestContext = httpUriRequestConverter.convert(request, task.getSites(), proxy);
+        HttpClientRequestContext requestContext = httpUriRequestConverter.convert(request, lifeCycle.getSites(), proxy);
         Page page = Page.fail();
 
         try {
             httpResponse = httpClient.execute(requestContext.getHttpUriRequest(), requestContext.getHttpClientContext());
-            page = handleResponse(request, request.getCharset() != null ? request.getCharset() : task.getSites().getCharset(), httpResponse, task);
+            page = handleResponse(request, request.getCharset() != null ? request.getCharset() : lifeCycle.getSites().getCharset(), httpResponse, lifeCycle);
             onSuccess(request);
             logger.info("downloading page success {}", request.getUrl());
             return page;
@@ -102,7 +102,7 @@ public class HttpClientDownloader extends AbstractDownloader {
                 EntityUtils.consumeQuietly(httpResponse.getEntity());
             }
             if (proxyProvider != null && proxy != null) {
-                proxyProvider.returnProxy(proxy, page, task);
+                proxyProvider.returnProxy(proxy, page, lifeCycle);
             }
         }
     }

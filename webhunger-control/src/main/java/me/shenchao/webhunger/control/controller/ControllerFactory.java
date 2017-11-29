@@ -19,24 +19,17 @@ public class ControllerFactory {
     private ControllerFactory() {}
 
     public static MasterController getController() {
-        if (masterController == null) {
-            logger.error("中央控制器尚未初始化，程序退出......");
-            System.exit(1);
-        }
+        assert masterController != null;
         return masterController;
     }
 
     public static void initController(ControlConfig controlConfig) {
         if (masterController == null) {
-            synchronized (ControllerFactory.class) {
-                if (masterController == null) {
-                    if (!controlConfig.isDistributed()) {
-                        masterController = new StandaloneController(controlConfig);
-                        logger.info("单机版控制器初始化完毕......");
-                    } else {
-                        logger.info("分布式控制器初始化完毕......");
-                    }
-                }
+            if (!controlConfig.isDistributed()) {
+                masterController = new StandaloneController(controlConfig);
+                logger.info("单机版控制器初始化完毕......");
+            } else {
+                logger.info("分布式控制器初始化完毕......");
             }
         } else {
             logger.warn("中央控制器正在运行中，请不要重复初始化......");

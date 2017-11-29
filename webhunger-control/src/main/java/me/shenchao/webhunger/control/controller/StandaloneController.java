@@ -16,17 +16,21 @@ class StandaloneController extends MasterController {
 
     private static final Logger logger = LoggerFactory.getLogger(StandaloneController.class);
 
+    private CrawlerBootstrap bootstrap;
+
     StandaloneController(ControlConfig controlConfig) {
         super(controlConfig);
-        new CrawlerBootstrap().start();
+        // 启动单机版爬虫
+        bootstrap = new CrawlerBootstrap();
+        bootstrap.start();
     }
 
     /**
-     * 在单机版中，直接通过方法调用，添加种子URL
+     * 在单机版中，直接通过方法调用，开始爬取站点
      */
     @Override
     void crawl(Host host) {
-
+        bootstrap.crawl(host);
     }
 
 }

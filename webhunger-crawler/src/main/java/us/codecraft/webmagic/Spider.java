@@ -1,6 +1,7 @@
 package us.codecraft.webmagic;
 
 import com.google.common.collect.Lists;
+import me.shenchao.webhunger.crawler.SiteDominate;
 import me.shenchao.webhunger.util.thread.CountableThreadPool;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
@@ -62,6 +63,8 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class Spider implements Runnable, LifeCycle {
 
+    private SiteDominate siteDominate;
+
     protected Downloader downloader;
 
     protected List<Pipeline> pipelines = new ArrayList<Pipeline>();
@@ -70,7 +73,7 @@ public class Spider implements Runnable, LifeCycle {
 
     protected List<Request> startRequests;
 
-    protected Site site;
+//    protected Site site;
 
     protected String uuid;
 
@@ -111,11 +114,6 @@ public class Spider implements Runnable, LifeCycle {
     private int emptySleepTime = 30000;
 
     private Thread asyncThread;
-
-    /**
-     * 保存站点Id与站点之间的映射
-     */
-    private Map<String, Site> siteMap = new ConcurrentHashMap<>();
 
     /**
      * create a spider with pageProcessor.
@@ -312,7 +310,7 @@ public class Spider implements Runnable, LifeCycle {
     public void run() {
         checkRunningStat();
         initComponent();
-        logger.info("Spider {} started!", getUUID());
+        logger.info("Spider {} 启动完成......", getUUID());
         while (!Thread.currentThread().isInterrupted() && stat.get() == STAT_RUNNING) {
             final Request request = scheduler.poll(this);
             if (request == null) {
@@ -419,7 +417,7 @@ public class Spider implements Runnable, LifeCycle {
     }
 
     private void onDownloadSuccess(Request request, Page page) {
-        if (site.getAcceptStatCode().contains(page.getStatusCode())) {
+        if (getSites().get(request.getSiteId()).getAcceptStatCode().contains(page.getStatusCode())) {
             pageProcessor.process(page);
             extractAndAddRequests(page, spawnUrl);
             if (!page.getResultItems().isSkip()) {
@@ -432,14 +430,13 @@ public class Spider implements Runnable, LifeCycle {
             onError(request);
             logger.info("page status code error, page {} , code: {}", request.getUrl(), page.getStatusCode());
         }
-        sleep(site.getSleepTime());
-        return;
+        sleep(getSites().get(request.getSiteId()));
     }
 
     private void onDownloaderFail(Request request) {
         onError(request);
-        if (site.getCycleRetryTimes() == 0) {
-            sleep(site.getSleepTime());
+        if (getSites().get(request.getSiteId()).getCycleRetryTimes() == 0) {
+            sleep(getSites().get(request.getSiteId()));
         } else {
             // for cycle retry
             doCycleRetry(request);
@@ -449,15 +446,15 @@ public class Spider implements Runnable, LifeCycle {
     private void doCycleRetry(Request request) {
         Object cycleTriedTimesObject = request.getExtra(Request.CYCLE_TRIED_TIMES);
         if (cycleTriedTimesObject == null) {
-            addRequest(SerializationUtils.clone(request).setPriority(0).putExtra(Request.CYCLE_TRIED_TIMES, 1));
+            addRequest(SerializationUtils.clone(request).setPriority(0).putExtra(Request.CYCLE_TRIED_TIMES, 1), getSites().get(request.getSiteId()));
         } else {
             int cycleTriedTimes = (Integer) cycleTriedTimesObject;
             cycleTriedTimes++;
-            if (cycleTriedTimes < site.getCycleRetryTimes()) {
-                addRequest(SerializationUtils.clone(request).setPriority(0).putExtra(Request.CYCLE_TRIED_TIMES, cycleTriedTimes));
+            if (cycleTriedTimes < getSites().get(request.getSiteId()).getCycleRetryTimes()) {
+                addRequest(SerializationUtils.clone(request).setPriority(0).putExtra(Request.CYCLE_TRIED_TIMES, cycleTriedTimes), getSites().get(request.getSiteId()));
             }
         }
-        sleep(site.getRetrySleepTime());
+        sleep(getSites().get(request.getSiteId()));
     }
 
     protected void processRequest(Request request) {
@@ -472,9 +469,12 @@ public class Spider implements Runnable, LifeCycle {
         }
     }
 
-    protected void sleep(int time) {
+    /**
+     * TODO 理论上不应该sleep
+     */
+    protected void sleep(Site site) {
         try {
-            Thread.sleep(time);
+            Thread.sleep(site.getSleepTime());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -483,16 +483,9 @@ public class Spider implements Runnable, LifeCycle {
     protected void extractAndAddRequests(Page page, boolean spawnUrl) {
         if (spawnUrl && CollectionUtils.isNotEmpty(page.getTargetRequests())) {
             for (Request request : page.getTargetRequests()) {
-                addRequest(request);
+                addRequest(request, getSites().get(request.getSiteId()));
             }
         }
-    }
-
-    private void addRequest(Request request) {
-        if (site.getDomain() == null && request != null && request.getUrl() != null) {
-            site.setDomain(UrlUtils.getDomain(request.getUrl()));
-        }
-        scheduler.push(request, this);
     }
 
     protected void checkIfRunning() {
@@ -507,73 +500,19 @@ public class Spider implements Runnable, LifeCycle {
         asyncThread.start();
     }
 
-    /**
-     * Add urls to crawl. <br>
-     * TODO 在此系统中，这是爬虫添加初始url的唯一入口
-     *
-     * @param urls urls
-     * @return this
-     */
-    public Spider addUrl(String... urls) {
-        for (String url : urls) {
-            Request newRequest = new Request(url);
-            // new added to save the depth of the page
-            newRequest.setNowDepth(1);
-            // set the main page's parent url is ""
-            newRequest.setParentUrl("");
-            addRequest(newRequest);
+    private void addRequest(Request request, Site site) {
+        if (site.getDomain() == null && request != null && request.getUrl() != null) {
+            site.setDomain(UrlUtils.getDomain(request.getUrl()));
         }
-        signalNewUrl();
-        return this;
+        scheduler.push(request, this);
     }
 
-    /**
-     * Download urls synchronizing.
-     *
-     * @param urls urls
-     * @return list downloaded
-     */
-    public <T> List<T> getAll(Collection<String> urls) {
-        destroyWhenExit = false;
-        spawnUrl = false;
-        startRequests.clear();
-        for (Request request : UrlUtils.convertToRequests(urls)) {
-            addRequest(request);
-        }
-        CollectorPipeline collectorPipeline = getCollectorPipeline();
-        pipelines.add(collectorPipeline);
-        run();
-        spawnUrl = true;
-        destroyWhenExit = true;
-        return collectorPipeline.getCollected();
-    }
-
-    protected CollectorPipeline getCollectorPipeline() {
-        return new ResultItemsCollectorPipeline();
-    }
-
-    public <T> T get(String url) {
-        List<String> urls = Lists.newArrayList(url);
-        List<T> resultItemses = getAll(urls);
-        if (resultItemses != null && resultItemses.size() > 0) {
-            return resultItemses.get(0);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Add urls with information to crawl.<br>
-     *
-     * @param requests requests
-     * @return this
-     */
-    public Spider addRequest(Request... requests) {
-        for (Request request : requests) {
-            addRequest(request);
-        }
-        signalNewUrl();
-        return this;
+    public void addSeed(String url, Site site) {
+        Request newRequest = new Request(url);
+        newRequest.setSiteId(site.getHost().getHostId());
+        newRequest.setNowDepth(1);
+        newRequest.setParentUrl("");
+        addRequest(newRequest, site);
     }
 
     private void waitNewUrl() {
@@ -583,7 +522,8 @@ public class Spider implements Runnable, LifeCycle {
             if (threadPool.getThreadAlive() == 0 && exitWhenComplete) {
                 return;
             }
-            newUrlCondition.await(emptySleepTime, TimeUnit.MILLISECONDS);
+//            newUrlCondition.await(emptySleepTime, TimeUnit.MILLISECONDS);
+            newUrlCondition.await();
         } catch (InterruptedException e) {
             logger.warn("waitNewUrl - interrupted, error {}", e);
         } finally {
@@ -591,7 +531,7 @@ public class Spider implements Runnable, LifeCycle {
         }
     }
 
-    private void signalNewUrl() {
+    public void signalNewUrl() {
         try {
             newUrlLock.lock();
             newUrlCondition.signalAll();
@@ -754,9 +694,6 @@ public class Spider implements Runnable, LifeCycle {
         if (uuid != null) {
             return uuid;
         }
-        if (site != null) {
-            return site.getDomain();
-        }
         uuid = UUID.randomUUID().toString();
         return uuid;
     }
@@ -769,7 +706,7 @@ public class Spider implements Runnable, LifeCycle {
 
     @Override
     public Map<String, Site> getSites() {
-        return siteMap;
+        return siteDominate.getSiteMap();
     }
 
     public List<SpiderListener> getSpiderListeners() {
@@ -798,4 +735,7 @@ public class Spider implements Runnable, LifeCycle {
         this.emptySleepTime = emptySleepTime;
     }
 
+    public void setSiteDominate(SiteDominate siteDominate) {
+        this.siteDominate = siteDominate;
+    }
 }

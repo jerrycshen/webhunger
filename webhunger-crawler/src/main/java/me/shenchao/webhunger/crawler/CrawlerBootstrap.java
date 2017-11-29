@@ -3,6 +3,7 @@ package me.shenchao.webhunger.crawler;
 import me.shenchao.webhunger.config.CrawlerConfig;
 import me.shenchao.webhunger.crawler.pipeline.StandalonePipeline;
 import me.shenchao.webhunger.crawler.processor.PageParser;
+import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.exception.ConfigParseException;
 import me.shenchao.webhunger.util.common.SystemUtil;
 import org.slf4j.Logger;
@@ -26,6 +27,8 @@ public class CrawlerBootstrap {
 
     private CrawlerConfig crawlerConfig;
 
+    private SiteDominate siteDominate;
+
     private void parseCrawlerConfig() {
         crawlerConfig = new CrawlerConfig();
         try {
@@ -39,22 +42,34 @@ public class CrawlerBootstrap {
     }
 
     /**
+     * 专门用于单机版调用，爬取新站点
+     */
+    public void crawl(Host host) {
+        siteDominate.crawl(host);
+    }
+
+    /**
      * 启动爬虫
      */
     public void start() {
         // 解析配置
         parseCrawlerConfig();
-        logger.info("爬虫模块开始启动......");
+        logger.info("爬虫模块正在启动......");
         // 配置爬虫
         Spider spider = Spider.create(new PageParser());
-        spider.setExitWhenComplete(false);
+        // 启动站点管理类
+        siteDominate = new SiteDominate(spider);
         if (crawlerConfig.isDistributed()) {
-
+            // 启动zookeeper监听 TODO
+            // 添加消息处理类
         } else {
             spider.addPipeline(new StandalonePipeline());
         }
+        // TODO 以后会动态变化
+        spider.thread(5);
+        spider.setExitWhenComplete(false);
         // 启动爬虫
-        spider.run();
+        spider.runAsync();
     }
 
     public static void main(String[] args) {

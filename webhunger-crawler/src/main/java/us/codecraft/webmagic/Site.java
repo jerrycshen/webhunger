@@ -31,13 +31,13 @@ public class Site {
 
     private String charset;
 
-    private int sleepTime = 5000;
+    private int sleepTime = 3000;
 
     private int retryTimes = 0;
 
     private int cycleRetryTimes = 0;
 
-    private int retrySleepTime = 1000;
+    private int retrySleepTime = 3000;
 
     private int timeOut = 5000;
 
@@ -333,6 +333,13 @@ public class Site {
         return this;
     }
 
+    public Host getHost() {
+        return host;
+    }
+
+    public void setHost(Host host) {
+        this.host = host;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -13,7 +13,7 @@ public class HostConfig {
 
     private int depth = -1;
 
-    private int leastInterval = 2000;
+    private int interval = 2000;
 
     /**
      * 该目录用于存放用户自定义的处理器Jar，例如URL处理器，页面处理器，站点处理器
@@ -40,12 +40,12 @@ public class HostConfig {
         this.depth = depth;
     }
 
-    public int getLeastInterval() {
-        return leastInterval;
+    public int getInterval() {
+        return interval;
     }
 
-    public void setLeastInterval(int leastInterval) {
-        this.leastInterval = leastInterval;
+    public void setInterval(int interval) {
+        this.interval = interval;
     }
 
     public String getProcessorJarDir() {
