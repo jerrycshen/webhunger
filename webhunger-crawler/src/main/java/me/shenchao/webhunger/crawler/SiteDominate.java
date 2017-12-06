@@ -17,6 +17,9 @@ public class SiteDominate {
 
     private Spider spider;
 
+    /**
+     * 缓存当前正在爬取的站点
+     */
     private Map<String, Site> siteMap = new HashMap<>();
 
     SiteDominate(Spider spider) {
