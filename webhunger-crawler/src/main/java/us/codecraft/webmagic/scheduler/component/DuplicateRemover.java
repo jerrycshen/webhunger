@@ -27,7 +27,7 @@ public interface DuplicateRemover {
     public void resetDuplicateCheck(LifeCycle task);
 
     /**
-     * Get TotalRequestsCount for cn.edu.zju.eagle.monitor.
+     * Get TotalRequestsCount for Monitor.
      * @param task task
      * @return number of total request
      */

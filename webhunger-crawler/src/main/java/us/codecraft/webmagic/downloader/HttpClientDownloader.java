@@ -107,6 +107,9 @@ public class HttpClientDownloader extends AbstractDownloader {
         }
     }
 
+    /**
+     * TODO 现在不了解底层实现，不知道现在因为同时爬取多个网站，而thread数量仍然很小，是否会降低爬取速度
+     */
     @Override
     public void setThread(int thread) {
         httpClientGenerator.setPoolSize(thread);
