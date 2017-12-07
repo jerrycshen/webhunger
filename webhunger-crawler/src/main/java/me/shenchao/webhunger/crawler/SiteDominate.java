@@ -1,13 +1,11 @@
 package me.shenchao.webhunger.crawler;
 
 import me.shenchao.webhunger.entity.Host;
+import me.shenchao.webhunger.entity.HostState;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -20,8 +18,14 @@ public class SiteDominate {
 
     private Spider spider;
 
+    /**
+     * 记录站点ID与站点之间的映射关系，站点爬取完毕，不会立刻移除该项
+     */
     private Map<String, Site> siteMap = new ConcurrentHashMap<>();
 
+    /**
+     * 列表中所有站点的state为Crawling 状态，一旦爬取完毕，立即从列表中删除
+     */
     private List<Site> siteList = Collections.synchronizedList(new LinkedList<>());
 
     SiteDominate(Spider spider) {
@@ -29,13 +33,25 @@ public class SiteDominate {
         this.spider.setSiteDominate(this);
     }
 
-    void add(Host host) {
+    void start(Host host) {
         Site site = Site.me();
         site.setHost(host);
         siteList.add(site);
         siteMap.put(host.getHostId(), site);
         spider.addSeed(host.getHostIndex(), site);
         spider.signalNewUrl();
+    }
+
+    /**
+     * 当站点爬取完毕时候，在此爬虫结点的站点管理器中更新状态与清理操作
+     * @param siteId siteId
+     */
+    public void finish(String siteId) {
+        Site site = siteMap.get(siteId);
+        // 更新站点状态
+        site.getHost().setState(HostState.Processing);
+        // 移除缓存记录
+        siteList.removeIf(s -> s.getHost().getHostId().equals(siteId));
     }
 
     public Map<String, Site> getSiteMap() {
@@ -45,4 +61,5 @@ public class SiteDominate {
     public List<Site> getSiteList() {
         return siteList;
     }
+
 }

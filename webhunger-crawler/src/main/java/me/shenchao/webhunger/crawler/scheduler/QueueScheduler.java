@@ -38,18 +38,14 @@ public class QueueScheduler extends DuplicateRemovedScheduler implements Duplica
      */
     @Override
     protected void pushWhenNoDuplicate(Request request, LifeCycle task) {
-        if (queueMap.get(request.getSiteId()) == null) {
-            queueMap.put(request.getSiteId(), new LinkedBlockingDeque<>());
-        }
+        queueMap.computeIfAbsent(request.getSiteId(), k -> new LinkedBlockingDeque<>());
         BlockingQueue<Request> queue = queueMap.get(request.getSiteId());
         queue.add(request);
     }
 
     @Override
     public boolean isDuplicate(Request request, LifeCycle task) {
-        if (duplicateMap.get(request.getSiteId()) == null) {
-            duplicateMap.put(request.getSiteId(), Collections.synchronizedSet(new HashSet<>()));
-        }
+        duplicateMap.computeIfAbsent(request.getSiteId(), k -> Collections.synchronizedSet(new HashSet<>()));
         return !duplicateMap.get(request.getSiteId()).add(request.getUrl());
     }
 
@@ -65,12 +61,12 @@ public class QueueScheduler extends DuplicateRemovedScheduler implements Duplica
     }
 
     @Override
-    public int getLeftRequestsCount(LifeCycle lifeCycle, String siteId) {
+    public int getLeftRequestsCount(String siteId) {
         return queueMap.get(siteId).size();
     }
 
     @Override
-    public int getTotalRequestsCount(LifeCycle lifeCycle, String siteId) {
+    public int getTotalRequestsCount(String siteId) {
         return duplicateMap.get(siteId).size();
     }
 

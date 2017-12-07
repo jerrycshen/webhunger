@@ -2,7 +2,6 @@ package me.shenchao.webhunger.crawler.selector;
 
 import me.shenchao.webhunger.crawler.SiteDominate;
 import me.shenchao.webhunger.crawler.listener.SiteListener;
-import me.shenchao.webhunger.entity.HostState;
 import us.codecraft.webmagic.Site;
 
 public abstract class AbstractSiteSelector implements SiteSelector {
@@ -19,9 +18,7 @@ public abstract class AbstractSiteSelector implements SiteSelector {
         Site nextSite = next(siteListener);
         while (nextSite != null) {
             // 如果太频繁抓取 或者 爬虫不在运行状态，则跳过
-            if (nextSite.isFrequent() && nextSite.getState() != HostState.Crawling) {
 
-            }
         }
         return nextSite;
     }

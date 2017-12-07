@@ -89,6 +89,10 @@ public class Host {
         this.state = state;
     }
 
+    public void setState(HostState hostState) {
+        this.state = hostState.getState();
+    }
+
     public HostConfig getHostConfig() {
         return hostConfig != null ? hostConfig : task.getHostConfig();
     }

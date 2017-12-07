@@ -3,6 +3,8 @@ package me.shenchao.webhunger.crawler;
 import me.shenchao.webhunger.config.CrawlerConfig;
 import me.shenchao.webhunger.crawler.pipeline.StandalonePipeline;
 import me.shenchao.webhunger.crawler.processor.PageParser;
+import me.shenchao.webhunger.crawler.scheduler.QueueScheduler;
+import me.shenchao.webhunger.crawler.selector.OrderSiteSelector;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.exception.ConfigParseException;
 import me.shenchao.webhunger.util.common.SystemUtil;
@@ -49,7 +51,7 @@ public class CrawlerBootstrap {
      * 专门用于单机版调用，爬取新站点
      */
     public void crawl(Host host) {
-        siteDominate.add(host);
+        siteDominate.start(host);
     }
 
     /**
@@ -68,6 +70,7 @@ public class CrawlerBootstrap {
             // 添加消息处理类
         } else {
             spider.addPipeline(new StandalonePipeline());
+            spider.setScheduler(new QueueScheduler(new OrderSiteSelector(siteDominate)));
         }
         // TODO 以后会动态变化
         spider.thread(5);
