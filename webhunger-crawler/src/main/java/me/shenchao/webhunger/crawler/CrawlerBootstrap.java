@@ -49,7 +49,7 @@ public class CrawlerBootstrap {
      * 专门用于单机版调用，爬取新站点
      */
     public void crawl(Host host) {
-        siteDominate.crawl(host);
+        siteDominate.add(host);
     }
 
     /**

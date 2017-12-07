@@ -10,8 +10,8 @@ import us.codecraft.webmagic.LifeCycle;
  */
 public interface MonitorableScheduler extends Scheduler {
 
-    public int getLeftRequestsCount(LifeCycle task);
+    public int getLeftRequestsCount(LifeCycle lifeCycle);
 
-    public int getTotalRequestsCount(LifeCycle task);
+    public int getTotalRequestsCount(LifeCycle lifeCycle);
 
 }

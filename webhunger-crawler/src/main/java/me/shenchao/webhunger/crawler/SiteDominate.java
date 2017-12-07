@@ -4,8 +4,11 @@ import me.shenchao.webhunger.entity.Host;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 站点管理类
@@ -17,32 +20,29 @@ public class SiteDominate {
 
     private Spider spider;
 
-    private Map<String, Site> siteMap = new HashMap<>();
+    private Map<String, Site> siteMap = new ConcurrentHashMap<>();
+
+    private List<Site> siteList = Collections.synchronizedList(new LinkedList<>());
 
     SiteDominate(Spider spider) {
         this.spider = spider;
         this.spider.setSiteDominate(this);
     }
 
-    void crawl(Host host) {
+    void add(Host host) {
         Site site = Site.me();
-        // TODO 睡眠时间应该动态变化，这里先写死
-        site.setSleepTime(2000);
         site.setHost(host);
+        siteList.add(site);
         siteMap.put(host.getHostId(), site);
         spider.addSeed(host.getHostIndex(), site);
         spider.signalNewUrl();
     }
 
-    public void suspend(Host host) {
-
-    }
-
-    public void stop(Host host) {
-
-    }
-
     public Map<String, Site> getSiteMap() {
         return siteMap;
+    }
+
+    public List<Site> getSiteList() {
+        return siteList;
     }
 }

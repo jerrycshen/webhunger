@@ -3,6 +3,7 @@ package us.codecraft.webmagic;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import me.shenchao.webhunger.entity.Host;
+import me.shenchao.webhunger.entity.HostState;
 import us.codecraft.webmagic.utils.HttpConstant;
 
 import java.util.*;
@@ -17,9 +18,14 @@ import java.util.*;
 public class Site {
 
     /**
-     * new
+     * host具体信息
      */
     private Host host;
+
+    /**
+     * 上一次访问该站点的时刻
+     */
+    private long lastCrawledTime;
 
     private String domain;
 
@@ -339,6 +345,25 @@ public class Site {
 
     public void setHost(Host host) {
         this.host = host;
+    }
+
+    public long getLastCrawledTime() {
+        return lastCrawledTime;
+    }
+
+    public void setLastCrawledTime(long lastCrawledTime) {
+        this.lastCrawledTime = lastCrawledTime;
+    }
+
+    /**
+     * 是否太频繁访问
+     */
+    public boolean isFrequent() {
+        return System.currentTimeMillis() - lastCrawledTime < sleepTime;
+    }
+
+    public HostState getState() {
+        return HostState.getHostState(host.getState());
     }
 
     @Override
