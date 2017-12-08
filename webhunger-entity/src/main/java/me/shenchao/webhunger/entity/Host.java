@@ -60,7 +60,7 @@ public class Host {
         return hostDomain;
     }
 
-    public void setHostDomain(String hostDomain) {
+    private void setHostDomain(String hostDomain) {
         this.hostDomain = hostDomain;
     }
 
@@ -68,7 +68,7 @@ public class Host {
         return hostSecondDomain;
     }
 
-    public void setHostSecondDomain(String hostSecondDomain) {
+    private void setHostSecondDomain(String hostSecondDomain) {
         this.hostSecondDomain = hostSecondDomain;
     }
 
@@ -79,6 +79,7 @@ public class Host {
     public void setHostIndex(String hostIndex) {
         this.hostIndex = hostIndex;
         setHostDomain(UrlUtil.removePort(UrlUtil.getDomain(hostIndex)));
+        setHostSecondDomain(UrlUtil.getHostSecondDomain(getHostDomain()));
     }
 
     public int getState() {

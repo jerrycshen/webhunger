@@ -1,6 +1,6 @@
-package me.shenchao.webhunger.client.task;
+package me.shenchao.webhunger.client.control;
 
-import me.shenchao.webhunger.client.api.TaskAccessor;
+import me.shenchao.webhunger.client.api.control.TaskAccessor;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostSnapshot;
 import me.shenchao.webhunger.entity.Task;

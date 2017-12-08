@@ -1,4 +1,4 @@
-package me.shenchao.webhunger.client.task;
+package me.shenchao.webhunger.client.control;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.FileWriteMode;

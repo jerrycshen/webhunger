@@ -1,9 +1,6 @@
-package me.shenchao.webhunger.client.task;
+package me.shenchao.webhunger.client.control;
 
-import me.shenchao.webhunger.entity.Host;
-import me.shenchao.webhunger.entity.HostConfig;
-import me.shenchao.webhunger.entity.HostSnapshot;
-import me.shenchao.webhunger.entity.Task;
+import me.shenchao.webhunger.entity.*;
 import me.shenchao.webhunger.exception.TaskParseException;
 import me.shenchao.webhunger.util.common.FileUtil;
 import me.shenchao.webhunger.util.common.MD5Util;
@@ -86,10 +83,6 @@ class FileParser {
             if (intervalElement != null) {
                 hostConfig.setInterval(Integer.parseInt(intervalElement.getText()));
             }
-            Element processorJarDirElement = configElement.element("processorJarDir");
-            if (processorJarDirElement != null) {
-                hostConfig.setProcessorJarDir(processorJarDirElement.getText());
-            }
             Element charsetElement = configElement.element("charset");
             if (charsetElement != null) {
                 hostConfig.setCharset(charsetElement.getText());
@@ -113,15 +106,35 @@ class FileParser {
                     hostConfig.addHeader(headerElement.attributeValue("key"), headerElement.attributeValue("value"));
                 }
             }
-            Element cookiesElment = configElement.element("cookies");
-            if (cookiesElment != null && cookiesElment.elements("cookie").size() > 0) {
-                List<Element> cookieList = cookiesElment.elements("cookie");
+            Element cookiesElement = configElement.element("cookies");
+            if (cookiesElement != null && cookiesElement.elements("cookie").size() > 0) {
+                List<Element> cookieList = cookiesElement.elements("cookie");
                 for (Element cookieElement : cookieList) {
                     hostConfig.addCookie(cookieElement.attributeValue("key"), cookieElement.attributeValue("value"));
                 }
             }
+            hostConfig.setUrlFilterConfig(parseURLFilterConfig(configElement.element("urlFilterConfig")));
         }
         return hostConfig;
+    }
+
+    private static URLFilterConfig parseURLFilterConfig(Element configElement) {
+        URLFilterConfig urlFilterConfig = null;
+        if (configElement != null) {
+            urlFilterConfig = new URLFilterConfig();
+            Element jarPathElement = configElement.element("jarPath");
+            if (jarPathElement != null) {
+                urlFilterConfig.setJarPath(jarPathElement.getText());
+            }
+            Element filtersElement = configElement.element("filters");
+            if (filtersElement != null && filtersElement.elements("filter").size() > 0) {
+                List<Element> filterList = filtersElement.elements("filter");
+                for (Element filterElement : filterList) {
+                    urlFilterConfig.addFilterClass(filterElement.getText());
+                }
+            }
+        }
+        return urlFilterConfig;
     }
 
     private static List<Host> parseHost(Task task, Element hostsElement) throws TaskParseException {

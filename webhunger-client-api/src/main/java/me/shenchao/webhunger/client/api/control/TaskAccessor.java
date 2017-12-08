@@ -1,4 +1,4 @@
-package me.shenchao.webhunger.client.api;
+package me.shenchao.webhunger.client.api.control;
 
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostSnapshot;

@@ -15,8 +15,7 @@ public class PageParser implements PageProcessor {
 
     @Override
     public void process(Page page) {
-        System.out.println(page.getRequest().getUrl());
-        System.out.println(page.getRawText());
+        
     }
 
 }
