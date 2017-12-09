@@ -138,8 +138,9 @@ class FileParser {
     }
 
     private static List<Host> parseHost(Task task, Element hostsElement) throws TaskParseException {
-        if (hostsElement == null || hostsElement.elements("host").size() == 0)
+        if (hostsElement == null || hostsElement.elements("host").size() == 0) {
             return new ArrayList<>();
+        }
 
         Set<Host> hosts = new HashSet<>();
         List<Element> hostElements = hostsElement.elements("host");
