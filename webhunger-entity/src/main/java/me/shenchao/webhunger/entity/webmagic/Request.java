@@ -1,6 +1,6 @@
-package us.codecraft.webmagic;
+package me.shenchao.webhunger.entity.webmagic;
 
-import us.codecraft.webmagic.model.HttpRequestBody;
+import me.shenchao.webhunger.entity.webmagic.http.HttpRequestBody;
 
 import java.io.Serializable;
 import java.util.HashMap;

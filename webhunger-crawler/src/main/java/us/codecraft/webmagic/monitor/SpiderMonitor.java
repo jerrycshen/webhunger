@@ -2,7 +2,7 @@ package us.codecraft.webmagic.monitor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import us.codecraft.webmagic.Request;
+import me.shenchao.webhunger.entity.webmagic.Request;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.utils.Experimental;
 import us.codecraft.webmagic.utils.UrlUtils;

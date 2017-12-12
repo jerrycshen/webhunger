@@ -1,6 +1,6 @@
 package us.codecraft.webmagic.pipeline;
 
-import us.codecraft.webmagic.ResultItems;
+import me.shenchao.webhunger.entity.webmagic.ResultItems;
 import us.codecraft.webmagic.LifeCycle;
 
 /**

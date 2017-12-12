@@ -1,4 +1,4 @@
-package us.codecraft.webmagic;
+package me.shenchao.webhunger.entity.webmagic;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

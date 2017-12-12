@@ -1,6 +1,6 @@
 package us.codecraft.webmagic.proxy;
 
-import us.codecraft.webmagic.Page;
+import me.shenchao.webhunger.entity.webmagic.Page;
 import us.codecraft.webmagic.LifeCycle;
 
 import java.util.ArrayList;

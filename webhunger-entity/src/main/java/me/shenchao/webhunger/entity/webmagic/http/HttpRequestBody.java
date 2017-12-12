@@ -1,4 +1,4 @@
-package us.codecraft.webmagic.model;
+package me.shenchao.webhunger.entity.webmagic.http;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;

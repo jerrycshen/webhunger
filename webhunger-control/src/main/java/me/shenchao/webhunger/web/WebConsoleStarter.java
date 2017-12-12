@@ -1,6 +1,6 @@
 package me.shenchao.webhunger.web;
 
-import me.shenchao.webhunger.util.common.SystemUtil;
+import me.shenchao.webhunger.util.common.SystemUtils;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -16,7 +16,7 @@ public class WebConsoleStarter {
     private static final String DEFAULT_WEBAPP_PATH;
 
     static {
-        DEFAULT_WEBAPP_PATH = SystemUtil.getWebHungerHomeDir() + "/webhunger-control/src/main/webapp";
+        DEFAULT_WEBAPP_PATH = SystemUtils.getWebHungerHomeDir() + "/webhunger-control/src/main/webapp";
     }
 
     public void startServer(int port, String context) throws Exception {

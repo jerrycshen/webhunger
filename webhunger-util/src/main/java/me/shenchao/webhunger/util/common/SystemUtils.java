@@ -2,7 +2,7 @@ package me.shenchao.webhunger.util.common;
 
 import java.io.File;
 
-public class SystemUtil {
+public class SystemUtils {
 
     public static String getWebHungerHomeDir() {
         String homeDir = System.getProperty("webhunger.home");

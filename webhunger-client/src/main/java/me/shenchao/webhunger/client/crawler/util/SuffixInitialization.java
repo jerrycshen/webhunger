@@ -35,7 +35,7 @@ public class SuffixInitialization {
     static  {
         SAXReader reader = new SAXReader();
         try {
-            Document document = reader.read(SuffixInitialization.class.getResourceAsStream("/suffix.xml"));
+            Document document = reader.read(SuffixInitialization.class.getResourceAsStream("/exclude_suffix.xml"));
             Element root = document.getRootElement();
             pic_filter_suffix = getSuffixByType(root, "pic_suffix");
             video_filter_suffix = getSuffixByType(root, "video_suffix");

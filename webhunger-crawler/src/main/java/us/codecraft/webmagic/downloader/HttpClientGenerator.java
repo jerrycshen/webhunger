@@ -16,7 +16,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import us.codecraft.webmagic.Site;
+import me.shenchao.webhunger.entity.webmagic.Site;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;

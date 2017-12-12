@@ -1,7 +1,8 @@
 package us.codecraft.webmagic.processor;
 
-import us.codecraft.webmagic.Page;
-import us.codecraft.webmagic.Site;
+import us.codecraft.webmagic.LifeCycle;
+import me.shenchao.webhunger.entity.webmagic.Page;
+import me.shenchao.webhunger.entity.webmagic.Site;
 
 /**
  * Interface to be implemented to customize a crawler.<br>
@@ -23,7 +24,8 @@ public interface PageProcessor {
      * process the page, extract urls to fetch, extract the data and store
      *
      * @param page page
+     * @param lifeCycle lifeCycle
      */
-    public void process(Page page);
+    void process(Page page, LifeCycle lifeCycle);
 
 }

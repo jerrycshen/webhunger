@@ -1,9 +1,9 @@
-package us.codecraft.webmagic;
+package me.shenchao.webhunger.entity.webmagic;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import me.shenchao.webhunger.entity.Host;
-import us.codecraft.webmagic.utils.HttpConstant;
+import me.shenchao.webhunger.entity.webmagic.http.HttpConstant;
 
 import java.util.*;
 
@@ -11,7 +11,6 @@ import java.util.*;
  * Object contains setting for crawler.<br>
  *
  * @author code4crafter@gmail.com <br>
- * @see us.codecraft.webmagic.processor.PageProcessor
  * @since 0.1.0
  */
 public class Site {

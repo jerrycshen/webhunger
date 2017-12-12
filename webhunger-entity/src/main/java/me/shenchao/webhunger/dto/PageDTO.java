@@ -1,4 +1,4 @@
-package me.shenchao.webhunger.entity;
+package me.shenchao.webhunger.dto;
 
 import java.io.Serializable;
 import java.util.List;
@@ -8,11 +8,11 @@ import java.util.Map;
  * @author Jerry Shen
  * @since 0.1
  */
-public class PageInfo implements Serializable {
+public class PageDTO implements Serializable {
 
-    private Long page_id;
+    private Long pageId;
 
-    private Host host;
+    private String siteId;
 
     private String pageTitle;
 
@@ -26,15 +26,7 @@ public class PageInfo implements Serializable {
 
     private String x_frame_options;
 
-    /**
-     * 响应头
-     */
-    private Map<String, List<String>> responseHeader;
-
     private String rawText;
-
-
-    private byte[] bytes;
 
     private String charset;
 
@@ -53,12 +45,12 @@ public class PageInfo implements Serializable {
         this.isSkip = skip;
     }
 
-    public Long getPage_id() {
-        return page_id;
+    public Long getPageId() {
+        return pageId;
     }
 
-    public void setPage_id(Long page_id) {
-        this.page_id = page_id;
+    public void setPageId(Long pageId) {
+        this.pageId = pageId;
     }
 
     public String getUrl() {
@@ -77,12 +69,12 @@ public class PageInfo implements Serializable {
         this.parentUrl = parentUrl;
     }
 
-    public Host getHost() {
-        return host;
+    public String getSiteId() {
+        return siteId;
     }
 
-    public void setHost(Host host) {
-        this.host = host;
+    public void setSiteId(String siteId) {
+        this.siteId = siteId;
     }
 
     public String getPageTitle() {
@@ -109,12 +101,7 @@ public class PageInfo implements Serializable {
         this.depth = depth;
     }
 
-    public Map<String, List<String>> getResponseHeader() {
-        return responseHeader;
-    }
-
     public void setResponseHeader(Map<String, List<String>> responseHeader) {
-        this.responseHeader = responseHeader;
         List<String> values = responseHeader.get("X-Frame-Options");
         if (values != null) {
             setX_frame_options(values.get(0));
@@ -127,14 +114,6 @@ public class PageInfo implements Serializable {
 
     public void setRawText(String rawText) {
         this.rawText = rawText;
-    }
-
-    public byte[] getBytes() {
-        return bytes;
-    }
-
-    public void setBytes(byte[] bytes) {
-        this.bytes = bytes;
     }
 
     public boolean isHasError() {

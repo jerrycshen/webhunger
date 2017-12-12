@@ -1,6 +1,6 @@
 package us.codecraft.webmagic.downloader;
 
-import us.codecraft.webmagic.Request;
+import me.shenchao.webhunger.entity.webmagic.Request;
 
 /**
  * Base class of downloader with some common methods.

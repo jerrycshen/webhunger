@@ -22,6 +22,11 @@
             <artifactId>webhunger-util</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>me.shenchao.webhunger</groupId>
+            <artifactId>webhunger-client-api</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
 
         <!-- WebMagic dependency-->
         <dependency>

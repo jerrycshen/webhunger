@@ -1,6 +1,9 @@
 package us.codecraft.webmagic;
 
 import me.shenchao.webhunger.crawler.SiteDominate;
+import me.shenchao.webhunger.entity.webmagic.Page;
+import me.shenchao.webhunger.entity.webmagic.Request;
+import me.shenchao.webhunger.entity.webmagic.Site;
 import me.shenchao.webhunger.util.thread.CountableThreadPool;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
@@ -413,7 +416,7 @@ public class Spider implements Runnable, LifeCycle {
 
     private void onDownloadSuccess(Request request, Page page) {
         if (getSites().get(request.getSiteId()).getAcceptStatCode().contains(page.getStatusCode())) {
-            pageProcessor.process(page);
+            pageProcessor.process(page, this);
             extractAndAddRequests(page, spawnUrl);
             if (!page.getResultItems().isSkip()) {
                 for (Pipeline pipeline : pipelines) {

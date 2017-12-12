@@ -1,7 +1,7 @@
 package us.codecraft.webmagic.scheduler.component;
 
 import com.google.common.collect.Sets;
-import us.codecraft.webmagic.Request;
+import me.shenchao.webhunger.entity.webmagic.Request;
 import us.codecraft.webmagic.LifeCycle;
 
 import java.util.Set;

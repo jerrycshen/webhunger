@@ -3,7 +3,7 @@ package us.codecraft.webmagic.scheduler;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import us.codecraft.webmagic.Request;
+import me.shenchao.webhunger.entity.webmagic.Request;
 import us.codecraft.webmagic.LifeCycle;
 import us.codecraft.webmagic.scheduler.component.DuplicateRemover;
 

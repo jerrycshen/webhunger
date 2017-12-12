@@ -1,8 +1,9 @@
 package me.shenchao.webhunger.client.crawler;
 
-import me.shenchao.webhunger.client.api.crawler.UrlFilter;
-import me.shenchao.webhunger.client.api.crawler.UrlFilterChain;
-import me.shenchao.webhunger.entity.PageInfo;
+import me.shenchao.webhunger.client.api.crawler.URLFilter;
+import me.shenchao.webhunger.client.api.crawler.URLFilterChain;
+import me.shenchao.webhunger.entity.webmagic.Page;
+import me.shenchao.webhunger.entity.webmagic.Site;
 
 import java.util.Set;
 
@@ -12,26 +13,17 @@ import java.util.Set;
  * @author Jerry Shen
  * @since 0.1
  */
-public class DepthFilter implements UrlFilter {
-
-    /**
-     * 默认全站爬取
-     */
-    private int planDepth = -1;
-
-    public DepthFilter(int planDepth) {
-        this.planDepth = planDepth;
-    }
+public class DepthFilter implements URLFilter {
 
     @Override
-    public void doFilter(PageInfo page, Set<String> newUrls, UrlFilterChain filterChain) {
+    public void doFilter(Page page, Site site, Set<String> newUrls, URLFilterChain filterChain) {
+        int planDepth = site.getHost().getHostConfig().getDepth();
         // 如果深度要求不满足，无需再进行之后的过滤器，深度过滤器一般设置在过滤链之首，可以避免许多无用操作
-        if (planDepth != -1 && page.getDepth() >= planDepth) {
+        if (planDepth != -1 && page.getRequest().getNowDepth() >= planDepth) {
             // 此页面中的URL无需再抓取
             newUrls.clear();
             return;
         }
-        filterChain.doFilter(page, newUrls);
+        filterChain.doFilter(page, site, newUrls);
     }
-
 }

@@ -2,7 +2,7 @@ package me.shenchao.webhunger.crawler.selector;
 
 import me.shenchao.webhunger.crawler.SiteDominate;
 import me.shenchao.webhunger.crawler.listener.SiteListener;
-import us.codecraft.webmagic.Site;
+import me.shenchao.webhunger.entity.webmagic.Site;
 
 public abstract class AbstractSiteSelector implements SiteSelector {
 

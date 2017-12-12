@@ -1,6 +1,6 @@
 package me.shenchao.webhunger.util;
 
-import me.shenchao.webhunger.util.common.FileUtil;
+import me.shenchao.webhunger.util.common.FileUtils;
 import org.junit.Test;
 
 import java.io.File;
@@ -11,12 +11,12 @@ import java.util.List;
  *
  * @author Jerry Shen
  */
-public class FileUtilTest {
+public class FileUtilsTest {
 
     @Test
     public void getAllSuffixFilesInCurrentDir() {
         String dir = "/Users/jerry/IdeaProjects/webhunger";
-        List<File> files = FileUtil.getAllSuffixFilesInCurrentDir(dir, ".java");
+        List<File> files = FileUtils.getAllSuffixFilesInCurrentDir(dir, ".java");
         System.out.println(files.size());
         for (File file : files) {
             System.out.println(file.getName());

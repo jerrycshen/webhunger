@@ -1,7 +1,7 @@
 package me.shenchao.webhunger.crawler.selector;
 
 import me.shenchao.webhunger.crawler.listener.SiteListener;
-import us.codecraft.webmagic.Site;
+import me.shenchao.webhunger.entity.webmagic.Site;
 
 /**
  * 站点选择器，用于站点调度

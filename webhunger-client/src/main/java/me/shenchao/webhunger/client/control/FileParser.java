@@ -2,8 +2,8 @@ package me.shenchao.webhunger.client.control;
 
 import me.shenchao.webhunger.entity.*;
 import me.shenchao.webhunger.exception.TaskParseException;
-import me.shenchao.webhunger.util.common.FileUtil;
-import me.shenchao.webhunger.util.common.MD5Util;
+import me.shenchao.webhunger.util.common.FileUtils;
+import me.shenchao.webhunger.util.common.MD5Utils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -38,8 +38,8 @@ class FileParser {
             }
             Task task = new Task();
             // 计算task文件名的MD5 作为task的 ID
-            String fileName = FileUtil.getFileName(taskFile);
-            task.setTaskId(MD5Util.get16bitMD5(fileName));
+            String fileName = FileUtils.getFileName(taskFile);
+            task.setTaskId(MD5Utils.get16bitMD5(fileName));
             Element nameElement = root.element("name");
             if (nameElement != null) {
                 task.setTaskName(nameElement.getText());
@@ -122,9 +122,9 @@ class FileParser {
         URLFilterConfig urlFilterConfig = null;
         if (configElement != null) {
             urlFilterConfig = new URLFilterConfig();
-            Element jarPathElement = configElement.element("jarPath");
+            Element jarPathElement = configElement.element("urlFilterJarDir");
             if (jarPathElement != null) {
-                urlFilterConfig.setJarPath(jarPathElement.getText());
+                urlFilterConfig.setUrlFilterJarDir(jarPathElement.getText());
             }
             Element filtersElement = configElement.element("filters");
             if (filtersElement != null && filtersElement.elements("filter").size() > 0) {
@@ -154,7 +154,7 @@ class FileParser {
             host.setHostIndex(hostIndexElement.getText());
             host.setHostName(hostNameElement.getText());
             // 根据host name 的MD5 值作为HOST ID
-            host.setHostId(MD5Util.get16bitMD5(host.getHostName()));
+            host.setHostId(MD5Utils.get16bitMD5(host.getHostName()));
             hosts.add(host);
 
             host.setHostConfig(parseHostConfig(hostElement.element("config")));

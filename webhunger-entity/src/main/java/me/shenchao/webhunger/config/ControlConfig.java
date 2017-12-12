@@ -1,7 +1,7 @@
 package me.shenchao.webhunger.config;
 
 import me.shenchao.webhunger.exception.ConfigParseException;
-import me.shenchao.webhunger.util.common.SystemUtil;
+import me.shenchao.webhunger.util.common.SystemUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,7 +19,7 @@ public class ControlConfig {
 
     private boolean distributed = false;
 
-    private String taskAccessorJarDir = SystemUtil.getWebHungerDefaultDir() + File.separator + "accessor";
+    private String taskAccessorJarDir = SystemUtils.getWebHungerDefaultDir() + File.separator + "accessor";
 
     private String taskAccessorClass = "me.shenchao.webhunger.client.task.FileTaskAccessor";
 
@@ -63,7 +63,7 @@ public class ControlConfig {
 
         this.taskAccessorJarDir = properties.getProperty("taskAccessorJarDir", taskAccessorClass);
         // 替换占位符
-        this.taskAccessorJarDir = this.taskAccessorJarDir.replace("${webhunger.home}", SystemUtil.getWebHungerHomeDir());
+        this.taskAccessorJarDir = this.taskAccessorJarDir.replace("${webhunger.home}", SystemUtils.getWebHungerHomeDir());
         this.taskAccessorClass = properties.getProperty("taskAccessorClass", taskAccessorClass);
         this.hostSchedulerClass = properties.getProperty("hostSchedulerClass", hostSchedulerClass);
         this.contentPath = properties.getProperty("contextPath", contentPath);

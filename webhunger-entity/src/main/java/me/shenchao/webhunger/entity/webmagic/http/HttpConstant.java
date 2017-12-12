@@ -1,4 +1,4 @@
-package us.codecraft.webmagic.utils;
+package me.shenchao.webhunger.entity.webmagic.http;
 
 /**
  * Some constants of Http protocal.

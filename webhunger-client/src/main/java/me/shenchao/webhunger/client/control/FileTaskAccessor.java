@@ -5,7 +5,7 @@ import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostSnapshot;
 import me.shenchao.webhunger.entity.Task;
 import me.shenchao.webhunger.exception.TaskParseException;
-import me.shenchao.webhunger.util.common.SystemUtil;
+import me.shenchao.webhunger.util.common.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,9 +23,9 @@ public class FileTaskAccessor implements TaskAccessor {
 
     private static final Logger logger = LoggerFactory.getLogger(FileTaskAccessor.class);
 
-    private static final String DEFAULT_TASK_PATH = SystemUtil.getWebHungerDefaultDir() + File.separator + "tasks";
+    private static final String DEFAULT_TASK_PATH = SystemUtils.getWebHungerDefaultDir() + File.separator + "tasks";
 
-    private static final String DEFAULT_RESULT_PATH = SystemUtil.getWebHungerDefaultDir() + File.separator + "result";
+    private static final String DEFAULT_RESULT_PATH = SystemUtils.getWebHungerDefaultDir() + File.separator + "result";
 
     private static final String SNAPSHOT_NAME = "host.snapshot";
 

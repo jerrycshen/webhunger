@@ -1,7 +1,7 @@
 package us.codecraft.webmagic.downloader;
 
-import us.codecraft.webmagic.Page;
-import us.codecraft.webmagic.Request;
+import me.shenchao.webhunger.entity.webmagic.Page;
+import me.shenchao.webhunger.entity.webmagic.Request;
 import us.codecraft.webmagic.LifeCycle;
 
 /**
@@ -21,11 +21,11 @@ public interface Downloader {
      * @param lifeCycle lifeCycle
      * @return page
      */
-    public Page download(Request request, LifeCycle lifeCycle);
+    Page download(Request request, LifeCycle lifeCycle);
 
     /**
      * Tell the downloader how many threads the spider used.
      * @param threadNum number of threads
      */
-    public void setThread(int threadNum);
+    void setThread(int threadNum);
 }

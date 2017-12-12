@@ -1,6 +1,4 @@
-package us.codecraft.webmagic;
-
-import us.codecraft.webmagic.selector.Selectable;
+package me.shenchao.webhunger.entity.webmagic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,8 +29,6 @@ public class Page {
     private String charset;
 
     private String rawText;
-
-    private Selectable url;
 
     /**
      * 响应头
@@ -99,19 +95,6 @@ public class Page {
     private Request incrementDepth(Request request) {
         request.setNowDepth(this.request.getNowDepth() + 1);
         return request;
-    }
-
-    /**
-     * get url of current page
-     *
-     * @return url of current page
-     */
-    public Selectable getUrl() {
-        return url;
-    }
-
-    public void setUrl(Selectable url) {
-        this.url = url;
     }
 
     /**

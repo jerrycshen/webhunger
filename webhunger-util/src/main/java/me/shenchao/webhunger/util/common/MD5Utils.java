@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
  * @author Jerry Shen
  * @since 0.1
  */
-public class MD5Util {
+public class MD5Utils {
 
     // 全局数组
     private final static String[] strDigits = { "0", "1", "2", "3", "4", "5",

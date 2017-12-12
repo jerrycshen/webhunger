@@ -1,5 +1,7 @@
 package us.codecraft.webmagic;
 
+import me.shenchao.webhunger.entity.webmagic.Site;
+
 import java.util.Map;
 
 /**
@@ -12,13 +14,13 @@ public interface LifeCycle {
      *
      * @return uuid
      */
-    public String getUUID();
+    String getUUID();
 
     /**
      * 正在爬取的所有站点集合
      *
      * @return sites
      */
-    public Map<String, Site> getSites();
+    Map<String, Site> getSites();
 
 }

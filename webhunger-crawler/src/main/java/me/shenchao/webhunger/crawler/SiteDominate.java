@@ -2,7 +2,7 @@ package me.shenchao.webhunger.crawler;
 
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostState;
-import us.codecraft.webmagic.Site;
+import me.shenchao.webhunger.entity.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 
 import java.util.*;

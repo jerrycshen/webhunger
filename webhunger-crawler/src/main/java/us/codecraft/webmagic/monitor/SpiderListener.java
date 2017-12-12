@@ -1,6 +1,6 @@
 package us.codecraft.webmagic.monitor;
 
-import us.codecraft.webmagic.Request;
+import me.shenchao.webhunger.entity.webmagic.Request;
 
 /**
  * Listener of Spider

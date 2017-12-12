@@ -11,19 +11,19 @@ import java.util.List;
  */
 public class URLFilterConfig {
 
-    private String jarPath;
+    private String urlFilterJarDir;
 
     /**
      * 注意filter的顺序，会按照顺序添加到过滤链
      */
     private List<String> filterClassList = new ArrayList<>();
 
-    public String getJarPath() {
-        return jarPath;
+    public String getUrlFilterJarDir() {
+        return urlFilterJarDir;
     }
 
-    public void setJarPath(String jarPath) {
-        this.jarPath = jarPath;
+    public void setUrlFilterJarDir(String urlFilterJarDir) {
+        this.urlFilterJarDir = urlFilterJarDir;
     }
 
     public List<String> getFilterClassList() {

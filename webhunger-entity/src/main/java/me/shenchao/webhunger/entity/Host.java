@@ -1,6 +1,6 @@
 package me.shenchao.webhunger.entity;
 
-import me.shenchao.webhunger.util.common.UrlUtil;
+import me.shenchao.webhunger.util.common.UrlUtils;
 
 import java.util.Date;
 
@@ -78,8 +78,8 @@ public class Host {
 
     public void setHostIndex(String hostIndex) {
         this.hostIndex = hostIndex;
-        setHostDomain(UrlUtil.removePort(UrlUtil.getDomain(hostIndex)));
-        setHostSecondDomain(UrlUtil.getHostSecondDomain(getHostDomain()));
+        setHostDomain(UrlUtils.removePort(UrlUtils.getDomain(hostIndex)));
+        setHostSecondDomain(UrlUtils.getHostSecondDomain(getHostDomain()));
     }
 
     public int getState() {

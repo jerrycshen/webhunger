@@ -1,7 +1,7 @@
 package me.shenchao.webhunger.crawler.pipeline;
 
 import us.codecraft.webmagic.LifeCycle;
-import us.codecraft.webmagic.ResultItems;
+import me.shenchao.webhunger.entity.webmagic.ResultItems;
 import us.codecraft.webmagic.pipeline.Pipeline;
 
 /**

@@ -2,12 +2,12 @@ package me.shenchao.webhunger.crawler;
 
 import me.shenchao.webhunger.config.CrawlerConfig;
 import me.shenchao.webhunger.crawler.pipeline.StandalonePipeline;
-import me.shenchao.webhunger.crawler.processor.PageParser;
-import me.shenchao.webhunger.crawler.scheduler.QueueScheduler;
+import me.shenchao.webhunger.crawler.processor.WholeSiteCrawledProcessor;
+import me.shenchao.webhunger.crawler.scheduler.QueueURLScheduler;
 import me.shenchao.webhunger.crawler.selector.OrderSiteSelector;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.exception.ConfigParseException;
-import me.shenchao.webhunger.util.common.SystemUtil;
+import me.shenchao.webhunger.util.common.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.codecraft.webmagic.Spider;
@@ -34,7 +34,7 @@ public class CrawlerBootstrap {
     private void parseCrawlerConfig() {
         crawlerConfig = new CrawlerConfig();
         try {
-            crawlerConfig.parse(SystemUtil.getWebHungerConfigDir() + File.separator + CONF_NAME);
+            crawlerConfig.parse(SystemUtils.getWebHungerConfigDir() + File.separator + CONF_NAME);
         } catch (ConfigParseException e) {
             logger.warn(e.toString());
         } catch (IOException e) {
@@ -62,7 +62,7 @@ public class CrawlerBootstrap {
         // 解析配置
         parseCrawlerConfig();
         // 配置爬虫
-        Spider spider = Spider.create(new PageParser());
+        Spider spider = Spider.create(new WholeSiteCrawledProcessor());
         // 启动站点管理类
         siteDominate = new SiteDominate(spider);
         if (crawlerConfig.isDistributed()) {
@@ -70,7 +70,7 @@ public class CrawlerBootstrap {
             // 添加消息处理类
         } else {
             spider.addPipeline(new StandalonePipeline());
-            spider.setScheduler(new QueueScheduler(new OrderSiteSelector(siteDominate)));
+            spider.setScheduler(new QueueURLScheduler(new OrderSiteSelector(siteDominate)));
         }
         // TODO 以后会动态变化
         spider.thread(5);

@@ -2,7 +2,7 @@ package us.codecraft.webmagic.scheduler.component;
 
 import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnels;
-import us.codecraft.webmagic.Request;
+import me.shenchao.webhunger.entity.webmagic.Request;
 import us.codecraft.webmagic.LifeCycle;
 
 import java.nio.charset.Charset;

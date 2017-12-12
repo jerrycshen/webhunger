@@ -1,9 +1,10 @@
 package me.shenchao.webhunger.client.crawler;
 
-import me.shenchao.webhunger.client.api.crawler.UrlFilter;
-import me.shenchao.webhunger.client.api.crawler.UrlFilterChain;
+import me.shenchao.webhunger.client.api.crawler.URLFilter;
+import me.shenchao.webhunger.client.api.crawler.URLFilterChain;
 import me.shenchao.webhunger.client.crawler.util.SuffixInitialization;
-import me.shenchao.webhunger.entity.PageInfo;
+import me.shenchao.webhunger.entity.webmagic.Page;
+import me.shenchao.webhunger.entity.webmagic.Site;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -16,10 +17,10 @@ import java.util.Set;
  * @author Jerry Shen
  * @since 3.0
  */
-public class UrlsSuffixExcludeFilter implements UrlFilter {
+public class UrlsSuffixExcludeFilter implements URLFilter {
 
     @Override
-    public void doFilter(PageInfo page, Set<String> newUrls, UrlFilterChain filterChain) {
+    public void doFilter(Page page, Site site, Set<String> newUrls, URLFilterChain filterChain) {
         Iterator<String> iterator = newUrls.iterator();
         while (iterator.hasNext()) {
             String url_str = iterator.next();
@@ -35,7 +36,7 @@ public class UrlsSuffixExcludeFilter implements UrlFilter {
             }
         }
         if (newUrls.size() != 0) {
-            filterChain.doFilter(page, newUrls);
+            filterChain.doFilter(page, site, newUrls);
         }
     }
 
