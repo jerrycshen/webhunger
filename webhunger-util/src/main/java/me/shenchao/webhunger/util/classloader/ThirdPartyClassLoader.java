@@ -38,7 +38,7 @@ public class ThirdPartyClassLoader {
         try {
             Class<T> aClass = (Class<T>) classLoader.loadClass(className);
             t = aClass.newInstance();
-            logger.info("加载类：{} 成功", className);
+            logger.debug("加载类：{} 成功", className);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("加载类：{} 失败", className);

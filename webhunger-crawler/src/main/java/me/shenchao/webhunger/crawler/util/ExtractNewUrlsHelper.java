@@ -1,6 +1,6 @@
 package me.shenchao.webhunger.crawler.util;
 
-import me.shenchao.webhunger.dto.PageDTO;
+import me.shenchao.webhunger.entity.webmagic.Page;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,7 +17,7 @@ import java.util.Set;
  */
 public class ExtractNewUrlsHelper {
 
-    public static Set<String> extractAllUrls(PageDTO page) {
+    public static Set<String> extractAllUrls(Page page) {
         Document doc = Jsoup.parse(page.getRawText());
         Set<String> newUrls = new HashSet<>();
         getLinksUrls(doc, newUrls);

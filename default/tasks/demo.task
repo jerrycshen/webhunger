@@ -20,9 +20,11 @@
                 <timeout>5000</timeout>
                 <userAgent>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.94 Safari/537.36</userAgent>
                 <urlFilterConfig>
-                    <urlFilterJarDir>/</urlFilterJarDir>
+                    <urlFilterJarDir>D:\IdeaIU\IdeaProjects\webhunger\default\accessor</urlFilterJarDir>
                     <filters>
-                        <filter>d</filter>
+                        <filter>me.shenchao.webhunger.client.crawler.filter.DepthFilter</filter>
+                        <filter>me.shenchao.webhunger.client.crawler.filter.SameDomainFilter</filter>
+                        <filter>me.shenchao.webhunger.client.crawler.filter.UrlsSuffixExcludeFilter</filter>
                     </filters>
                 </urlFilterConfig>
             </config>

@@ -20,6 +20,10 @@ class StandaloneController extends MasterController {
 
     StandaloneController(ControlConfig controlConfig) {
         super(controlConfig);
+        init();
+    }
+
+    private void init() {
         // 启动单机版爬虫
         bootstrap = new CrawlerBootstrap();
         bootstrap.start();

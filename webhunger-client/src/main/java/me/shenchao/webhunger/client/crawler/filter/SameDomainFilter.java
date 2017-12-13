@@ -1,4 +1,4 @@
-package me.shenchao.webhunger.client.crawler;
+package me.shenchao.webhunger.client.crawler.filter;
 
 import me.shenchao.webhunger.client.api.crawler.URLFilter;
 import me.shenchao.webhunger.client.api.crawler.URLFilterChain;

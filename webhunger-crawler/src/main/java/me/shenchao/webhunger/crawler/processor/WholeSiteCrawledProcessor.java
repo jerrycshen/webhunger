@@ -1,8 +1,10 @@
 package me.shenchao.webhunger.crawler.processor;
 
+import me.shenchao.webhunger.client.api.crawler.URLFilterChain;
 import me.shenchao.webhunger.crawler.filter.URLFilterChainFactory;
 import me.shenchao.webhunger.crawler.util.ExtractNewUrlsHelper;
 import me.shenchao.webhunger.dto.PageDTO;
+import me.shenchao.webhunger.entity.webmagic.Site;
 import us.codecraft.webmagic.LifeCycle;
 import me.shenchao.webhunger.entity.webmagic.Page;
 import us.codecraft.webmagic.processor.PageProcessor;
@@ -23,15 +25,20 @@ public class WholeSiteCrawledProcessor implements PageProcessor {
 
     @Override
     public void process(Page page, LifeCycle lifeCycle) {
-        PageDTO pageDTO = copyPageInfo(page);
         // 提取该页面中的所有URL集合
-        Set<String> newUrls = ExtractNewUrlsHelper.extractAllUrls(pageDTO);
+        Set<String> newUrls = ExtractNewUrlsHelper.extractAllUrls(page);
         // 获取过滤链
-        URLFilterChainFactory.getURLFilterChain(lifeCycle.getSites().get(page.getRequest().getSiteId()));
+        Site site = lifeCycle.getSites().get(page.getRequest().getSiteId());
+        URLFilterChain urlFilterChain = URLFilterChainFactory.getURLFilterChain(site);
+        urlFilterChain.doFilter(page, site, newUrls);
+
         // 过滤后的URL 加入待爬列表
+        System.out.println(newUrls.size());
         for (String newUrl : newUrls) {
             page.addTargetRequest(newUrl);
         }
+
+        PageDTO pageDTO = copyPageInfo(page);
         page.putField("page", pageDTO);
     }
 

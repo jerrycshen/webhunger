@@ -70,7 +70,6 @@ public class HttpClientDownloader extends AbstractDownloader {
 
     @Override
     public Page download(Request request, LifeCycle lifeCycle) {
-        System.out.println(lifeCycle.getSites().size());
         if (lifeCycle == null || lifeCycle.getSites().get(request.getSiteId()) == null) {
             throw new NullPointerException("task or site can not be null");
         }
