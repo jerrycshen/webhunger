@@ -2,7 +2,6 @@ package me.shenchao.webhunger.control.controller;
 
 import me.shenchao.webhunger.config.ControlConfig;
 import me.shenchao.webhunger.control.scheduler.HostScheduler;
-import me.shenchao.webhunger.control.scheduler.QueueHostScheduler;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostState;
 import me.shenchao.webhunger.entity.Task;
@@ -84,14 +83,16 @@ public abstract class MasterController {
     }
 
     public List<Host> getHostsByTaskId(String taskId) {
-        if (taskMap == null)
+        if (taskMap == null) {
             loadTasks();
+        }
         return taskMap.get(taskId).getHosts();
     }
 
     public Task getTaskById(String taskId) {
-        if (taskMap == null)
+        if (taskMap == null) {
             loadTasks();
+        }
         return taskMap.get(taskId);
     }
 
@@ -189,10 +190,11 @@ public abstract class MasterController {
             System.exit(1);
         }
         // 如果并行度设置小于0，表示同时爬取所有站点
-        if (controlConfig.getParallelism() > 0)
+        if (controlConfig.getParallelism() > 0) {
             threadPool = new CountableThreadPool(controlConfig.getParallelism());
-        else
+        } else {
             threadPool = new CountableThreadPool(Integer.MAX_VALUE);
+        }
 
         logger.info("站点调度器初始化完成，使用如下配置启动：");
         logger.info("Host Scheduler Name: {}", hostScheduler.getClass());

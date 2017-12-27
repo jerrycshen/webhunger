@@ -229,7 +229,7 @@ public class Site {
      * @return the interval between the processing of two pages,
      */
     public int getSleepTime() {
-        return sleepTime;
+        return host.getHostConfig().getInterval();
     }
 
     /**
@@ -357,7 +357,7 @@ public class Site {
      * 是否太频繁访问
      */
     public long isFrequent() {
-        return System.currentTimeMillis() - lastCrawledTime - sleepTime;
+        return System.currentTimeMillis() - lastCrawledTime - getSleepTime();
     }
 
     @Override

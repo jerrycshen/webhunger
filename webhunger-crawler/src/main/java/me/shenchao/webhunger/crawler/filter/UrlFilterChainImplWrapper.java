@@ -14,11 +14,11 @@ import java.util.Set;
  * @author Jerry Shen
  * @since 3.0
  */
-public class URLFilterChainImplWrapper extends AbstractURLFilterChain {
+public class UrlFilterChainImplWrapper extends AbstractURLFilterChain {
 
     private URLFilterChain urlFilterChain;
 
-    public URLFilterChainImplWrapper(URLFilterChain urlFilterChain) {
+    public UrlFilterChainImplWrapper(URLFilterChain urlFilterChain) {
         this.urlFilterChain = urlFilterChain;
     }
 

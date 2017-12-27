@@ -17,10 +17,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 
 /**
+ * 待爬队列以FIFO方式管理
  * @author Jerry Shen
  * @since 0.1
  */
-public class QueueURLScheduler extends DuplicateRemovedScheduler implements DuplicateRemover, SiteListener {
+public class QueueUrlScheduler extends DuplicateRemovedScheduler implements DuplicateRemover, SiteListener {
 
     private Map<String, BlockingQueue<Request>> queueMap = new ConcurrentHashMap<>();
 
@@ -28,7 +29,7 @@ public class QueueURLScheduler extends DuplicateRemovedScheduler implements Dupl
 
     private SiteSelector siteSelector;
 
-    public QueueURLScheduler(SiteSelector siteSelector) {
+    public QueueUrlScheduler(SiteSelector siteSelector) {
         this.siteSelector = siteSelector;
         setDuplicateRemover(this);
     }
@@ -70,9 +71,6 @@ public class QueueURLScheduler extends DuplicateRemovedScheduler implements Dupl
         return duplicateMap.get(siteId).size();
     }
 
-    /**
-     * 两轮检查
-     */
     @Override
     public Request poll(LifeCycle task) {
         Site site = siteSelector.select(this);

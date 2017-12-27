@@ -28,12 +28,12 @@ public class SiteDominate {
      */
     private List<Site> siteList = Collections.synchronizedList(new LinkedList<>());
 
-    SiteDominate(Spider spider) {
+    public SiteDominate(Spider spider) {
         this.spider = spider;
         this.spider.setSiteDominate(this);
     }
 
-    void start(Host host) {
+    public void start(Host host) {
         Site site = Site.me();
         site.setHost(host);
         siteList.add(site);
@@ -52,6 +52,10 @@ public class SiteDominate {
         site.getHost().setState(HostState.Processing);
         // 移除缓存记录
         siteList.removeIf(s -> s.getHost().getHostId().equals(siteId));
+    }
+
+    public boolean isSpiderActive() {
+        return spider.getThreadAlive() > 0;
     }
 
     public Map<String, Site> getSiteMap() {

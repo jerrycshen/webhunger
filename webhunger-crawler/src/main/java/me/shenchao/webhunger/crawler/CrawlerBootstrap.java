@@ -3,9 +3,8 @@ package me.shenchao.webhunger.crawler;
 import me.shenchao.webhunger.config.CrawlerConfig;
 import me.shenchao.webhunger.crawler.pipeline.StandalonePipeline;
 import me.shenchao.webhunger.crawler.processor.WholeSiteCrawledProcessor;
-import me.shenchao.webhunger.crawler.scheduler.QueueURLScheduler;
+import me.shenchao.webhunger.crawler.scheduler.QueueUrlScheduler;
 import me.shenchao.webhunger.crawler.selector.OrderSiteSelector;
-import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.exception.ConfigParseException;
 import me.shenchao.webhunger.util.common.SystemUtils;
 import org.slf4j.Logger;
@@ -29,8 +28,6 @@ public class CrawlerBootstrap {
 
     private CrawlerConfig crawlerConfig;
 
-    private SiteDominate siteDominate;
-
     private void parseCrawlerConfig() {
         crawlerConfig = new CrawlerConfig();
         try {
@@ -48,13 +45,6 @@ public class CrawlerBootstrap {
     }
 
     /**
-     * 专门用于单机版调用，爬取新站点
-     */
-    public void crawl(Host host) {
-        siteDominate.start(host);
-    }
-
-    /**
      * 启动爬虫
      */
     public void start() {
@@ -63,14 +53,14 @@ public class CrawlerBootstrap {
         parseCrawlerConfig();
         // 配置爬虫
         Spider spider = Spider.create(new WholeSiteCrawledProcessor());
-        // 启动站点管理类
-        siteDominate = new SiteDominate(spider);
+        // 创建站点管理类
+        SiteDominate siteDominate = new SiteDominate(spider);
         if (crawlerConfig.isDistributed()) {
             // 启动zookeeper监听 TODO
             // 添加消息处理类
         } else {
             spider.addPipeline(new StandalonePipeline());
-            spider.setScheduler(new QueueURLScheduler(new OrderSiteSelector(siteDominate)));
+            spider.setScheduler(new QueueUrlScheduler(new OrderSiteSelector(siteDominate)));
         }
         // TODO 以后会动态变化
         spider.thread(5);

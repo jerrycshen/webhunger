@@ -10,7 +10,6 @@ import me.shenchao.webhunger.entity.webmagic.Site;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * URL过滤链工厂
@@ -20,11 +19,9 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Jerry Shen
  * @since 0.1
  */
-public class URLFilterChainFactory {
+public class UrlFilterChainFactory {
 
     private static Map<String, URLFilterChain> urlFilterChainMap = new HashMap<>();
-
-    private static ReentrantLock lock = new ReentrantLock();
 
     /**
      * 根据站点ID获取指定站点的URL过滤链
@@ -34,19 +31,10 @@ public class URLFilterChainFactory {
     public static URLFilterChain getURLFilterChain(Site site) {
         String siteId = site.getHost().getHostId();
         if (urlFilterChainMap.get(siteId) == null) {
-            lock.lock();
-            try {
-                if (urlFilterChainMap.get(siteId) != null) {
-                    return urlFilterChainMap.get(siteId);
-                } else {
-                    // 创建过滤链，耗时操作
-                    URLFilterChain urlFilterChain = buildURLFilterChain(site);
-                    urlFilterChainMap.put(siteId, urlFilterChain);
-                    return urlFilterChain;
-                }
-            } finally {
-                lock.unlock();
-            }
+            // 创建过滤链，耗时操作
+            URLFilterChain urlFilterChain = buildURLFilterChain(site);
+            urlFilterChainMap.put(siteId, urlFilterChain);
+            return urlFilterChain;
         } else {
             return urlFilterChainMap.get(siteId);
         }
@@ -62,7 +50,7 @@ public class URLFilterChainFactory {
         for (URLFilter urlFilter : urlFilters) {
             urlFilterChain.addFilter(urlFilter);
         }
-        return new URLFilterChainImplWrapper(urlFilterChain);
+        return new UrlFilterChainImplWrapper(urlFilterChain);
     }
 
 }
