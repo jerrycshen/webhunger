@@ -1,12 +1,17 @@
 package me.shenchao.webhunger.crawler;
 
 import me.shenchao.webhunger.config.CrawlerConfig;
+import me.shenchao.webhunger.constant.ZookeeperPathConsts;
 import me.shenchao.webhunger.crawler.pipeline.StandalonePipeline;
 import me.shenchao.webhunger.crawler.processor.WholeSiteCrawledProcessor;
 import me.shenchao.webhunger.crawler.scheduler.QueueUrlScheduler;
 import me.shenchao.webhunger.crawler.selector.OrderSiteSelector;
 import me.shenchao.webhunger.exception.ConfigParseException;
 import me.shenchao.webhunger.util.common.SystemUtils;
+import me.shenchao.webhunger.util.common.ZookeeperUtils;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.codecraft.webmagic.Spider;
@@ -56,8 +61,14 @@ public class CrawlerBootstrap {
         // 创建站点管理类
         SiteDominate siteDominate = new SiteDominate(spider);
         if (crawlerConfig.isDistributed()) {
-            // 启动zookeeper监听 TODO
-            // 添加消息处理类
+            // 启动zookeeper,注册本爬虫节点
+            ZooKeeper zooKeeper = ZookeeperUtils.getZKConnection(crawlerConfig.getZkServer());
+            try {
+                zooKeeper.create(ZookeeperPathConsts.CRAWLER + "/" + SystemUtils.getHostName(), "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("启动失败：未能向Zookeeper注册本爬虫节点");
+            }
         } else {
             spider.addPipeline(new StandalonePipeline());
             spider.setScheduler(new QueueUrlScheduler(new OrderSiteSelector(siteDominate)));

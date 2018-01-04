@@ -29,7 +29,7 @@ public abstract class MasterController {
 
     private ControllerSupport controllerSupport;
 
-    private ControlConfig controlConfig;
+    protected ControlConfig controlConfig;
 
     /**
      * 重用WebMagic的线程池类，进行线程数量控制

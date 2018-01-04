@@ -29,6 +29,7 @@ public class ControllerFactory {
                 masterController = new StandaloneController(controlConfig);
                 logger.info("单机版控制器初始化完毕......");
             } else {
+                masterController = new DistributedController(controlConfig);
                 logger.info("分布式控制器初始化完毕......");
             }
         } else {

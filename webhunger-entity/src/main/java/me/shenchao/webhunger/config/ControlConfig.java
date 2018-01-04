@@ -34,6 +34,8 @@ public class ControlConfig {
 
     private String contentPath = "/webhunger";
 
+    private String zkServer;
+
     public void parse(String fileName) throws IOException, ConfigParseException {
         parse(new FileInputStream(fileName));
     }
@@ -67,6 +69,9 @@ public class ControlConfig {
         this.taskAccessorClass = properties.getProperty("taskAccessorClass", taskAccessorClass);
         this.hostSchedulerClass = properties.getProperty("hostSchedulerClass", hostSchedulerClass);
         this.contentPath = properties.getProperty("contextPath", contentPath);
+        if (this.distributed) {
+            this.zkServer = properties.getProperty("zkServer");
+        }
     }
 
     public boolean isDistributed() {
@@ -95,5 +100,9 @@ public class ControlConfig {
 
     public String getHostSchedulerClass() {
         return hostSchedulerClass;
+    }
+
+    public String getZkServer() {
+        return zkServer;
     }
 }

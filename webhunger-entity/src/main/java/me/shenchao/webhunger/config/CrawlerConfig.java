@@ -17,6 +17,8 @@ public class CrawlerConfig {
 
     private boolean distributed = false;
 
+    private String zkServer;
+
     public void parse(String fileName) throws IOException, ConfigParseException {
         parse(new FileInputStream(fileName));
     }
@@ -29,9 +31,16 @@ public class CrawlerConfig {
 
     private void parseProperties(Properties properties) throws ConfigParseException {
         this.distributed = Boolean.parseBoolean(properties.getProperty("distributed", "false"));
+        if (distributed) {
+            this.zkServer = properties.getProperty("zkServer");
+        }
     }
 
     public boolean isDistributed() {
         return distributed;
+    }
+
+    public String getZkServer() {
+        return zkServer;
     }
 }
