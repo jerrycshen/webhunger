@@ -18,7 +18,7 @@
                 <li><a href="${AppContext}task/list">Task</a></li>
             </ul>
             <ul class="nav navbar-nav">
-                <li><a href="#">Crawler</a></li>
+                <li><a href="${AppContext}crawler/list">Crawler</a></li>
             </ul>
         </div><!--/.nav-collapse -->
     </div>
