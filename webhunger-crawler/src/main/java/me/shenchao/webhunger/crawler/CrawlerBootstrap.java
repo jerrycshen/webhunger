@@ -1,5 +1,9 @@
 package me.shenchao.webhunger.crawler;
 
+import com.alibaba.dubbo.config.ApplicationConfig;
+import com.alibaba.dubbo.config.ProtocolConfig;
+import com.alibaba.dubbo.config.RegistryConfig;
+import com.alibaba.dubbo.config.ServiceConfig;
 import me.shenchao.webhunger.config.CrawlerConfig;
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
 import me.shenchao.webhunger.crawler.pipeline.StandalonePipeline;
@@ -7,6 +11,7 @@ import me.shenchao.webhunger.crawler.processor.WholeSiteCrawledProcessor;
 import me.shenchao.webhunger.crawler.scheduler.QueueUrlScheduler;
 import me.shenchao.webhunger.crawler.selector.OrderSiteSelector;
 import me.shenchao.webhunger.exception.ConfigParseException;
+import me.shenchao.webhunger.rpc.api.crawler.CrawlerCallable;
 import me.shenchao.webhunger.util.common.SystemUtils;
 import me.shenchao.webhunger.util.common.ZookeeperUtils;
 import org.apache.zookeeper.CreateMode;
@@ -62,13 +67,9 @@ public class CrawlerBootstrap {
         SiteDominate siteDominate = new SiteDominate(spider);
         if (crawlerConfig.isDistributed()) {
             // 启动zookeeper,注册本爬虫节点
-            ZooKeeper zooKeeper = ZookeeperUtils.getZKConnection(crawlerConfig.getZkServer());
-            try {
-                zooKeeper.create(ZookeeperPathConsts.CRAWLER + "/" + SystemUtils.getHostName(), "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.error("启动失败：未能向Zookeeper注册本爬虫节点");
-            }
+            initZookeeper();
+            // 启动dubbo，暴露接口与控制器RPC通信
+            initDubbo();
         } else {
             spider.addPipeline(new StandalonePipeline());
             spider.setScheduler(new QueueUrlScheduler(new OrderSiteSelector(siteDominate)));
@@ -78,6 +79,44 @@ public class CrawlerBootstrap {
         spider.setExitWhenComplete(false);
         // 启动爬虫
         spider.runAsync();
+    }
+
+    private void initZookeeper() {
+        ZooKeeper zooKeeper = ZookeeperUtils.getZKConnection(crawlerConfig.getZkServer());
+        try {
+            zooKeeper.create(ZookeeperPathConsts.CRAWLER + "/" + SystemUtils.getHostName(), "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("启动失败：未能向Zookeeper注册本爬虫节点");
+        }
+    }
+
+    private void initDubbo() {
+        CrawlerCallable callable = new CrawlerController();
+
+        ApplicationConfig applicationConfig = new ApplicationConfig();
+        applicationConfig.setName("Crawler: " + SystemUtils.INTERNET_IP);
+
+        // 服务提供协议配置
+        ProtocolConfig protocolConfig = new ProtocolConfig();
+        protocolConfig.setName("dubbo");
+        protocolConfig.setPort(20880);
+        protocolConfig.setThreads(1);
+
+        // 由于使用直连方式，所以不使用注册中心
+        RegistryConfig registryConfig = new RegistryConfig();
+        registryConfig.setAddress("N/A");
+
+        // 服务配置
+        ServiceConfig<CrawlerCallable> serviceConfig = new ServiceConfig<>();
+        serviceConfig.setApplication(applicationConfig);
+        serviceConfig.setRegistry(registryConfig);
+        serviceConfig.setProtocol(protocolConfig);
+        serviceConfig.setInterface(CrawlerCallable.class);
+        serviceConfig.setRef(callable);
+
+        // 暴露服务
+        serviceConfig.export();
     }
 
     public static void main(String[] args) {

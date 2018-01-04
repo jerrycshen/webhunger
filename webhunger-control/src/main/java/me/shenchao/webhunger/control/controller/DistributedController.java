@@ -1,9 +1,12 @@
 package me.shenchao.webhunger.control.controller;
 
+import com.alibaba.dubbo.config.ApplicationConfig;
+import com.alibaba.dubbo.config.ReferenceConfig;
 import me.shenchao.webhunger.config.ControlConfig;
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
 import me.shenchao.webhunger.entity.Crawler;
 import me.shenchao.webhunger.entity.Host;
+import me.shenchao.webhunger.rpc.api.crawler.CrawlerCallable;
 import me.shenchao.webhunger.util.common.ZookeeperUtils;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooKeeper;
@@ -27,10 +30,27 @@ public class DistributedController extends MasterController {
 
     DistributedController(ControlConfig controlConfig) {
         super(controlConfig);
-        init();
+        initZookeeper();
+        initDubbo();
     }
 
-    private void init() {
+    private void initDubbo() {
+        ApplicationConfig applicationConfig = new ApplicationConfig();
+        applicationConfig.setName("Controller");
+
+        // 引用远程服务
+        // 此实例很重，封装了与注册中心的连接以及与提供者的连接，请自行缓存，否则可能造成内存和连接泄漏
+        ReferenceConfig<CrawlerCallable> referenceConfig = new ReferenceConfig<>();
+        referenceConfig.setApplication(applicationConfig);
+        referenceConfig.setInterface(CrawlerCallable.class);
+        // TODO
+        referenceConfig.setUrl("");
+        // 注意：此代理对象内部封装了所有通讯细节，对象较重，请缓存复用
+        CrawlerCallable crawlerCallable = referenceConfig.get();
+
+    }
+
+    private void initZookeeper() {
         // 获取zookeeper连接
         String zkServer = controlConfig.getZkServer();
         zooKeeper = ZookeeperUtils.getZKConnection(zkServer);
