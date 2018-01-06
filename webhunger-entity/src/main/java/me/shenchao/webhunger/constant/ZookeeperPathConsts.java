@@ -14,7 +14,9 @@ public class ZookeeperPathConsts {
 
     public static final String CRAWLER = APP_PREFIX + "/crawler";
 
-    public static String getCrawlerPath() {
+    public static final String HOST = APP_PREFIX + "/host";
+
+    public static String getCrawlerNodePath() {
         return CRAWLER + "/" + SystemUtils.getHostName();
     }
 

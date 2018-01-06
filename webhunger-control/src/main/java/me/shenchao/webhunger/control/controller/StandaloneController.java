@@ -49,4 +49,9 @@ class StandaloneController extends MasterController {
         siteDominate.start(host);
     }
 
+    @Override
+    void completed(Host host) {
+
+    }
+
 }

@@ -133,6 +133,8 @@ public abstract class MasterController {
      */
     abstract void crawl(Host host);
 
+    abstract void completed(Host host);
+
     class SchedulerThread implements Runnable {
 
         @Override

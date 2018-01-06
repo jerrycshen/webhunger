@@ -87,7 +87,7 @@ public class CrawlerBootstrap {
     private void initZookeeper() {
         zooKeeper = ZookeeperUtils.getZKConnection(crawlerConfig.getZkServer());
         try {
-            zooKeeper.create(ZookeeperPathConsts.getCrawlerPath(), "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+            zooKeeper.create(ZookeeperPathConsts.getCrawlerNodePath(), "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
             logger.info("Zookeeper连接成功......");
         } catch (Exception e) {
             e.printStackTrace();

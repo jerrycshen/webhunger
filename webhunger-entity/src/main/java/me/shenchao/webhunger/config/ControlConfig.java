@@ -36,6 +36,8 @@ public class ControlConfig {
 
     private String zkServer;
 
+    private String redisServer;
+
     public void parse(String fileName) throws IOException, ConfigParseException {
         parse(new FileInputStream(fileName));
     }
@@ -71,6 +73,7 @@ public class ControlConfig {
         this.contentPath = properties.getProperty("contextPath", contentPath);
         if (this.distributed) {
             this.zkServer = properties.getProperty("zkServer");
+            this.redisServer = properties.getProperty("redisServer");
         }
     }
 
@@ -104,5 +107,9 @@ public class ControlConfig {
 
     public String getZkServer() {
         return zkServer;
+    }
+
+    public String getRedisServer() {
+        return redisServer;
     }
 }

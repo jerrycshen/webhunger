@@ -27,7 +27,7 @@ public class CrawlerController implements CrawlerCallable {
     public void run() {
         // 修改zookeeper中节点状态
         try {
-            zooKeeper.setData(ZookeeperPathConsts.getCrawlerPath(), "1".getBytes(), -1);
+            zooKeeper.setData(ZookeeperPathConsts.getCrawlerNodePath(), "1".getBytes(), -1);
             logger.info("爬虫节点开始运行......");
         } catch (KeeperException e) {
             e.printStackTrace();
