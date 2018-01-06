@@ -70,7 +70,7 @@
                 "render": function (data, type, row) {
                     var buttonStr = "";
                     if (data === 0) {
-                        buttonStr += "<button type='button' class='btn btn-default btn-sm'>Run</button> ";
+                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='runCrawler(\""+row.ip+"\")'>Run</button> ";
                     } else {
                         buttonStr += "<button type='button' class='btn btn-warning btn-sm'>Halt</button> ";
                     }
@@ -91,6 +91,25 @@
             cell.innerHTML = i+1;
         });
     } ).draw();
+
+    function updateCrawlerTable() {
+        crawlerTable.ajax.reload();
+    }
+    
+    function runCrawler(crawlerIP) {
+        $.ajax({
+            "url": "${AppContext}crawler/" + crawlerIP + "/run",
+            "type": "POST",
+            "success": function (data) {
+                data = JSON.parse(data);
+                if (data.res_code === 0) {
+                    updateCrawlerTable();
+                    $("#modalContent").html("You have added a crawler to run successfully~");
+                    $("#commonModal").modal('show');
+                }
+            }
+        });
+    }
 
 </script>
 </body>

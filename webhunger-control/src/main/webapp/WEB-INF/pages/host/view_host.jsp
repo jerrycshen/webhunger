@@ -126,7 +126,7 @@
                     var buttonStr = "";
                     // Ready
                     if (row.state === 0) {
-                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='startCrawler(\""+data+"\")'>Start</button> ";
+                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='startCrawlingHost(\""+data+"\")'>Start</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Suspend</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Stop</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>ReStart</button>";
@@ -134,14 +134,14 @@
                         // 正在爬取
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Start</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' >Suspend</button> ";
-                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='stopCrawler("+data+")'>Stop</button> ";
+                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='stopCrawlingHost("+data+")'>Stop</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>ReStart</button>";
                     } else if (row.state === 5) {
                         // 结束状态
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Start</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Suspend</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Stop</button> ";
-                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='reStartCrawler("+data+")'>ReStart</button>";
+                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='reStartCrawlingHost("+data+")'>ReStart</button>";
                     } else if (row.state === -1) {
                         // Waiting
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Start</button> ";
@@ -283,13 +283,13 @@
         });
     }
 
-    function startCrawler(host_id) {
+    function startCrawlingHost(host_id) {
         $.ajax({
             "url": "${AppContext}host/" + host_id + "/start",
             "type": "POST",
             "success": function () {
                 updateHostTable();
-                $("#modalContent").html("You have started a crawler successfully~");
+                $("#modalContent").html("You have started crawling the host successfully~");
                 $("#commonModal").modal('show');
 
                 updateHostTableAfter2SecAgain();
@@ -297,13 +297,13 @@
         });
     }
 
-    function stopCrawler(host_id) {
+    function stopCrawlingHost(host_id) {
         $.ajax({
             "url": "${AppContext}host/" + host_id + "/stop",
             "type": "POST",
             "success": function () {
                 updateHostTable();
-                $("#modalContent").html("You have stopped a crawler successfully~");
+                $("#modalContent").html("You have stopped crawling the host successfully~");
                 $("#commonModal").modal('show');
 
                 updateHostTableAfter2SecAgain();
@@ -311,7 +311,7 @@
         });
     }
 
-    function reStartCrawler(host_id) {
+    function reStartCrawlingHost(host_id) {
         $.ajax({
             "url": "${AppContext}host/" + host_id + "/restart",
             "type": "POST",

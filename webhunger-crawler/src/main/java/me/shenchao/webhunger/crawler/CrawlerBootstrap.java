@@ -38,6 +38,8 @@ public class CrawlerBootstrap {
 
     private CrawlerConfig crawlerConfig;
 
+    private ZooKeeper zooKeeper;
+
     private void parseCrawlerConfig() {
         crawlerConfig = new CrawlerConfig();
         try {
@@ -58,7 +60,7 @@ public class CrawlerBootstrap {
      * 启动爬虫
      */
     public void start() {
-        logger.info("爬虫模块正在启动......");
+        logger.info("爬虫节点正在启动......");
         // 解析配置
         parseCrawlerConfig();
         // 配置爬虫
@@ -79,12 +81,14 @@ public class CrawlerBootstrap {
         spider.setExitWhenComplete(false);
         // 启动爬虫
         spider.runAsync();
+        logger.info("爬虫节点启动成功，等待调度运行......");
     }
 
     private void initZookeeper() {
-        ZooKeeper zooKeeper = ZookeeperUtils.getZKConnection(crawlerConfig.getZkServer());
+        zooKeeper = ZookeeperUtils.getZKConnection(crawlerConfig.getZkServer());
         try {
-            zooKeeper.create(ZookeeperPathConsts.CRAWLER + "/" + SystemUtils.getHostName(), "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+            zooKeeper.create(ZookeeperPathConsts.getCrawlerPath(), "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+            logger.info("Zookeeper连接成功......");
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("启动失败：未能向Zookeeper注册本爬虫节点");
@@ -92,10 +96,10 @@ public class CrawlerBootstrap {
     }
 
     private void initDubbo() {
-        CrawlerCallable callable = new CrawlerController();
+        CrawlerCallable callable = new CrawlerController(zooKeeper);
 
         ApplicationConfig applicationConfig = new ApplicationConfig();
-        applicationConfig.setName("Crawler: " + SystemUtils.INTERNET_IP);
+        applicationConfig.setName("Crawler");
 
         // 服务提供协议配置
         ProtocolConfig protocolConfig = new ProtocolConfig();
@@ -114,9 +118,11 @@ public class CrawlerBootstrap {
         serviceConfig.setProtocol(protocolConfig);
         serviceConfig.setInterface(CrawlerCallable.class);
         serviceConfig.setRef(callable);
+        serviceConfig.setVersion("0.1");
 
         // 暴露服务
         serviceConfig.export();
+        logger.info("Dubbo注册成功......");
     }
 
     public static void main(String[] args) {
