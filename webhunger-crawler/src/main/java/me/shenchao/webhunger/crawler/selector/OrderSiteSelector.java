@@ -1,6 +1,6 @@
 package me.shenchao.webhunger.crawler.selector;
 
-import me.shenchao.webhunger.crawler.SiteDominate;
+import me.shenchao.webhunger.crawler.dominate.BaseSiteDominate;
 import me.shenchao.webhunger.crawler.listener.SiteListener;
 import me.shenchao.webhunger.entity.webmagic.Site;
 
@@ -14,9 +14,9 @@ import java.util.List;
  */
 public class OrderSiteSelector implements SiteSelector {
 
-    private SiteDominate siteDominate;
+    private BaseSiteDominate siteDominate;
 
-    public OrderSiteSelector(SiteDominate siteDominate) {
+    public OrderSiteSelector(BaseSiteDominate siteDominate) {
         this.siteDominate = siteDominate;
     }
 

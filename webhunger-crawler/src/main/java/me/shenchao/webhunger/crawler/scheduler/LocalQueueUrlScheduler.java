@@ -2,9 +2,9 @@ package me.shenchao.webhunger.crawler.scheduler;
 
 import me.shenchao.webhunger.crawler.listener.SiteListener;
 import me.shenchao.webhunger.crawler.selector.SiteSelector;
-import us.codecraft.webmagic.LifeCycle;
 import me.shenchao.webhunger.entity.webmagic.Request;
 import me.shenchao.webhunger.entity.webmagic.Site;
+import us.codecraft.webmagic.LifeCycle;
 import us.codecraft.webmagic.scheduler.DuplicateRemovedScheduler;
 import us.codecraft.webmagic.scheduler.component.DuplicateRemover;
 
@@ -16,12 +16,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 
-/**
- * 待爬队列以FIFO方式管理
- * @author Jerry Shen
- * @since 0.1
- */
-public class QueueUrlScheduler extends DuplicateRemovedScheduler implements DuplicateRemover, SiteListener {
+public class LocalQueueUrlScheduler extends DuplicateRemovedScheduler implements DuplicateRemover, SiteListener {
 
     private Map<String, BlockingQueue<Request>> queueMap = new ConcurrentHashMap<>();
 
@@ -29,7 +24,7 @@ public class QueueUrlScheduler extends DuplicateRemovedScheduler implements Dupl
 
     private SiteSelector siteSelector;
 
-    public QueueUrlScheduler(SiteSelector siteSelector) {
+    public LocalQueueUrlScheduler(SiteSelector siteSelector) {
         this.siteSelector = siteSelector;
         setDuplicateRemover(this);
     }
@@ -50,15 +45,13 @@ public class QueueUrlScheduler extends DuplicateRemovedScheduler implements Dupl
         return !duplicateMap.get(request.getSiteId()).add(request.getUrl());
     }
 
-    @Deprecated
     @Override
     public void resetDuplicateCheck(LifeCycle task) {
     }
 
-    @Deprecated
     @Override
     public int getTotalRequestsCount(LifeCycle task) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override

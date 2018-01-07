@@ -43,4 +43,11 @@ public class ZookeeperUtils {
         }
         return zooKeeper;
     }
+
+    /**
+     * 分布式锁实现
+     */
+    public static class DistributedLock {
+
+    }
 }

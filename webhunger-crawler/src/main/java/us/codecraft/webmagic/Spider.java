@@ -1,6 +1,6 @@
 package us.codecraft.webmagic;
 
-import me.shenchao.webhunger.crawler.SiteDominate;
+import me.shenchao.webhunger.crawler.dominate.BaseSiteDominate;
 import me.shenchao.webhunger.entity.webmagic.Page;
 import me.shenchao.webhunger.entity.webmagic.Request;
 import me.shenchao.webhunger.entity.webmagic.Site;
@@ -61,7 +61,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class Spider implements Runnable, LifeCycle {
 
-    private SiteDominate siteDominate;
+    private BaseSiteDominate siteDominate;
 
     protected Downloader downloader;
 
@@ -733,7 +733,7 @@ public class Spider implements Runnable, LifeCycle {
         this.emptySleepTime = emptySleepTime;
     }
 
-    public void setSiteDominate(SiteDominate siteDominate) {
+    public void setSiteDominate(BaseSiteDominate siteDominate) {
         this.siteDominate = siteDominate;
     }
 }

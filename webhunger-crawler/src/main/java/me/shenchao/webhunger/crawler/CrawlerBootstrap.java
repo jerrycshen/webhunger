@@ -6,10 +6,13 @@ import com.alibaba.dubbo.config.RegistryConfig;
 import com.alibaba.dubbo.config.ServiceConfig;
 import me.shenchao.webhunger.config.CrawlerConfig;
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
-import me.shenchao.webhunger.crawler.pipeline.StandalonePipeline;
+import me.shenchao.webhunger.crawler.dominate.BaseSiteDominate;
+import me.shenchao.webhunger.crawler.dominate.DistributedSiteDominate;
+import me.shenchao.webhunger.crawler.pipeline.DistributedPipeline;
 import me.shenchao.webhunger.crawler.processor.WholeSiteCrawledProcessor;
-import me.shenchao.webhunger.crawler.scheduler.QueueUrlScheduler;
-import me.shenchao.webhunger.crawler.selector.OrderSiteSelector;
+import me.shenchao.webhunger.crawler.rpc.CrawlerController;
+import me.shenchao.webhunger.crawler.scheduler.RedisQueueUrlScheduler;
+import me.shenchao.webhunger.crawler.selector.RoundRobinSiteSelector;
 import me.shenchao.webhunger.exception.ConfigParseException;
 import me.shenchao.webhunger.rpc.api.crawler.CrawlerCallable;
 import me.shenchao.webhunger.util.common.SystemUtils;
@@ -38,8 +41,6 @@ public class CrawlerBootstrap {
 
     private CrawlerConfig crawlerConfig;
 
-    private ZooKeeper zooKeeper;
-
     private void parseCrawlerConfig() {
         crawlerConfig = new CrawlerConfig();
         try {
@@ -65,16 +66,19 @@ public class CrawlerBootstrap {
         parseCrawlerConfig();
         // 配置爬虫
         Spider spider = Spider.create(new WholeSiteCrawledProcessor());
-        // 创建站点管理类
-        SiteDominate siteDominate = new SiteDominate(spider);
+
         if (crawlerConfig.isDistributed()) {
             // 启动zookeeper,注册本爬虫节点
-            initZookeeper();
+            ZooKeeper zooKeeper = initZookeeper();
+            // 创建分布式站点管理类
+            BaseSiteDominate siteDominate = new DistributedSiteDominate(spider, zooKeeper);
             // 启动dubbo，暴露接口与控制器RPC通信
-            initDubbo();
+            initDubbo(siteDominate, zooKeeper);
+            // 爬虫配置
+            spider.addPipeline(new DistributedPipeline());
+            spider.setScheduler(new RedisQueueUrlScheduler(new RoundRobinSiteSelector(siteDominate), crawlerConfig.getRedisAddress()));
         } else {
-            spider.addPipeline(new StandalonePipeline());
-            spider.setScheduler(new QueueUrlScheduler(new OrderSiteSelector(siteDominate)));
+            // TODO
         }
         // TODO 以后会动态变化
         spider.thread(5);
@@ -84,8 +88,8 @@ public class CrawlerBootstrap {
         logger.info("爬虫节点启动成功，等待调度运行......");
     }
 
-    private void initZookeeper() {
-        zooKeeper = ZookeeperUtils.getZKConnection(crawlerConfig.getZkServer());
+    private ZooKeeper initZookeeper() {
+        ZooKeeper zooKeeper = ZookeeperUtils.getZKConnection(crawlerConfig.getZkAddress());
         try {
             zooKeeper.create(ZookeeperPathConsts.getCrawlerNodePath(), "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
             logger.info("Zookeeper连接成功......");
@@ -93,10 +97,11 @@ public class CrawlerBootstrap {
             e.printStackTrace();
             logger.error("启动失败：未能向Zookeeper注册本爬虫节点");
         }
+        return zooKeeper;
     }
 
-    private void initDubbo() {
-        CrawlerCallable callable = new CrawlerController(zooKeeper);
+    private void initDubbo(BaseSiteDominate siteDominate, ZooKeeper zooKeeper) {
+        CrawlerCallable callable = new CrawlerController(siteDominate, zooKeeper);
 
         ApplicationConfig applicationConfig = new ApplicationConfig();
         applicationConfig.setName("Crawler");

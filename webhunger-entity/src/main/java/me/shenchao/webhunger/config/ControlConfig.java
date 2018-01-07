@@ -34,9 +34,9 @@ public class ControlConfig {
 
     private String contentPath = "/webhunger";
 
-    private String zkServer;
+    private String zkAddress;
 
-    private String redisServer;
+    private String redisAddress;
 
     public void parse(String fileName) throws IOException, ConfigParseException {
         parse(new FileInputStream(fileName));
@@ -72,8 +72,8 @@ public class ControlConfig {
         this.hostSchedulerClass = properties.getProperty("hostSchedulerClass", hostSchedulerClass);
         this.contentPath = properties.getProperty("contextPath", contentPath);
         if (this.distributed) {
-            this.zkServer = properties.getProperty("zkServer");
-            this.redisServer = properties.getProperty("redisServer");
+            this.zkAddress = properties.getProperty("zkAddress");
+            this.redisAddress = properties.getProperty("redisAddress");
         }
     }
 
@@ -105,11 +105,11 @@ public class ControlConfig {
         return hostSchedulerClass;
     }
 
-    public String getZkServer() {
-        return zkServer;
+    public String getZkAddress() {
+        return zkAddress;
     }
 
-    public String getRedisServer() {
-        return redisServer;
+    public String getRedisAddress() {
+        return redisAddress;
     }
 }

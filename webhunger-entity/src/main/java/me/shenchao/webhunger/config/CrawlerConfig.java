@@ -17,7 +17,9 @@ public class CrawlerConfig {
 
     private boolean distributed = false;
 
-    private String zkServer;
+    private String zkAddress;
+
+    private String redisAddress;
 
     public void parse(String fileName) throws IOException, ConfigParseException {
         parse(new FileInputStream(fileName));
@@ -32,7 +34,8 @@ public class CrawlerConfig {
     private void parseProperties(Properties properties) throws ConfigParseException {
         this.distributed = Boolean.parseBoolean(properties.getProperty("distributed", "false"));
         if (distributed) {
-            this.zkServer = properties.getProperty("zkServer");
+            this.zkAddress = properties.getProperty("zkAddress");
+            this.redisAddress = properties.getProperty("redisAddress");
         }
     }
 
@@ -40,7 +43,11 @@ public class CrawlerConfig {
         return distributed;
     }
 
-    public String getZkServer() {
-        return zkServer;
+    public String getZkAddress() {
+        return zkAddress;
+    }
+
+    public String getRedisAddress() {
+        return redisAddress;
     }
 }

@@ -2,6 +2,7 @@ package me.shenchao.webhunger.control.controller;
 
 import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.ReferenceConfig;
+import com.alibaba.fastjson.JSON;
 import me.shenchao.webhunger.config.ControlConfig;
 import me.shenchao.webhunger.constant.RedisPrefixConsts;
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
@@ -88,7 +89,7 @@ public class DistributedController extends MasterController {
 
         private ZookeeperSupport() {
             // 获取zookeeper连接
-            String zkServer = controlConfig.getZkServer();
+            String zkServer = controlConfig.getZkAddress();
             zooKeeper = ZookeeperUtils.getZKConnection(zkServer);
             logger.info("控制器连接Zookeeper成功......");
         }
@@ -106,7 +107,11 @@ public class DistributedController extends MasterController {
 
         private void createHostNode(Host host) {
             try {
-                zooKeeper.create(getHostNodePath(host), "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+                // 创建站点详情节点
+                String hostDetail = JSON.toJSONString(host);
+                zooKeeper.create(getDetailHostNodePath(host), hostDetail.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+                // 创建站点爬取统计节点
+                zooKeeper.create(getCrawlingHostNodePath(host), "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
                 // 监控该站点的爬取状态
                 zookeeperSupport.watchHostCrawlingStatus(host);
             } catch (KeeperException e) {
@@ -153,7 +158,7 @@ public class DistributedController extends MasterController {
          */
         private void watchHostCrawlingStatus(Host host) {
             try {
-                byte[] data = zooKeeper.getData(getHostNodePath(host), new Watcher() {
+                byte[] data = zooKeeper.getData(getCrawlingHostNodePath(host), new Watcher() {
                     @Override
                     public void process(WatchedEvent watchedEvent) {
                         watchHostCrawlingStatus(host);
@@ -172,8 +177,12 @@ public class DistributedController extends MasterController {
             }
         }
 
-        private String getHostNodePath(Host host) {
-            return ZookeeperPathConsts.HOST + "/" + host.getHostId();
+        private String getCrawlingHostNodePath(Host host) {
+            return ZookeeperPathConsts.CRAWLING_HOST + "/" + host.getHostId();
+        }
+
+        private String getDetailHostNodePath(Host host) {
+            return ZookeeperPathConsts.DETAIL_HOST + "/" + host.getHostId();
         }
 
     }
@@ -218,7 +227,7 @@ public class DistributedController extends MasterController {
         private JedisPool pool;
 
         private RedisSupport() {
-            String serverStr = controlConfig.getRedisServer();
+            String serverStr = controlConfig.getRedisAddress();
             String[] ss = serverStr.split(":");
             this.pool = new JedisPool(new JedisPoolConfig(), ss[0], Integer.parseInt(ss[1]));
         }

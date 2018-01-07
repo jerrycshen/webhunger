@@ -18,16 +18,16 @@ public interface Scheduler {
      * add a url to fetch
      *
      * @param request request
-     * @param task task
+     * @param lifeCycle lifeCycle
      */
-    public void push(Request request, LifeCycle task);
+    public void push(Request request, LifeCycle lifeCycle);
 
     /**
      * get an url to crawl
      *
-     * @param task the task of spider
+     * @param lifeCycle the task of spider
      * @return the url to crawl
      */
-    public Request poll(LifeCycle task);
+    public Request poll(LifeCycle lifeCycle);
 
 }

@@ -28,9 +28,9 @@ public class Host {
 
     private HostConfig hostConfig;
 
-    private Date startTime;
+    private transient Date startTime;
 
-    private Date finishTime;
+    private transient Date finishTime;
 
     public String getHostId() {
         return hostId;
@@ -121,8 +121,12 @@ public class Host {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Host host = (Host) o;
 

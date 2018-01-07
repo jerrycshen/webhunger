@@ -1,5 +1,6 @@
 package me.shenchao.webhunger.control.controller;
 
+import com.alibaba.fastjson.JSON;
 import me.shenchao.webhunger.config.ControlConfig;
 import me.shenchao.webhunger.control.scheduler.HostScheduler;
 import me.shenchao.webhunger.entity.Host;
@@ -108,6 +109,7 @@ public abstract class MasterController {
             List<Host> hosts = task.getHosts();
             taskMap.put(task.getTaskId(), task);
             for (Host host : hosts) {
+                System.out.println(JSON.toJSONString(host));
                 hostMap.put(host.getHostId(), host);
             }
         }
@@ -133,6 +135,10 @@ public abstract class MasterController {
      */
     abstract void crawl(Host host);
 
+    /**
+     * 爬取完成操作
+     * @param host host
+     */
     abstract void completed(Host host);
 
     class SchedulerThread implements Runnable {

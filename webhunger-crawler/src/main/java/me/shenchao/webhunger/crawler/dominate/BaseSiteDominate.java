@@ -1,4 +1,4 @@
-package me.shenchao.webhunger.crawler;
+package me.shenchao.webhunger.crawler.dominate;
 
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostState;
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Jerry Shen
  * @since 0.1
  */
-public class SiteDominate {
+public abstract class BaseSiteDominate {
 
     private Spider spider;
 
@@ -28,7 +28,7 @@ public class SiteDominate {
      */
     private List<Site> siteList = Collections.synchronizedList(new LinkedList<>());
 
-    public SiteDominate(Spider spider) {
+    public BaseSiteDominate(Spider spider) {
         this.spider = spider;
         this.spider.setSiteDominate(this);
     }
@@ -66,4 +66,9 @@ public class SiteDominate {
         return siteList;
     }
 
+    /**
+     * 检查该站点是否已经爬取完毕
+     * @param siteId siteId
+     */
+    public abstract void checkCrawledCompleted(String siteId);
 }
