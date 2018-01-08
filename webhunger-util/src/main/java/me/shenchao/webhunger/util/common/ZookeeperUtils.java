@@ -1,9 +1,12 @@
 package me.shenchao.webhunger.util.common;
 
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
+import org.apache.zookeeper.data.Stat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -48,6 +51,87 @@ public class ZookeeperUtils {
      * 分布式锁实现
      */
     public static class DistributedLock {
+
+        private static final Logger logger = LoggerFactory.getLogger(DistributedLock.class);
+
+        private static final String SUB_NODE = "lock_";
+
+        private ZooKeeper zooKeeper;
+
+        private String lockNode;
+
+        private String myZNode;
+
+        private String waitZNode;
+
+        private CountDownLatch latch;
+
+        public DistributedLock(ZooKeeper zooKeeper, String lockNode) {
+            this.zooKeeper = zooKeeper;
+            this.lockNode = lockNode;
+        }
+
+        public void lock() {
+            try {
+                if (!tryLock()) {
+                    waitForLock(waitZNode);
+                }
+            } catch (KeeperException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private void waitForLock(String waitZNode) throws KeeperException, InterruptedException {
+            Stat stat = zooKeeper.exists(waitZNode, new Watcher() {
+                @Override
+                public void process(WatchedEvent watchedEvent) {
+                    if (latch != null) {
+                        latch.countDown();
+                    }
+                }
+            });
+            // 等待前一个节点释放锁
+            if (stat != null) {
+                latch = new CountDownLatch(1);
+                latch.await();
+                latch = null;
+            }
+        }
+
+        public void unlock() {
+            try {
+                zooKeeper.delete(myZNode, -1);
+                myZNode = null;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (KeeperException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private boolean tryLock() throws KeeperException, InterruptedException {
+            myZNode = zooKeeper.create(lockNode + "/" + SUB_NODE, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
+            logger.debug("{} is created", myZNode);
+            // 取出所有子节点，不要watch
+            List<String> subNodes = zooKeeper.getChildren(lockNode, false);
+            // 如果列表中只有一个子节点，那肯定就是自己获得锁
+            if (subNodes.size() == 1) {
+                return true;
+            }
+            Collections.sort(subNodes);
+            String myZNodeName = myZNode.substring((lockNode + "/").length());
+            int index = Collections.binarySearch(subNodes, myZNodeName);
+            if (index == 0) {
+                // 表明当前节点处于第一位，可以获得锁
+                return true;
+            }
+            if (index > 0) {
+                waitZNode = lockNode + "/" + subNodes.get(index - 1);
+            }
+            return false;
+        }
 
     }
 }

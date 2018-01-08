@@ -59,6 +59,12 @@ public class Site {
         DEFAULT_STATUS_CODE_SET.add(HttpConstant.StatusCode.CODE_200);
     }
 
+    public Site() {}
+
+    public Site(Host host) {
+        this.host = host;
+    }
+
     /**
      * new a Site
      *

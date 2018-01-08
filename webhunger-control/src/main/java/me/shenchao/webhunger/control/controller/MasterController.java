@@ -109,7 +109,6 @@ public abstract class MasterController {
             List<Host> hosts = task.getHosts();
             taskMap.put(task.getTaskId(), task);
             for (Host host : hosts) {
-                System.out.println(JSON.toJSONString(host));
                 hostMap.put(host.getHostId(), host);
             }
         }
