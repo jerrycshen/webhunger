@@ -122,7 +122,7 @@ public abstract class MasterController {
         // 修改host状态
         host.setState(HostState.Waiting.getState());
         // 生成host快照，记录当前状态情况
-        controllerSupport.createSnapshot(host);
+//        controllerSupport.createSnapshot(host);
         hostScheduler.push(host);
         logger.info("站点：{} 加入待爬站点队列......", host.getHostName());
         signalNewHost();

@@ -351,10 +351,6 @@ public class Site {
         this.host = host;
     }
 
-    public long getLastCrawledTime() {
-        return lastCrawledTime;
-    }
-
     public void setLastCrawledTime(long lastCrawledTime) {
         this.lastCrawledTime = lastCrawledTime;
     }

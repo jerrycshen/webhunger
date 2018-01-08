@@ -6,6 +6,7 @@ import me.shenchao.webhunger.entity.webmagic.Request;
 import me.shenchao.webhunger.entity.webmagic.Site;
 import me.shenchao.webhunger.util.thread.CountableThreadPool;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,6 +113,14 @@ public class Spider implements Runnable, LifeCycle {
     private int emptySleepTime = 30000;
 
     private Thread asyncThread;
+
+    /**
+     * 记录spider线程当前正在爬取的请求<br>
+     *
+     *  注意该字段与 {@link BaseSiteDominate#siteList} {@link BaseSiteDominate#siteMap} 两者的区别，该字段粒度更细，精确到URL，
+     *  而后两者是site层；此外，该字段实时性更高，事实上，后两者列表的维护就是通过该字段判断得到
+     */
+    private Map<String, List<Request>> currentCrawlingRequests = new HashMap<>();
 
     /**
      * create a spider with pageProcessor.
@@ -318,6 +327,14 @@ public class Spider implements Runnable, LifeCycle {
                 // wait until new url added
                 waitNewUrl();
             } else {
+                // 记录当前正在爬取的请求
+                List<Request> requests;
+                if ((requests = currentCrawlingRequests.get(request.getSiteId())) == null) {
+                    requests = new LinkedList<>();
+                    currentCrawlingRequests.put(request.getSiteId(), requests);
+                }
+                requests.add(request);
+
                 threadPool.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -330,9 +347,12 @@ public class Spider implements Runnable, LifeCycle {
                         } finally {
                             pageCount.incrementAndGet();
                             signalNewUrl();
+                            // 该请求爬取完毕后，移除该请求
+                            currentCrawlingRequests.get(request.getSiteId()).remove(request);
                         }
                     }
                 });
+
             }
         }
         stat.set(STAT_STOPPED);
@@ -428,14 +448,11 @@ public class Spider implements Runnable, LifeCycle {
             onError(request);
             logger.info("page status code error, page {} , code: {}", request.getUrl(), page.getStatusCode());
         }
-        sleep(getSites().get(request.getSiteId()));
     }
 
     private void onDownloaderFail(Request request) {
         onError(request);
-        if (getSites().get(request.getSiteId()).getCycleRetryTimes() == 0) {
-            sleep(getSites().get(request.getSiteId()));
-        } else {
+        if (getSites().get(request.getSiteId()).getCycleRetryTimes() != 0) {
             // for cycle retry
             doCycleRetry(request);
         }
@@ -452,7 +469,6 @@ public class Spider implements Runnable, LifeCycle {
                 addRequest(SerializationUtils.clone(request).setPriority(0).putExtra(Request.CYCLE_TRIED_TIMES, cycleTriedTimes), getSites().get(request.getSiteId()));
             }
         }
-        sleep(getSites().get(request.getSiteId()));
     }
 
     protected void processRequest(Request request) {
@@ -464,17 +480,6 @@ public class Spider implements Runnable, LifeCycle {
             onDownloadSuccess(request, page);
         } else {
             onDownloaderFail(request);
-        }
-    }
-
-    /**
-     * TODO 理论上不应该sleep
-     */
-    protected void sleep(Site site) {
-        try {
-            Thread.sleep(site.getSleepTime());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 
@@ -735,5 +740,9 @@ public class Spider implements Runnable, LifeCycle {
 
     public void setSiteDominate(BaseSiteDominate siteDominate) {
         this.siteDominate = siteDominate;
+    }
+
+    public Map<String, List<Request>> getCurrentCrawlingRequests() {
+        return currentCrawlingRequests;
     }
 }

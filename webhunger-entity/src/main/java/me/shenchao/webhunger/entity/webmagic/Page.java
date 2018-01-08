@@ -83,9 +83,7 @@ public class Page {
         Request request = incrementDepth(new Request(requestString));
         request.setParentUrl(this.request.getUrl());
         request.setSiteId(this.request.getSiteId());
-        synchronized (targetRequests) {
-            targetRequests.add(request);
-        }
+        targetRequests.add(request);
     }
 
     /**

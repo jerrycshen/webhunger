@@ -34,7 +34,8 @@ public abstract class BaseSiteDominate {
     /**
      * 检查该站点是否已经爬取完毕
      * @param siteId siteId
+     * @return 是否爬取完毕
      */
-    public abstract void checkCrawledCompleted(String siteId);
+    public abstract boolean checkCrawledCompleted(String siteId);
 
 }

@@ -73,7 +73,7 @@ public class CrawlerBootstrap {
             // 启动zookeeper,注册本爬虫节点
             ZooKeeper zooKeeper = initZookeeper();
             // 创建分布式站点管理类
-            siteDominate = new DistributedSiteDominate(zooKeeper);
+            siteDominate = new DistributedSiteDominate(zooKeeper, spider);
             // 创建爬虫控制类
             CrawlerCallable callable = new CrawlerController((DistributedSiteDominate) siteDominate, zooKeeper, spider);
             // 启动dubbo，暴露接口与控制器RPC通信
@@ -87,7 +87,7 @@ public class CrawlerBootstrap {
         }
         spider.setSiteDominate(siteDominate);
         // TODO 以后会动态变化
-        spider.thread(5);
+        spider.thread(4);
         spider.setExitWhenComplete(false);
         // 启动爬虫
         spider.runAsync();

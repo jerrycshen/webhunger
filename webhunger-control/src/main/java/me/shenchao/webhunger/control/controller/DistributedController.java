@@ -8,7 +8,9 @@ import me.shenchao.webhunger.constant.RedisPrefixConsts;
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
 import me.shenchao.webhunger.entity.Crawler;
 import me.shenchao.webhunger.entity.Host;
+import me.shenchao.webhunger.entity.webmagic.Request;
 import me.shenchao.webhunger.rpc.api.crawler.CrawlerCallable;
+import me.shenchao.webhunger.util.common.MD5Utils;
 import me.shenchao.webhunger.util.common.ZookeeperUtils;
 import org.apache.zookeeper.*;
 import org.slf4j.Logger;
@@ -169,6 +171,7 @@ public class DistributedController extends MasterController {
                 int completedCrawlerNum = Integer.parseInt(new String(data));
                 if (runningCrawlerNum == completedCrawlerNum) {
                     completed(host);
+                    logger.info("{} 站点爬取完毕......",host.getHostName());
                 }
             } catch (KeeperException e) {
                 e.printStackTrace();
@@ -232,11 +235,18 @@ public class DistributedController extends MasterController {
             this.pool = new JedisPool(new JedisPoolConfig(), ss[0], Integer.parseInt(ss[1]));
         }
 
-        public void push(Host host) {
+        private void push(Host host) {
             Jedis jedis = pool.getResource();
             try {
                 jedis.rpush(RedisPrefixConsts.getQueueKey(host.getHostId()), host.getHostIndex());
                 jedis.sadd(RedisPrefixConsts.getSetKey(host.getHostId()), host.getHostIndex());
+                String field = MD5Utils.get16bitMD5(host.getHostIndex());
+                Request request = new Request(host.getHostIndex());
+                request.setSiteId(host.getHostId());
+                request.setNowDepth(1);
+                request.setParentUrl("");
+                String value = JSON.toJSONString(request);
+                jedis.hset(RedisPrefixConsts.getItemKey(host.getHostId()), field, value);
             } finally {
                 pool.returnResource(jedis);
             }
