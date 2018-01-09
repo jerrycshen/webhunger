@@ -11,17 +11,25 @@ package me.shenchao.webhunger.entity;
  *         <li>Processing</li>
  *     </ul>
  *
- *     <note>
- *         Completed 表示对整个站点的操作结束；
- *         Crawled 只是表示爬取完毕，页面可能并没有处理完;
- *     </note>
- *
  * @author Jerry Shen
  * @since 0.1
  */
 public enum HostState {
 
-    Ready(0), Waiting(-1), Crawling(1), Completed(5),  Suspend(3), Processing(2);
+    /**
+     * 初始化完毕，接受start
+     */
+    Ready(0),
+
+    Waiting(-1), Crawling(1), Completed(5),
+
+    Suspend(3),
+
+    /**
+     * 事实上，爬取与处理是同时进行的，但是为了便于在爬虫快照中记录，两者顺序为前后关系，状态转为
+     * Processing的时候就是爬取结束的时候
+     */
+    Processing(2);
 
     HostState(int state) {
         this.state = state;

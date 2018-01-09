@@ -8,6 +8,7 @@ import me.shenchao.webhunger.constant.RedisPrefixConsts;
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
 import me.shenchao.webhunger.entity.Crawler;
 import me.shenchao.webhunger.entity.Host;
+import me.shenchao.webhunger.entity.HostState;
 import me.shenchao.webhunger.entity.webmagic.Request;
 import me.shenchao.webhunger.rpc.api.crawler.CrawlerCallable;
 import me.shenchao.webhunger.util.common.MD5Utils;
@@ -61,7 +62,10 @@ public class DistributedController extends MasterController {
     }
 
     @Override
-    void completed(Host host) {
+    void crawlingCompleted(Host host) {
+        zookeeperSupport.deleteCrawlingHostNode(host);
+        host.setState(HostState.Processing);
+        controllerSupport.createSnapshot(host);
         System.out.println(host.getHostName() + "爬取完毕");
     }
 
@@ -123,6 +127,16 @@ public class DistributedController extends MasterController {
             }
         }
 
+        private void deleteCrawlingHostNode(Host host) {
+            try {
+                zooKeeper.delete(getCrawlingHostNodePath(host), -1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (KeeperException e) {
+                e.printStackTrace();
+            }
+        }
+
         private List<Crawler> watchCrawlerStatus() {
             try {
                 List<String> nodeList = zooKeeper.getChildren(ZookeeperPathConsts.CRAWLER, new Watcher() {
@@ -170,7 +184,7 @@ public class DistributedController extends MasterController {
                 // 获取对该站点已经爬取完毕的数量
                 int completedCrawlerNum = Integer.parseInt(new String(data));
                 if (runningCrawlerNum == completedCrawlerNum) {
-                    completed(host);
+                    crawlingCompleted(host);
                     logger.info("{} 站点爬取完毕......",host.getHostName());
                 }
             } catch (KeeperException e) {

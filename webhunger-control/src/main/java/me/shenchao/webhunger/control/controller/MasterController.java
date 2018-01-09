@@ -28,7 +28,7 @@ public abstract class MasterController {
 
     private static final Logger logger = LoggerFactory.getLogger(MasterController.class);
 
-    private ControllerSupport controllerSupport;
+    protected ControllerSupport controllerSupport;
 
     protected ControlConfig controlConfig;
 
@@ -122,7 +122,7 @@ public abstract class MasterController {
         // 修改host状态
         host.setState(HostState.Waiting.getState());
         // 生成host快照，记录当前状态情况
-//        controllerSupport.createSnapshot(host);
+        controllerSupport.createSnapshot(host);
         hostScheduler.push(host);
         logger.info("站点：{} 加入待爬站点队列......", host.getHostName());
         signalNewHost();
@@ -138,7 +138,7 @@ public abstract class MasterController {
      * 爬取完成操作
      * @param host host
      */
-    abstract void completed(Host host);
+    abstract void crawlingCompleted(Host host);
 
     class SchedulerThread implements Runnable {
 
@@ -154,7 +154,8 @@ public abstract class MasterController {
                         @Override
                         public void run() {
                             logger.info("站点：{} 开始爬取......", host.getHostName());
-                            host.setState(HostState.Crawling.getState());
+                            host.setState(HostState.Crawling);
+                            controllerSupport.createSnapshot(host);
 
                             crawl(host);
                         }

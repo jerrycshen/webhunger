@@ -27,7 +27,7 @@ class StandaloneController extends MasterController {
     }
 
     @Override
-    void completed(Host host) {
+    void crawlingCompleted(Host host) {
 
     }
 

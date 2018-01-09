@@ -48,7 +48,7 @@ public class RoundRobinSiteSelector implements SiteSelector {
         if (leftRequestCount > 0) {
             long isFrequent;
             if ((isFrequent = nextSite.isFrequent()) > 0) {
-                System.out.println(" can frequent: " + isFrequent);
+                System.out.println(" cnan frequet: " + isFrequent);
                 // 如果可以访问
                 nextSite.setLastCrawledTime(System.currentTimeMillis());
                 this.prevSite = nextSite;
@@ -62,16 +62,18 @@ public class RoundRobinSiteSelector implements SiteSelector {
                     System.out.println("sleep");
                     sleep(-isFrequent + 30);
                 }
+                this.prevSite = nextSite;
                 return select(siteListener);
             }
         } else {
             // 如果该站点待爬URL数量为0，控制权交还给SiteDominate决定站点是否爬取完毕
-            boolean isCompleted = siteDominate.checkCrawledCompleted(nextSite.getHost().getHostId());
-            // 如果对该站点的爬取还没有结束，说明当前有其他线程正在对该站点进行爬取，所以睡眠一段时间后继续检测
-            if (!isCompleted) {
+            boolean isCompleted = siteDominate.checkCrawledCompleted(nextSite.getHost().getHostId(), siteListener);
+            // 如果对该站点的爬取还没有结束并且当前只有一个带爬取站点的时候，说明当前有其他线程正在对该站点进行爬取，所以睡眠一段时间后继续检测
+            if (!isCompleted && prevSite == nextSite) {
                 System.out.println("sleep");
                 sleep(nextSite.getSleepTime());
             }
+            this.prevSite = nextSite;
             return select(siteListener);
         }
     }
