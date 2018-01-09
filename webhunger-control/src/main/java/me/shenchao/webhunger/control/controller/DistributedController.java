@@ -58,15 +58,20 @@ public class DistributedController extends MasterController {
         // 1. 往redis对应站点队列添加种子URL
         redisSupport.push(host);
         // 2. 向zookeeper注册正在爬取站点
-        zookeeperSupport.createHostNode(host);
+        zookeeperSupport.createHostNode(host, true);
     }
 
     @Override
     void crawlingCompleted(Host host) {
-        zookeeperSupport.deleteCrawlingHostNode(host);
+        cleanAfterCrawled(host);
         host.setState(HostState.Processing);
         controllerSupport.createSnapshot(host);
         System.out.println(host.getHostName() + "爬取完毕");
+    }
+
+    @Override
+    void processingCompleted(Host host) {
+
     }
 
     /**
@@ -74,7 +79,7 @@ public class DistributedController extends MasterController {
      *
      * @param crawlerIP 爬虫节点IP
      */
-    public void run(String crawlerIP) {
+    public void runCrawler(String crawlerIP) {
         ReferenceConfig<CrawlerCallable> referenceConfig = crawlerRPCMap.get(crawlerIP);
         CrawlerCallable crawlerCallable = referenceConfig.get();
         crawlerCallable.run();
@@ -85,6 +90,38 @@ public class DistributedController extends MasterController {
      */
     public List<Crawler> getOnlineCrawlers() {
         return zookeeperSupport.watchCrawlerStatus();
+    }
+
+    /**
+     * 对爬取完毕后的站点进行资源清理
+     * @param host host
+     */
+    private void cleanAfterCrawled(Host host) {
+        // 清空Redis中缓存
+        redisSupport.remove(host);
+    }
+
+    private void cleanAfterProcessed(Host host) {
+
+    }
+
+    /**
+     * 进一步确认站点是否爬取完毕
+     * @param host host
+     */
+    private void checkHostCrawlingCompleted(Host host) {
+        // 先从zookeeper中删除该节点
+        zookeeperSupport.deleteCrawlingHostNode(host);
+        // 访问redis进一步确定站点URL队列为空
+        if (redisSupport.getLeftRequestsCount(host) == 0) {
+            crawlingCompleted(host);
+        } else {
+            /*
+             * 如果站点队列中仍有URL未被爬取，那么重新将该站点加入到待爬列表，该方法中通过删除与添加操作，会
+             * 触发各个爬虫节点更新待爬列表，从而重新加入该站点进行爬取
+             */
+            zookeeperSupport.createHostNode(host, false);
+        }
     }
 
     private class ZookeeperSupport {
@@ -111,11 +148,13 @@ public class DistributedController extends MasterController {
             return runningCrawlers;
         }
 
-        private void createHostNode(Host host) {
+        private void createHostNode(Host host, boolean needCreateDetailHostNode) {
             try {
                 // 创建站点详情节点
                 String hostDetail = JSON.toJSONString(host);
-                zooKeeper.create(getDetailHostNodePath(host), hostDetail.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+                if (needCreateDetailHostNode) {
+                    zooKeeper.create(getDetailHostNodePath(host), hostDetail.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+                }
                 // 创建站点爬取统计节点
                 zooKeeper.create(getCrawlingHostNodePath(host), "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
                 // 监控该站点的爬取状态
@@ -184,8 +223,7 @@ public class DistributedController extends MasterController {
                 // 获取对该站点已经爬取完毕的数量
                 int completedCrawlerNum = Integer.parseInt(new String(data));
                 if (runningCrawlerNum == completedCrawlerNum) {
-                    crawlingCompleted(host);
-                    logger.info("{} 站点爬取完毕......",host.getHostName());
+                    checkHostCrawlingCompleted(host);
                 }
             } catch (KeeperException e) {
                 e.printStackTrace();
@@ -261,6 +299,26 @@ public class DistributedController extends MasterController {
                 request.setParentUrl("");
                 String value = JSON.toJSONString(request);
                 jedis.hset(RedisPrefixConsts.getItemKey(host.getHostId()), field, value);
+            } finally {
+                pool.returnResource(jedis);
+            }
+        }
+
+        private int getLeftRequestsCount(Host host) {
+            Jedis jedis = pool.getResource();
+            try {
+                Long size = jedis.llen(RedisPrefixConsts.getQueueKey(host.getHostId()));
+                return size.intValue();
+            } finally {
+                pool.returnResource(jedis);
+            }
+        }
+
+        private void remove(Host host) {
+            Jedis jedis = pool.getResource();
+            try {
+                String hostId = host.getHostId();
+                jedis.del(RedisPrefixConsts.getQueueKey(hostId), RedisPrefixConsts.getSetKey(hostId), RedisPrefixConsts.getItemKey(hostId));
             } finally {
                 pool.returnResource(jedis);
             }

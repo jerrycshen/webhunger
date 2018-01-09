@@ -31,4 +31,9 @@ class StandaloneController extends MasterController {
 
     }
 
+    @Override
+    void processingCompleted(Host host) {
+
+    }
+
 }

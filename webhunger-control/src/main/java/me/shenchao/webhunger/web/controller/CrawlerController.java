@@ -50,7 +50,7 @@ public class CrawlerController {
         result.put("res_code", 1);
         if (masterController instanceof DistributedController) {
             DistributedController distributedController = (DistributedController) masterController;
-            distributedController.run(crawlerIP);
+            distributedController.runCrawler(crawlerIP);
             result.put("res_code", 0);
         }
         return result.toJSONString();

@@ -140,6 +140,12 @@ public abstract class MasterController {
      */
     abstract void crawlingCompleted(Host host);
 
+    /**
+     * 处理完毕操纵
+     * @param host host
+     */
+    abstract void processingCompleted(Host host);
+
     private class SchedulerThread implements Runnable {
 
         @Override
