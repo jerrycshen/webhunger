@@ -43,6 +43,8 @@
 <!-- 自定义 -->
 <script type="text/javascript">
 
+    $("#taskMenu").addClass("active");
+
     taskTable = $("#task_table").DataTable({
         "ajax": {
             "url": "${AppContext}task/list",

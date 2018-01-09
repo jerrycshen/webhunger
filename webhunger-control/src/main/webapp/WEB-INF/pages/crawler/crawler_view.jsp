@@ -42,6 +42,8 @@
 <!-- 自定义 -->
 <script type="text/javascript">
 
+    $("#crawlerMenu").addClass("active");
+
     crawlerTable = $("#crawler_table").DataTable({
         "ajax": {
             "url": "${AppContext}crawler/list",
