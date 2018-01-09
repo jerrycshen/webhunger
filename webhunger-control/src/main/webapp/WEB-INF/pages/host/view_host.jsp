@@ -168,10 +168,10 @@
                 "data": "hostId",
                 "render": function (data, type, row) {
                     var buttonStr = "";
-                    if (row.state === 0) {
+                    if (row.state === 0 || row.state === -1) {
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Report</button> ";
                     } else {
-                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='viewReport("+data+")'>Report</button> ";
+                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='viewReport(\""+data+"\")'>Report</button> ";
                     }
                     buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='viewConfig(\""+data+"\")'>Config</button>";
                     return buttonStr;
@@ -238,7 +238,7 @@
     }
 
     // 该页面每隔一分钟刷新一次，获取最新各个站点的状态
-//    window.setInterval(updateHostTable, 60000);
+    window.setInterval(updateHostTable, 60000);
 
     // 2秒后再次获取各个站点的状态，因为可能有站点从waiting 变为running
     function updateHostTableAfter2SecAgain() {
@@ -343,7 +343,7 @@
             "url": ${AppContext} + "host/" + hostId + "/config/show",
             "type": "GET",
             "success": function (data) {
-                config = data.data;
+                var config = data.data;
                 // 回显基本配置
                 $("#host_name").val(config.hostName);
                 $("#host_index").val(config.hostIndex);

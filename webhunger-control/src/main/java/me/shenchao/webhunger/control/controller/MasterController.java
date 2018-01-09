@@ -140,7 +140,7 @@ public abstract class MasterController {
      */
     abstract void crawlingCompleted(Host host);
 
-    class SchedulerThread implements Runnable {
+    private class SchedulerThread implements Runnable {
 
         @Override
         public void run() {

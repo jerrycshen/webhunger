@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import me.shenchao.webhunger.control.controller.ControllerFactory;
 import me.shenchao.webhunger.control.controller.MasterController;
 import me.shenchao.webhunger.entity.Host;
+import me.shenchao.webhunger.entity.HostState;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,6 +57,25 @@ public class HostController {
     public String getHostConfig(@PathVariable String hostId) {
         JSONObject result = new JSONObject();
         result.put("data", masterController.getHostById(hostId));
+        return result.toJSONString();
+    }
+
+    @RequestMapping(value = "/host/{hostId}/report", method = RequestMethod.GET)
+    public String reportCrawler(@PathVariable String hostId, Model model) {
+        model.addAttribute("host_id", hostId);
+        Host host = masterController.getHostById(hostId);
+        if (host.getState() == HostState.Completed.getState()) {
+            return "host/completed_report.jsp";
+        } else {
+            return "host/running_report.jsp";
+        }
+    }
+
+    @RequestMapping(value = "/host/{hostId}/progress", method = RequestMethod.GET)
+    @ResponseBody
+    public String pullProgress(@PathVariable String hostId) {
+        JSONObject result = new JSONObject();
+
         return result.toJSONString();
     }
 }
