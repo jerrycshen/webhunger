@@ -9,7 +9,7 @@ import us.codecraft.webmagic.pipeline.Pipeline;
  * @author Jerry Shen
  * @since 0.1
  */
-public class StandalonePipeline implements Pipeline {
+public class LocalPipeline implements Pipeline {
 
     @Override
     public void process(ResultItems resultItems, LifeCycle task) {

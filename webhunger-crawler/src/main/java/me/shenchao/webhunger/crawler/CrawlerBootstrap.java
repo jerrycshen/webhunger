@@ -6,15 +6,16 @@ import com.alibaba.dubbo.config.RegistryConfig;
 import com.alibaba.dubbo.config.ServiceConfig;
 import me.shenchao.webhunger.config.CrawlerConfig;
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
+import me.shenchao.webhunger.crawler.controller.LocalCrawlerCaller;
 import me.shenchao.webhunger.crawler.dominate.BaseSiteDominate;
 import me.shenchao.webhunger.crawler.dominate.DistributedSiteDominate;
-import me.shenchao.webhunger.crawler.dominate.StandaloneSiteDominate;
+import me.shenchao.webhunger.crawler.dominate.LocalSiteDominate;
 import me.shenchao.webhunger.crawler.listener.CommonSpiderListener;
 import me.shenchao.webhunger.crawler.listener.SpiderListener;
 import me.shenchao.webhunger.crawler.pipeline.DistributedPipeline;
-import me.shenchao.webhunger.crawler.pipeline.StandalonePipeline;
+import me.shenchao.webhunger.crawler.pipeline.LocalPipeline;
 import me.shenchao.webhunger.crawler.processor.WholeSiteCrawledProcessor;
-import me.shenchao.webhunger.crawler.rpc.CrawlerController;
+import me.shenchao.webhunger.crawler.controller.RpcCrawlerCaller;
 import me.shenchao.webhunger.crawler.scheduler.LocalQueueUrlScheduler;
 import me.shenchao.webhunger.crawler.scheduler.RedisQueueUrlScheduler;
 import me.shenchao.webhunger.crawler.selector.RoundRobinSiteSelector;
@@ -46,6 +47,8 @@ public class CrawlerBootstrap {
     private static final String CONF_NAME = "webhunger.conf";
 
     private CrawlerConfig crawlerConfig;
+
+    private CrawlerCallable crawlerController;
 
     private void parseCrawlerConfig() {
         crawlerConfig = new CrawlerConfig();
@@ -79,15 +82,16 @@ public class CrawlerBootstrap {
             // 创建分布式站点管理类
             siteDominate = new DistributedSiteDominate(zooKeeper, spider);
             // 创建爬虫控制类
-            CrawlerCallable callable = new CrawlerController((DistributedSiteDominate) siteDominate, zooKeeper, spider);
+            crawlerController = new RpcCrawlerCaller((DistributedSiteDominate) siteDominate, zooKeeper);
             // 启动dubbo，暴露接口与控制器RPC通信
-            initDubbo(callable);
+            initDubbo(crawlerController);
             // 爬虫配置
             spider.addPipeline(new DistributedPipeline());
             spider.setScheduler(new RedisQueueUrlScheduler(new RoundRobinSiteSelector(siteDominate), crawlerConfig.getRedisAddress()));
         } else {
-            siteDominate = new StandaloneSiteDominate(spider);
-            spider.addPipeline(new StandalonePipeline());
+            siteDominate = new LocalSiteDominate(spider);
+            crawlerController = new LocalCrawlerCaller((LocalSiteDominate) siteDominate);
+            spider.addPipeline(new LocalPipeline());
             spider.setScheduler(new LocalQueueUrlScheduler(new RoundRobinSiteSelector(siteDominate)));
         }
         SpiderListener[] spiderListeners = {new CommonSpiderListener()};
@@ -139,6 +143,10 @@ public class CrawlerBootstrap {
         // 暴露服务
         serviceConfig.export();
         logger.info("Dubbo注册成功......");
+    }
+
+    public CrawlerCallable getCrawlerController() {
+        return crawlerController;
     }
 
     public static void main(String[] args) {

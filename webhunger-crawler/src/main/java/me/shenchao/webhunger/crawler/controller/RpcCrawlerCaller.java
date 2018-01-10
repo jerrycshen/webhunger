@@ -1,4 +1,4 @@
-package me.shenchao.webhunger.crawler.rpc;
+package me.shenchao.webhunger.crawler.controller;
 
 import com.alibaba.fastjson.JSON;
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
@@ -12,7 +12,6 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import us.codecraft.webmagic.Spider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,20 +22,17 @@ import java.util.List;
  * @author Jerry Shen
  * @since 0.1
  */
-public class CrawlerController implements CrawlerCallable {
+public class RpcCrawlerCaller implements CrawlerCallable {
 
-    private static final Logger logger = LoggerFactory.getLogger(CrawlerController.class);
+    private static final Logger logger = LoggerFactory.getLogger(RpcCrawlerCaller.class);
 
     private ZooKeeper zooKeeper;
 
     private DistributedSiteDominate siteDominate;
 
-    private Spider spider;
-
-    public CrawlerController(DistributedSiteDominate siteDominate, ZooKeeper zooKeeper, Spider spider) {
+    public RpcCrawlerCaller(DistributedSiteDominate siteDominate, ZooKeeper zooKeeper) {
         this.siteDominate = siteDominate;
         this.zooKeeper = zooKeeper;
-        this.spider = spider;
     }
 
     @Override
@@ -52,6 +48,17 @@ public class CrawlerController implements CrawlerCallable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 分布式爬取中，由控制模块直接通过向redis中添加站点，并通过zookeeper事件监听机制，触发爬虫节点对站点进行爬取，所以无须调用此方法。
+     * 当前阶段，分布式爬取不支持指定爬虫节点爬取具体某几个站点，所以不支持该方法，当前只支持所有爬虫节点爬取所有站点
+     *
+     * @param hosts hosts
+     */
+    @Override
+    public void crawl(List<Host> hosts) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -74,9 +81,6 @@ public class CrawlerController implements CrawlerCallable {
                 newSiteList.add(site);
             }
             siteDominate.updateLocalCrawlingSiteList(newSiteList);
-
-            // 唤醒爬虫工作
-            spider.signalNewUrl();
         } catch (KeeperException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

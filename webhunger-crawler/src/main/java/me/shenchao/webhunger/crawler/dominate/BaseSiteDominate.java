@@ -64,14 +64,6 @@ public abstract class BaseSiteDominate {
     }
 
     /**
-     * 检查该站点是否已经爬取完毕
-     * @param siteId siteId
-     * @param siteListener siteListener
-     * @return 是否爬取完毕
-     */
-    public abstract boolean checkCrawledCompleted(String siteId, SiteListener siteListener);
-
-    /**
      * 检查本爬虫节点对该站点的爬取是否已经结束
      * @param siteId siteId
      * @return 如果爬取完成返回true，反之false
@@ -83,9 +75,23 @@ public abstract class BaseSiteDominate {
     }
 
     /**
+     * 检查该站点是否已经爬取完毕
+     * @param siteId siteId
+     * @param siteListener siteListener
+     * @return 是否爬取完毕
+     */
+    public abstract boolean checkCrawledCompleted(String siteId, SiteListener siteListener);
+
+    /**
      * 站点爬取结束回调方法
      * @param siteId siteId
      */
     abstract void complete(String siteId);
+
+    /**
+     * 更新本地爬虫列表
+     * @param newSiteList 新的爬取列表
+     */
+    public abstract void updateLocalCrawlingSiteList(List<Site> newSiteList);
 
 }

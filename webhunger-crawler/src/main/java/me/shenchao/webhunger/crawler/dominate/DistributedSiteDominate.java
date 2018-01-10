@@ -2,7 +2,6 @@ package me.shenchao.webhunger.crawler.dominate;
 
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
 import me.shenchao.webhunger.crawler.listener.SiteListener;
-import me.shenchao.webhunger.entity.webmagic.Request;
 import me.shenchao.webhunger.entity.webmagic.Site;
 import me.shenchao.webhunger.util.common.ZookeeperUtils;
 import org.apache.zookeeper.KeeperException;
@@ -91,7 +90,6 @@ public class DistributedSiteDominate extends BaseSiteDominate {
     }
 
     /**
-     * 更新本地的爬取列表<br>
      * 按照业务逻辑，新的爬取列表与原爬取列表有两种可能差别情况：<br>
      *     1. 新的爬取列表包含了新的待爬站点，这是因为控制端加入了新站点进行爬取<br>
      *     2. 本地爬取列表数据领先于新的站点列表，这是因为某个站点爬取完毕了，控制端删除了该站点在zookeeper中的节点而触发的，而事实上
@@ -99,6 +97,7 @@ public class DistributedSiteDominate extends BaseSiteDominate {
      *
      * @param newSiteList 新的爬取列表
      */
+    @Override
     public void updateLocalCrawlingSiteList(List<Site> newSiteList) {
         for (Site site : newSiteList) {
             String siteId = site.getHost().getHostId();
@@ -106,6 +105,8 @@ public class DistributedSiteDominate extends BaseSiteDominate {
                 addSite(site);
             }
         }
+        // 唤醒爬虫工作
+        spider.signalNewUrl();
     }
 
     /**

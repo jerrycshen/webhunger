@@ -26,7 +26,7 @@ public class ControllerFactory {
     public static void initController(ControlConfig controlConfig) {
         if (masterController == null) {
             if (!controlConfig.isDistributed()) {
-                masterController = new StandaloneController(controlConfig);
+                masterController = new LocalController(controlConfig);
                 logger.info("单机版控制器初始化完毕......");
             } else {
                 masterController = new DistributedController(controlConfig);

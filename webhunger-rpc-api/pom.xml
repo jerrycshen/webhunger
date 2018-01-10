@@ -11,5 +11,12 @@
 
     <artifactId>webhunger-rpc-api</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>me.shenchao.webhunger</groupId>
+            <artifactId>webhunger-entity</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
 </project>
