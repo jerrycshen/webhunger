@@ -1,4 +1,4 @@
-package me.shenchao.webhunger.crawler.controller;
+package me.shenchao.webhunger.crawler.caller;
 
 import com.google.common.collect.Lists;
 import me.shenchao.webhunger.crawler.dominate.LocalSiteDominate;

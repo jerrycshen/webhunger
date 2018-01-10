@@ -1,4 +1,4 @@
-package me.shenchao.webhunger.crawler.controller;
+package me.shenchao.webhunger.crawler.caller;
 
 import com.alibaba.fastjson.JSON;
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;

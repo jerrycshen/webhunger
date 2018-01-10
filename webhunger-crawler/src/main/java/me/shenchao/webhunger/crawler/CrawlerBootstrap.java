@@ -6,16 +6,16 @@ import com.alibaba.dubbo.config.RegistryConfig;
 import com.alibaba.dubbo.config.ServiceConfig;
 import me.shenchao.webhunger.config.CrawlerConfig;
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
-import me.shenchao.webhunger.crawler.controller.LocalCrawlerCaller;
+import me.shenchao.webhunger.crawler.caller.LocalCrawlerCaller;
 import me.shenchao.webhunger.crawler.dominate.BaseSiteDominate;
 import me.shenchao.webhunger.crawler.dominate.DistributedSiteDominate;
 import me.shenchao.webhunger.crawler.dominate.LocalSiteDominate;
-import me.shenchao.webhunger.crawler.listener.CommonSpiderListener;
+import me.shenchao.webhunger.crawler.listener.BaseSpiderListener;
 import me.shenchao.webhunger.crawler.listener.SpiderListener;
 import me.shenchao.webhunger.crawler.pipeline.DistributedPipeline;
 import me.shenchao.webhunger.crawler.pipeline.LocalPipeline;
 import me.shenchao.webhunger.crawler.processor.WholeSiteCrawledProcessor;
-import me.shenchao.webhunger.crawler.controller.RpcCrawlerCaller;
+import me.shenchao.webhunger.crawler.caller.RpcCrawlerCaller;
 import me.shenchao.webhunger.crawler.scheduler.LocalQueueUrlScheduler;
 import me.shenchao.webhunger.crawler.scheduler.RedisQueueUrlScheduler;
 import me.shenchao.webhunger.crawler.selector.RoundRobinSiteSelector;
@@ -94,7 +94,7 @@ public class CrawlerBootstrap {
             spider.addPipeline(new LocalPipeline());
             spider.setScheduler(new LocalQueueUrlScheduler(new RoundRobinSiteSelector(siteDominate)));
         }
-        SpiderListener[] spiderListeners = {new CommonSpiderListener()};
+        SpiderListener[] spiderListeners = {new BaseSpiderListener()};
         spider.setSpiderListeners(Arrays.asList(spiderListeners));
         spider.setSiteDominate(siteDominate);
         // TODO 以后会动态变化
