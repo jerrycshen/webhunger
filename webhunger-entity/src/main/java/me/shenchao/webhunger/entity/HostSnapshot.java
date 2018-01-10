@@ -16,8 +16,6 @@ public class HostSnapshot {
 
     private int errorPageNum;
 
-    private int processedPageNum;
-
     private int state;
 
     private Date createTime;
@@ -52,15 +50,6 @@ public class HostSnapshot {
 
     public HostSnapshot setErrorPageNum(int errorPageNum) {
         this.errorPageNum = errorPageNum;
-        return this;
-    }
-
-    public int getProcessedPageNum() {
-        return processedPageNum;
-    }
-
-    public HostSnapshot setProcessedPageNum(int processedPageNum) {
-        this.processedPageNum = processedPageNum;
         return this;
     }
 

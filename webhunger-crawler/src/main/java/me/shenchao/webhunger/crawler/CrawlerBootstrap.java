@@ -10,7 +10,8 @@ import me.shenchao.webhunger.crawler.caller.LocalCrawlerCaller;
 import me.shenchao.webhunger.crawler.dominate.BaseSiteDominate;
 import me.shenchao.webhunger.crawler.dominate.DistributedSiteDominate;
 import me.shenchao.webhunger.crawler.dominate.LocalSiteDominate;
-import me.shenchao.webhunger.crawler.listener.BaseSpiderListener;
+import me.shenchao.webhunger.crawler.listener.CommonSpiderListener;
+import me.shenchao.webhunger.crawler.listener.LocalSpiderListener;
 import me.shenchao.webhunger.crawler.listener.SpiderListener;
 import me.shenchao.webhunger.crawler.pipeline.DistributedPipeline;
 import me.shenchao.webhunger.crawler.pipeline.LocalPipeline;
@@ -19,6 +20,7 @@ import me.shenchao.webhunger.crawler.caller.RpcCrawlerCaller;
 import me.shenchao.webhunger.crawler.scheduler.LocalQueueUrlScheduler;
 import me.shenchao.webhunger.crawler.scheduler.RedisQueueUrlScheduler;
 import me.shenchao.webhunger.crawler.selector.RoundRobinSiteSelector;
+import me.shenchao.webhunger.crawler.util.HostSnapshotHelper;
 import me.shenchao.webhunger.exception.ConfigParseException;
 import me.shenchao.webhunger.rpc.api.crawler.CrawlerCallable;
 import me.shenchao.webhunger.util.common.SystemUtils;
@@ -48,7 +50,7 @@ public class CrawlerBootstrap {
 
     private CrawlerConfig crawlerConfig;
 
-    private CrawlerCallable crawlerController;
+    private CrawlerCallable crawlerCaller;
 
     private void parseCrawlerConfig() {
         crawlerConfig = new CrawlerConfig();
@@ -76,25 +78,30 @@ public class CrawlerBootstrap {
         // 配置爬虫
         Spider spider = Spider.create(new WholeSiteCrawledProcessor());
         BaseSiteDominate siteDominate;
+        CommonSpiderListener spiderListener;
         if (crawlerConfig.isDistributed()) {
+            // 创建监听器
+            spiderListener = new CommonSpiderListener();
             // 启动zookeeper,注册本爬虫节点
             ZooKeeper zooKeeper = initZookeeper();
             // 创建分布式站点管理类
             siteDominate = new DistributedSiteDominate(zooKeeper, spider);
             // 创建爬虫控制类
-            crawlerController = new RpcCrawlerCaller((DistributedSiteDominate) siteDominate, zooKeeper);
+            crawlerCaller = new RpcCrawlerCaller((DistributedSiteDominate) siteDominate, spiderListener,zooKeeper);
             // 启动dubbo，暴露接口与控制器RPC通信
-            initDubbo(crawlerController);
+            initDubbo(crawlerCaller);
             // 爬虫配置
             spider.addPipeline(new DistributedPipeline());
             spider.setScheduler(new RedisQueueUrlScheduler(new RoundRobinSiteSelector(siteDominate), crawlerConfig.getRedisAddress()));
         } else {
+            // 创建监听器
+            spiderListener = new LocalSpiderListener(spider);
             siteDominate = new LocalSiteDominate(spider);
-            crawlerController = new LocalCrawlerCaller((LocalSiteDominate) siteDominate);
+            crawlerCaller = new LocalCrawlerCaller((LocalSiteDominate) siteDominate, spiderListener);
             spider.addPipeline(new LocalPipeline());
             spider.setScheduler(new LocalQueueUrlScheduler(new RoundRobinSiteSelector(siteDominate)));
         }
-        SpiderListener[] spiderListeners = {new BaseSpiderListener()};
+        SpiderListener[] spiderListeners = {spiderListener};
         spider.setSpiderListeners(Arrays.asList(spiderListeners));
         spider.setSiteDominate(siteDominate);
         // TODO 以后会动态变化
@@ -145,8 +152,8 @@ public class CrawlerBootstrap {
         logger.info("Dubbo注册成功......");
     }
 
-    public CrawlerCallable getCrawlerController() {
-        return crawlerController;
+    public CrawlerCallable getCrawlerCaller() {
+        return crawlerCaller;
     }
 
     public static void main(String[] args) {

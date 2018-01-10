@@ -30,7 +30,7 @@ class LocalController extends MasterController {
     private void initCrawler() {
         CrawlerBootstrap crawlerBootstrap = new CrawlerBootstrap();
         crawlerBootstrap.start();
-        this.crawlerController = crawlerBootstrap.getCrawlerController();
+        this.crawlerController = crawlerBootstrap.getCrawlerCaller();
     }
 
     /**

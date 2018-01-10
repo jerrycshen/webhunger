@@ -2,6 +2,9 @@ package me.shenchao.webhunger.crawler.caller;
 
 import com.google.common.collect.Lists;
 import me.shenchao.webhunger.crawler.dominate.LocalSiteDominate;
+import me.shenchao.webhunger.crawler.listener.CommonSpiderListener;
+import me.shenchao.webhunger.crawler.util.HostSnapshotHelper;
+import me.shenchao.webhunger.dto.HostSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.webmagic.Site;
 import me.shenchao.webhunger.rpc.api.crawler.CrawlerCallable;
@@ -18,8 +21,11 @@ public class LocalCrawlerCaller implements CrawlerCallable {
 
     private LocalSiteDominate siteDominate;
 
-    public LocalCrawlerCaller(LocalSiteDominate siteDominate) {
+    private CommonSpiderListener spiderListener;
+
+    public LocalCrawlerCaller(LocalSiteDominate siteDominate, CommonSpiderListener spiderListener) {
         this.siteDominate = siteDominate;
+        this.spiderListener = spiderListener;
     }
 
     /**
@@ -37,6 +43,11 @@ public class LocalCrawlerCaller implements CrawlerCallable {
         }
         siteDominate.addSeedUrls(newSiteList);
         siteDominate.updateLocalCrawlingSiteList(newSiteList);
+    }
+
+    @Override
+    public HostSnapshotDTO createSnapshot(String hostId) {
+        return HostSnapshotHelper.create(hostId, spiderListener.getSiteStatusStatistics(hostId));
     }
 
 

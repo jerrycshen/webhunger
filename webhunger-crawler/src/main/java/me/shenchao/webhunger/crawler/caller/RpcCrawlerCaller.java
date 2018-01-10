@@ -3,6 +3,9 @@ package me.shenchao.webhunger.crawler.caller;
 import com.alibaba.fastjson.JSON;
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
 import me.shenchao.webhunger.crawler.dominate.DistributedSiteDominate;
+import me.shenchao.webhunger.crawler.listener.CommonSpiderListener;
+import me.shenchao.webhunger.crawler.util.HostSnapshotHelper;
+import me.shenchao.webhunger.dto.HostSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.webmagic.Site;
 import me.shenchao.webhunger.rpc.api.crawler.CrawlerCallable;
@@ -30,9 +33,12 @@ public class RpcCrawlerCaller implements CrawlerCallable {
 
     private DistributedSiteDominate siteDominate;
 
-    public RpcCrawlerCaller(DistributedSiteDominate siteDominate, ZooKeeper zooKeeper) {
+    private CommonSpiderListener spiderListener;
+
+    public RpcCrawlerCaller(DistributedSiteDominate siteDominate, CommonSpiderListener spiderListener, ZooKeeper zooKeeper) {
         this.siteDominate = siteDominate;
         this.zooKeeper = zooKeeper;
+        this.spiderListener = spiderListener;
     }
 
     @Override
@@ -59,6 +65,11 @@ public class RpcCrawlerCaller implements CrawlerCallable {
     @Override
     public void crawl(List<Host> hosts) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public HostSnapshotDTO createSnapshot(String hostId) {
+        return HostSnapshotHelper.create(hostId, spiderListener.getSiteStatusStatistics(hostId));
     }
 
     /**
