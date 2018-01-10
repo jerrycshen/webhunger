@@ -9,12 +9,13 @@ import me.shenchao.webhunger.constant.ZookeeperPathConsts;
 import me.shenchao.webhunger.crawler.dominate.BaseSiteDominate;
 import me.shenchao.webhunger.crawler.dominate.DistributedSiteDominate;
 import me.shenchao.webhunger.crawler.dominate.StandaloneSiteDominate;
+import me.shenchao.webhunger.crawler.listener.CommonSpiderListener;
+import me.shenchao.webhunger.crawler.listener.SpiderListener;
 import me.shenchao.webhunger.crawler.pipeline.DistributedPipeline;
 import me.shenchao.webhunger.crawler.processor.WholeSiteCrawledProcessor;
 import me.shenchao.webhunger.crawler.rpc.CrawlerController;
 import me.shenchao.webhunger.crawler.scheduler.RedisQueueUrlScheduler;
 import me.shenchao.webhunger.crawler.selector.RoundRobinSiteSelector;
-import me.shenchao.webhunger.entity.webmagic.Site;
 import me.shenchao.webhunger.exception.ConfigParseException;
 import me.shenchao.webhunger.rpc.api.crawler.CrawlerCallable;
 import me.shenchao.webhunger.util.common.SystemUtils;
@@ -28,6 +29,7 @@ import us.codecraft.webmagic.Spider;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * 爬虫模块启动类
@@ -85,6 +87,8 @@ public class CrawlerBootstrap {
             // TODO
             siteDominate = new StandaloneSiteDominate();
         }
+        SpiderListener[] spiderListeners = {new CommonSpiderListener()};
+        spider.setSpiderListeners(Arrays.asList(spiderListeners));
         spider.setSiteDominate(siteDominate);
         // TODO 以后会动态变化
         spider.thread(4);

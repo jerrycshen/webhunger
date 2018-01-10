@@ -6,13 +6,12 @@ import me.shenchao.webhunger.entity.webmagic.Request;
 import me.shenchao.webhunger.entity.webmagic.Site;
 import me.shenchao.webhunger.util.thread.CountableThreadPool;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.codecraft.webmagic.downloader.Downloader;
 import us.codecraft.webmagic.downloader.HttpClientDownloader;
-import us.codecraft.webmagic.monitor.SpiderListener;
+import me.shenchao.webhunger.crawler.listener.SpiderListener;
 import us.codecraft.webmagic.pipeline.ConsolePipeline;
 import us.codecraft.webmagic.pipeline.Pipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
@@ -331,7 +330,7 @@ public class Spider implements Runnable, LifeCycle {
                 // 记录当前正在爬取的请求
                 List<Request> requests;
                 if ((requests = currentCrawlingRequests.get(request.getSiteId())) == null) {
-                    requests = Collections.synchronizedList(new LinkedList<>());
+                    requests = new LinkedList<>();
                     currentCrawlingRequests.put(request.getSiteId(), requests);
                 }
                 requests.add(request);
