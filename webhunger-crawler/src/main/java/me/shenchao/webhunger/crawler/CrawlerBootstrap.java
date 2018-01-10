@@ -12,8 +12,10 @@ import me.shenchao.webhunger.crawler.dominate.StandaloneSiteDominate;
 import me.shenchao.webhunger.crawler.listener.CommonSpiderListener;
 import me.shenchao.webhunger.crawler.listener.SpiderListener;
 import me.shenchao.webhunger.crawler.pipeline.DistributedPipeline;
+import me.shenchao.webhunger.crawler.pipeline.StandalonePipeline;
 import me.shenchao.webhunger.crawler.processor.WholeSiteCrawledProcessor;
 import me.shenchao.webhunger.crawler.rpc.CrawlerController;
+import me.shenchao.webhunger.crawler.scheduler.LocalQueueUrlScheduler;
 import me.shenchao.webhunger.crawler.scheduler.RedisQueueUrlScheduler;
 import me.shenchao.webhunger.crawler.selector.RoundRobinSiteSelector;
 import me.shenchao.webhunger.exception.ConfigParseException;
@@ -84,14 +86,15 @@ public class CrawlerBootstrap {
             spider.addPipeline(new DistributedPipeline());
             spider.setScheduler(new RedisQueueUrlScheduler(new RoundRobinSiteSelector(siteDominate), crawlerConfig.getRedisAddress()));
         } else {
-            // TODO
-            siteDominate = new StandaloneSiteDominate();
+            siteDominate = new StandaloneSiteDominate(spider);
+            spider.addPipeline(new StandalonePipeline());
+            spider.setScheduler(new LocalQueueUrlScheduler(new RoundRobinSiteSelector(siteDominate)));
         }
         SpiderListener[] spiderListeners = {new CommonSpiderListener()};
         spider.setSpiderListeners(Arrays.asList(spiderListeners));
         spider.setSiteDominate(siteDominate);
         // TODO 以后会动态变化
-        spider.thread(4);
+        spider.thread(5);
         spider.setExitWhenComplete(false);
         // 启动爬虫
         spider.runAsync();

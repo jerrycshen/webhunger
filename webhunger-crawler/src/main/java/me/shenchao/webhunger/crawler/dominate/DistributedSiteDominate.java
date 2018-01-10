@@ -25,13 +25,11 @@ public class DistributedSiteDominate extends BaseSiteDominate {
 
     private ZooKeeper zooKeeper;
 
-    private Spider spider;
-
     private SiteCrawledCompletedCheckThread siteCrawledCompletedCheckThread;
 
     public DistributedSiteDominate(ZooKeeper zooKeeper, Spider spider) {
+        super(spider);
         this.zooKeeper = zooKeeper;
-        this.spider = spider;
         // 启动站点检查线程
         siteCrawledCompletedCheckThread = new SiteCrawledCompletedCheckThread();
         Thread thread = new Thread(siteCrawledCompletedCheckThread);
@@ -44,6 +42,8 @@ public class DistributedSiteDominate extends BaseSiteDominate {
         if (!checkLocalCrawledCompleted(siteId)) {
             return false;
         } else {
+            // 将该站点从待爬列表移除，但并没有真正移除该站点在map中的缓存，因为之后可能会恢复
+            removeSiteFromList(siteId);
             /*
              * 考虑有多个爬虫节点存在并且只有一个待爬站点的情况，初始时，只有一个爬虫节点能获取种子URL，导致其他爬虫节点直接认为该站点已经爬取结束，造成最终
              * 只有一个爬虫节点对该站点进行爬取
@@ -88,17 +88,6 @@ public class DistributedSiteDominate extends BaseSiteDominate {
     private void resumeSite(String siteId) {
         siteCrawledCompletedCheckThread.remove(siteId);
         addSiteToList(siteId);
-    }
-
-    /**
-     * 检查本爬虫节点对该站点的爬取是否已经结束
-     * @param siteId siteId
-     * @return 如果爬取完成返回true，反之false
-     */
-    private boolean checkLocalCrawledCompleted(String siteId) {
-        // 获取当前spider正在爬取的请求
-        Map<String, List<Request>> currentCrawlingRequests = spider.getCurrentCrawlingRequests();
-        return currentCrawlingRequests.get(siteId).size() == 0;
     }
 
     /**
@@ -192,8 +181,6 @@ public class DistributedSiteDominate extends BaseSiteDominate {
             try {
                 checkTimeoutMap.put(siteId, siteMap.get(siteId).getTimeOut() + System.currentTimeMillis());
                 siteListenerMap.put(siteId, siteListener);
-                // 将该站点从待爬列表移除，但并没有真正移除该站点在map中的缓存，因为之后可能会恢复
-                removeSiteFromList(siteId);
             } finally {
                 lock.unlock();
             }

@@ -1,5 +1,7 @@
 package me.shenchao.webhunger.crawler.scheduler;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import me.shenchao.webhunger.crawler.listener.SiteListener;
 import me.shenchao.webhunger.crawler.selector.SiteSelector;
 import me.shenchao.webhunger.entity.webmagic.Request;
@@ -8,19 +10,22 @@ import us.codecraft.webmagic.LifeCycle;
 import us.codecraft.webmagic.scheduler.DuplicateRemovedScheduler;
 import us.codecraft.webmagic.scheduler.component.DuplicateRemover;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 
+/**
+ * 基于本地存储的URL调度器，每个站点使用FIFO队列管理URL顺序
+ *
+ * @author Jerry Shen
+ * @since 0.1
+ */
 public class LocalQueueUrlScheduler extends DuplicateRemovedScheduler implements DuplicateRemover, SiteListener {
 
-    private Map<String, BlockingQueue<Request>> queueMap = new ConcurrentHashMap<>();
+    private Map<String, BlockingQueue<Request>> queueMap = Maps.newConcurrentMap();
 
-    private Map<String, Set<String>> duplicateMap = new ConcurrentHashMap<>();
+    private Map<String, Set<String>> duplicateMap = Maps.newConcurrentMap();
 
     private SiteSelector siteSelector;
 
@@ -34,15 +39,12 @@ public class LocalQueueUrlScheduler extends DuplicateRemovedScheduler implements
      */
     @Override
     protected void pushWhenNoDuplicate(Request request, LifeCycle task) {
-        queueMap.computeIfAbsent(request.getSiteId(), k -> new LinkedBlockingDeque<>());
-        BlockingQueue<Request> queue = queueMap.get(request.getSiteId());
-        queue.add(request);
+        queueMap.computeIfAbsent(request.getSiteId(), k -> new LinkedBlockingDeque<>()).add(request);
     }
 
     @Override
     public boolean isDuplicate(Request request, LifeCycle task) {
-        duplicateMap.computeIfAbsent(request.getSiteId(), k -> Collections.synchronizedSet(new HashSet<>()));
-        return !duplicateMap.get(request.getSiteId()).add(request.getUrl());
+        return !duplicateMap.computeIfAbsent(request.getSiteId(), k -> Sets.newConcurrentHashSet()).add(request.getUrl());
     }
 
     @Override

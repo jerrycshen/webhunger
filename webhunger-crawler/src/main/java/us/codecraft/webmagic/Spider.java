@@ -1,5 +1,6 @@
 package us.codecraft.webmagic;
 
+import com.google.common.collect.Lists;
 import me.shenchao.webhunger.crawler.dominate.BaseSiteDominate;
 import me.shenchao.webhunger.entity.webmagic.Page;
 import me.shenchao.webhunger.entity.webmagic.Request;
@@ -328,12 +329,7 @@ public class Spider implements Runnable, LifeCycle {
                 waitNewUrl();
             } else {
                 // 记录当前正在爬取的请求
-                List<Request> requests;
-                if ((requests = currentCrawlingRequests.get(request.getSiteId())) == null) {
-                    requests = new LinkedList<>();
-                    currentCrawlingRequests.put(request.getSiteId(), requests);
-                }
-                requests.add(request);
+                currentCrawlingRequests.computeIfAbsent(request.getSiteId(),  k -> Lists.newCopyOnWriteArrayList()).add(request);
 
                 threadPool.execute(new Runnable() {
                     @Override

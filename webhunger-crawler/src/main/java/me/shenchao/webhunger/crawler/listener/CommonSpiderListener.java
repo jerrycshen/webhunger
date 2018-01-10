@@ -24,22 +24,12 @@ public class CommonSpiderListener implements SpiderListener {
 
     @Override
     public void onSuccess(Request request) {
-        AtomicInteger counter;
-        if ((counter = successCounterMap.get(request.getSiteId())) == null) {
-            counter = new AtomicInteger(0);
-            successCounterMap.put(request.getSiteId(), counter);
-        }
-        counter.incrementAndGet();
+        successCounterMap.computeIfAbsent(request.getSiteId(), k -> new AtomicInteger(0)).incrementAndGet();
     }
 
     @Override
     public void onError(Request request) {
-        AtomicInteger counter;
-        if ((counter = errorCounterMap.get(request.getSiteId())) == null) {
-            counter = new AtomicInteger(0);
-            errorCounterMap.put(request.getSiteId(), counter);
-        }
-        counter.incrementAndGet();
+        errorCounterMap.computeIfAbsent(request.getSiteId(), k -> new AtomicInteger(0)).incrementAndGet();
     }
 
     @Override

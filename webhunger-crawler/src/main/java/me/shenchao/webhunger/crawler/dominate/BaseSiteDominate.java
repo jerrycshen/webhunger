@@ -1,10 +1,13 @@
 package me.shenchao.webhunger.crawler.dominate;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import me.shenchao.webhunger.crawler.listener.SiteListener;
+import me.shenchao.webhunger.entity.webmagic.Request;
 import me.shenchao.webhunger.entity.webmagic.Site;
+import us.codecraft.webmagic.Spider;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 站点管理类
@@ -17,12 +20,19 @@ public abstract class BaseSiteDominate {
     /**
      * 记录站点ID与站点之间的映射关系
      */
-    protected Map<String, Site> siteMap = new ConcurrentHashMap<>();
+    protected Map<String, Site> siteMap = Maps.newConcurrentMap();
 
     /**
      * 列表中所有站点的state为Crawling 状态
      */
-    protected volatile List<Site> siteList = Collections.synchronizedList(new LinkedList<>());
+    protected volatile List<Site> siteList = Lists.newCopyOnWriteArrayList();
+
+    protected Spider spider;
+
+    public BaseSiteDominate(Spider spider) {
+        this.spider = spider;
+    }
+
 
     public Map<String, Site> getSiteMap() {
         return siteMap;
@@ -60,6 +70,17 @@ public abstract class BaseSiteDominate {
      * @return 是否爬取完毕
      */
     public abstract boolean checkCrawledCompleted(String siteId, SiteListener siteListener);
+
+    /**
+     * 检查本爬虫节点对该站点的爬取是否已经结束
+     * @param siteId siteId
+     * @return 如果爬取完成返回true，反之false
+     */
+    protected boolean checkLocalCrawledCompleted(String siteId) {
+        // 获取当前spider正在爬取的请求
+        Map<String, List<Request>> currentCrawlingRequests = spider.getCurrentCrawlingRequests();
+        return currentCrawlingRequests.get(siteId).size() == 0;
+    }
 
     /**
      * 站点爬取结束回调方法
