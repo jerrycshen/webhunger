@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -51,8 +50,6 @@ public abstract class MasterController {
      */
     protected Map<String, Host> crawlingHostMap = Maps.newConcurrentMap();
 
-    protected Map<String, AtomicReference<HostCrawlingSnapshotDTO>> currentHostCrawlingSnapshotMap = Maps.newConcurrentMap();
-
     MasterController(ControlConfig controlConfig) {
         this.controlConfig = controlConfig;
         controllerSupport = new ControllerSupport(controlConfig);
@@ -87,9 +84,12 @@ public abstract class MasterController {
         signalNewHost();
     }
 
-    public HostCrawlingSnapshotDTO getCurrentCrawlingSnapshot(String hostId) {
-        return currentHostCrawlingSnapshotMap.computeIfAbsent(hostId, k -> new AtomicReference<>(createCrawlingSnapshot(hostId))).get();
-    }
+    /**
+     * 获取站点当前快照
+     * @param hostId hostId
+     * @return the crawling snapshot of host
+     */
+    public abstract HostCrawlingSnapshotDTO getCurrentCrawlingSnapshot(String hostId);
 
     /**
      * 向爬虫发送种子URL，开始爬取
@@ -113,13 +113,6 @@ public abstract class MasterController {
      * @param host host
      */
     abstract void processingCompleted(Host host);
-
-    /**
-     * 创建站点快照
-     * @param hostId hostId
-     * @return 站点当前快照
-     */
-    protected abstract HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId);
 
     private class SchedulerThread implements Runnable {
 

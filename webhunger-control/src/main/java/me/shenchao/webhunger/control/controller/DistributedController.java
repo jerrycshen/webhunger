@@ -20,10 +20,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created on 2018-01-04
@@ -72,19 +69,34 @@ public class DistributedController extends MasterController {
 
     }
 
+    @Override
+    public HostCrawlingSnapshotDTO getCurrentCrawlingSnapshot(String hostId) {
+        return createCrawlingSnapshot(hostId);
+    }
+
+
     /**
      * 分布式中创建站点快照相对耗时，因为要汇总所有节点该站点的状态
      *
      * @param hostId hostId
      * @return 站点当前快照
      */
-    @Override
-    protected HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId) {
+    private HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId) {
+        List<HostCrawlingSnapshotDTO> collectedHostCrawlingSnapshotList = new ArrayList<>(crawlerRPCMap.size());
         for (Map.Entry<String, ReferenceConfig<CrawlerCallable>> entry : crawlerRPCMap.entrySet()) {
-            String crawlerIP = entry.getKey();
-            // TODO
+            CrawlerCallable crawlerCallable = entry.getValue().get();
+            collectedHostCrawlingSnapshotList.add(crawlerCallable.createSnapshot(hostId));
         }
-        return null;
+        if (collectedHostCrawlingSnapshotList.size() == 0) {
+            return null;
+        } else {
+            HostCrawlingSnapshotDTO snapshot = HostSnapshotHelper.combine(collectedHostCrawlingSnapshotList);
+            snapshot.setHostName(crawlingHostMap.get(hostId).getHostName());
+            snapshot.setHostIndex(crawlingHostMap.get(hostId).getHostIndex());
+            snapshot.setLeftPageNum(redisSupport.getLeftRequestsCount(crawlingHostMap.get(hostId)));
+            snapshot.setTotalPageNum(redisSupport.getTotalRequestsCount(crawlingHostMap.get(hostId)));
+            return snapshot;
+        }
     }
 
     /**
@@ -326,6 +338,16 @@ public class DistributedController extends MasterController {
             }
         }
 
+        private int getTotalRequestsCount(Host host) {
+            Jedis jedis = pool.getResource();
+            try {
+                Long size = jedis.scard(RedisPrefixConsts.getSetKey(host.getHostId()));
+                return size.intValue();
+            } finally {
+                pool.returnResource(jedis);
+            }
+        }
+
         private void remove(Host host) {
             Jedis jedis = pool.getResource();
             try {
@@ -334,6 +356,37 @@ public class DistributedController extends MasterController {
             } finally {
                 pool.returnResource(jedis);
             }
+        }
+    }
+
+    private static class HostSnapshotHelper {
+
+        private static HostCrawlingSnapshotDTO combine(List<HostCrawlingSnapshotDTO> snapshotList) {
+            int successPageNum = 0;
+            int errorPageNum = 0;
+            Date startTime = null;
+            Date endTime = null;
+            for (HostCrawlingSnapshotDTO snapshot : snapshotList) {
+                successPageNum += snapshot.getSuccessPageNum();
+                errorPageNum += snapshot.getErrorPageNum();
+                if (startTime == null) {
+                    startTime = snapshot.getStartTime();
+                } else {
+                    if (snapshot.getStartTime().before(startTime)) {
+                        startTime = snapshot.getStartTime();
+                    }
+                }
+                if (endTime == null) {
+                    endTime = snapshot.getEndTime();
+                } else {
+                    if (snapshot.getEndTime().after(endTime)) {
+                        endTime = snapshot.getEndTime();
+                    }
+                }
+            }
+            String hostId = snapshotList.get(0).getHostId();
+            return new HostCrawlingSnapshotDTO.Builder(hostId).successPageNum(successPageNum).errorPageNum(errorPageNum)
+                    .startTime(startTime).endTime(endTime).build();
         }
     }
 }

@@ -138,6 +138,9 @@
             "url": "${AppContext}host/${hostId}/progress",
             "type": "POST",
             "success": function (data) {
+                if (data.data === null) {
+                    return;
+                }
                 var crawlingSnapshot = data.data;
                 var successPageNum = crawlingSnapshot.successPageNum;
                 var errorPageNum = crawlingSnapshot.errorPageNum;

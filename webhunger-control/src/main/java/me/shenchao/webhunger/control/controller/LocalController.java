@@ -1,5 +1,6 @@
 package me.shenchao.webhunger.control.controller;
 
+import com.google.common.collect.Maps;
 import me.shenchao.webhunger.config.ControlConfig;
 import me.shenchao.webhunger.crawler.CrawlerBootstrap;
 import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
@@ -24,6 +25,8 @@ class LocalController extends MasterController {
     private static final Logger logger = LoggerFactory.getLogger(LocalController.class);
 
     private CrawlerCallable crawlerCallable;
+
+    private Map<String, AtomicReference<HostCrawlingSnapshotDTO>> currentHostCrawlingSnapshotMap = Maps.newConcurrentMap();
 
     LocalController(ControlConfig controlConfig) {
         super(controlConfig);
@@ -54,7 +57,11 @@ class LocalController extends MasterController {
     }
 
     @Override
-    protected HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId) {
+    public HostCrawlingSnapshotDTO getCurrentCrawlingSnapshot(String hostId) {
+        return currentHostCrawlingSnapshotMap.computeIfAbsent(hostId, k -> new AtomicReference<>(createCrawlingSnapshot(hostId))).get();
+    }
+
+    private HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId) {
         HostCrawlingSnapshotDTO snapshot = crawlerCallable.createSnapshot(hostId);
         snapshot.setHostName(crawlingHostMap.get(hostId).getHostName());
         snapshot.setHostIndex(crawlingHostMap.get(hostId).getHostIndex());

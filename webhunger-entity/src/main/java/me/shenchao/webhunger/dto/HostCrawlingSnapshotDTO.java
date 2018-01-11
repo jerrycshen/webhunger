@@ -81,6 +81,14 @@ public class HostCrawlingSnapshotDTO {
         this.hostIndex = hostIndex;
     }
 
+    public void setTotalPageNum(Integer totalPageNum) {
+        this.totalPageNum = totalPageNum;
+    }
+
+    public void setLeftPageNum(Integer leftPageNum) {
+        this.leftPageNum = leftPageNum;
+    }
+
     @Override
     public String toString() {
         return "HostCrawlingSnapshotDTO{" +
