@@ -6,9 +6,9 @@ import com.alibaba.fastjson.JSON;
 import me.shenchao.webhunger.config.ControlConfig;
 import me.shenchao.webhunger.constant.RedisPrefixConsts;
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
+import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Crawler;
 import me.shenchao.webhunger.entity.Host;
-import me.shenchao.webhunger.entity.HostState;
 import me.shenchao.webhunger.entity.webmagic.Request;
 import me.shenchao.webhunger.rpc.api.crawler.CrawlerCallable;
 import me.shenchao.webhunger.util.common.MD5Utils;
@@ -63,15 +63,28 @@ public class DistributedController extends MasterController {
 
     @Override
     void crawlingCompleted(Host host) {
-        cleanAfterCrawled(host);
-        host.setState(HostState.Processing);
-        controllerSupport.createSnapshot(host);
-        System.out.println(host.getHostName() + "爬取完毕");
+        releaseAfterCrawled(host);
+        super.crawlingCompleted(host);
     }
 
     @Override
     void processingCompleted(Host host) {
 
+    }
+
+    /**
+     * 分布式中创建站点快照相对耗时，因为要汇总所有节点该站点的状态
+     *
+     * @param hostId hostId
+     * @return 站点当前快照
+     */
+    @Override
+    protected HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId) {
+        for (Map.Entry<String, ReferenceConfig<CrawlerCallable>> entry : crawlerRPCMap.entrySet()) {
+            String crawlerIP = entry.getKey();
+            // TODO
+        }
+        return null;
     }
 
     /**
@@ -96,13 +109,12 @@ public class DistributedController extends MasterController {
      * 对爬取完毕后的站点进行资源清理
      * @param host host
      */
-    private void cleanAfterCrawled(Host host) {
+    private void releaseAfterCrawled(Host host) {
         // 清空Redis中缓存
         redisSupport.remove(host);
     }
 
     private void cleanAfterProcessed(Host host) {
-
     }
 
     /**

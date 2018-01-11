@@ -1,8 +1,9 @@
 package me.shenchao.webhunger.control.controller;
 
-import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Maps;
 import me.shenchao.webhunger.config.ControlConfig;
 import me.shenchao.webhunger.control.scheduler.HostScheduler;
+import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostState;
 import me.shenchao.webhunger.entity.Task;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -65,6 +67,13 @@ public abstract class MasterController {
      * hostMap: 保存hostId 与 Host之间的映射关系
      */
     private Map<String, Host> hostMap;
+
+    /**
+     * 当前正在爬取或者页面处理的站点集合
+     */
+    protected Map<String, Host> crawlingHostMap = Maps.newHashMap();
+
+    protected Map<String, AtomicReference<HostCrawlingSnapshotDTO>> currentHostCrawlingSnapshotMap = Maps.newConcurrentMap();
 
     MasterController(ControlConfig controlConfig) {
         this.controlConfig = controlConfig;
@@ -128,6 +137,10 @@ public abstract class MasterController {
         signalNewHost();
     }
 
+    public HostCrawlingSnapshotDTO getCurrentCrawlingSnapshot(String hostId) {
+        return currentHostCrawlingSnapshotMap.computeIfAbsent(hostId, k -> new AtomicReference<>(createCrawlingSnapshot(hostId))).get();
+    }
+
     /**
      * 向爬虫发送种子URL，开始爬取
      * @param host host
@@ -138,13 +151,25 @@ public abstract class MasterController {
      * 爬取完成操作
      * @param host host
      */
-    abstract void crawlingCompleted(Host host);
+    void crawlingCompleted(Host host) {
+        crawlingHostMap.remove(host.getHostId());
+        host.setState(HostState.Processing);
+        controllerSupport.createSnapshot(host);
+        System.out.println(host.getHostName() + "爬取完毕");
+    }
 
     /**
      * 处理完毕操纵
      * @param host host
      */
     abstract void processingCompleted(Host host);
+
+    /**
+     * 创建站点快照
+     * @param hostId hostId
+     * @return 站点当前快照
+     */
+    protected abstract HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId);
 
     private class SchedulerThread implements Runnable {
 
@@ -159,9 +184,10 @@ public abstract class MasterController {
                     threadPool.execute(new Runnable() {
                         @Override
                         public void run() {
-                            logger.info("站点：{} 开始爬取......", host.getHostName());
                             host.setState(HostState.Crawling);
                             controllerSupport.createSnapshot(host);
+                            crawlingHostMap.put(host.getHostId(), host);
+                            logger.info("站点：{} 开始爬取......", host.getHostName());
 
                             crawl(host);
                         }

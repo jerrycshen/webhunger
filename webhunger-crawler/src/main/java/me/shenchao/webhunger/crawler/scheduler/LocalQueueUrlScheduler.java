@@ -72,4 +72,9 @@ public class LocalQueueUrlScheduler extends DuplicateRemovedScheduler implements
         return site == null ? null : queueMap.get(site.getHost().getHostId()).poll();
     }
 
+    @Override
+    public void clean(String siteId) {
+        queueMap.remove(siteId);
+        duplicateMap.remove(siteId);
+    }
 }

@@ -9,9 +9,11 @@ import java.util.List;
  * @author Jerry Shen
  * @since 0.1
  */
-public class HostSnapshotDTO {
+public class HostCrawlingSnapshotDTO {
 
     private String hostId;
+    private String hostName;
+    private String hostIndex;
     private Integer totalPageNum;
     private Integer leftPageNum;
     private Integer successPageNum;
@@ -20,7 +22,7 @@ public class HostSnapshotDTO {
     private Date endTime;
     private List<ErrorPageDTO> errorPages;
 
-    public HostSnapshotDTO(Builder builder) {
+    public HostCrawlingSnapshotDTO(Builder builder) {
         this.hostId = builder.hostId;
         this.totalPageNum = builder.totalPageNum;
         this.leftPageNum = builder.leftPageNum;
@@ -63,17 +65,35 @@ public class HostSnapshotDTO {
         return errorPages;
     }
 
+    public String getHostName() {
+        return hostName;
+    }
+
+    public String getHostIndex() {
+        return hostIndex;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
+
+    public void setHostIndex(String hostIndex) {
+        this.hostIndex = hostIndex;
+    }
+
     @Override
     public String toString() {
-        return "HostSnapshotDTO{" +
+        return "HostCrawlingSnapshotDTO{" +
                 "hostId='" + hostId + '\'' +
+                ", hostName='" + hostName + '\'' +
+                ", hostIndex='" + hostIndex + '\'' +
                 ", totalPageNum=" + totalPageNum +
                 ", leftPageNum=" + leftPageNum +
                 ", successPageNum=" + successPageNum +
                 ", errorPageNum=" + errorPageNum +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
-                ", errorPagesNum=" + errorPages.size() +
+                ", errorPageNum=" + errorPages.size() +
                 '}';
     }
 
@@ -127,8 +147,8 @@ public class HostSnapshotDTO {
             return this;
         }
 
-        public HostSnapshotDTO build() {
-            return new HostSnapshotDTO(this);
+        public HostCrawlingSnapshotDTO build() {
+            return new HostCrawlingSnapshotDTO(this);
         }
     }
 

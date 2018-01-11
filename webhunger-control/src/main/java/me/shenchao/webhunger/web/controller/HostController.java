@@ -2,7 +2,9 @@ package me.shenchao.webhunger.web.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import me.shenchao.webhunger.control.controller.ControllerFactory;
+import me.shenchao.webhunger.control.controller.DistributedController;
 import me.shenchao.webhunger.control.controller.MasterController;
+import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostState;
 import org.springframework.stereotype.Controller;
@@ -62,20 +64,29 @@ public class HostController {
 
     @RequestMapping(value = "/host/{hostId}/report", method = RequestMethod.GET)
     public String reportCrawler(@PathVariable String hostId, Model model) {
-        model.addAttribute("host_id", hostId);
+        boolean isDistributed = masterController instanceof DistributedController;
+        model.addAttribute("hostId", hostId);
+        model.addAttribute("isDistributed", isDistributed);
         Host host = masterController.getHostById(hostId);
         if (host.getState() == HostState.Completed.getState()) {
             return "host/completed_report.jsp";
         } else {
+            // 根据不同爬取模式，设置不同的站点进度刷新间隔
+            if (isDistributed) {
+                model.addAttribute("flushInterval", 6000);
+            } else {
+                model.addAttribute("flushInterval", 3000);
+            }
             return "host/running_report.jsp";
         }
     }
 
-    @RequestMapping(value = "/host/{hostId}/progress", method = RequestMethod.GET)
+    @RequestMapping(value = "/host/{hostId}/progress", method = RequestMethod.POST, produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String pullProgress(@PathVariable String hostId) {
         JSONObject result = new JSONObject();
-
+        HostCrawlingSnapshotDTO snapshot = masterController.getCurrentCrawlingSnapshot(hostId);
+        result.put("data", snapshot);
         return result.toJSONString();
     }
 }

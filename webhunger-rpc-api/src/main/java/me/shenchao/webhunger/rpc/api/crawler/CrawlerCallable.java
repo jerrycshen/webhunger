@@ -1,6 +1,6 @@
 package me.shenchao.webhunger.rpc.api.crawler;
 
-import me.shenchao.webhunger.dto.HostSnapshotDTO;
+import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
 
 import java.util.List;
@@ -31,5 +31,5 @@ public interface CrawlerCallable {
      * @param hostId hostId
      * @return 当前快照
      */
-    HostSnapshotDTO createSnapshot(String hostId);
+    HostCrawlingSnapshotDTO createSnapshot(String hostId);
 }

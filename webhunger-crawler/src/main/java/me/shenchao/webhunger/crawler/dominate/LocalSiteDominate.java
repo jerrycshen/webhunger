@@ -32,6 +32,8 @@ public class LocalSiteDominate extends BaseSiteDominate {
     void complete(String siteId) {
         // 彻底移除对该站点的所有缓存
         removeSite(siteId);
+        // 移除站点对应的相关URL队列
+        spider.getScheduler().clean(siteId);
     }
 
     @Override

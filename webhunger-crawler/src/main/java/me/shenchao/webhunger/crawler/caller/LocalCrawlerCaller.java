@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import me.shenchao.webhunger.crawler.dominate.LocalSiteDominate;
 import me.shenchao.webhunger.crawler.listener.CommonSpiderListener;
 import me.shenchao.webhunger.crawler.util.HostSnapshotHelper;
-import me.shenchao.webhunger.dto.HostSnapshotDTO;
+import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.webmagic.Site;
 import me.shenchao.webhunger.rpc.api.crawler.CrawlerCallable;
@@ -46,7 +46,7 @@ public class LocalCrawlerCaller implements CrawlerCallable {
     }
 
     @Override
-    public HostSnapshotDTO createSnapshot(String hostId) {
+    public HostCrawlingSnapshotDTO createSnapshot(String hostId) {
         return HostSnapshotHelper.create(hostId, spiderListener.getSiteStatusStatistics(hostId));
     }
 

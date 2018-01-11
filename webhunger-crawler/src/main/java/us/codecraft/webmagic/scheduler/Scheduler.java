@@ -1,6 +1,7 @@
 package us.codecraft.webmagic.scheduler;
 
 import me.shenchao.webhunger.entity.webmagic.Request;
+import me.shenchao.webhunger.entity.webmagic.Site;
 import us.codecraft.webmagic.LifeCycle;
 
 /**
@@ -29,5 +30,13 @@ public interface Scheduler {
      * @return the url to crawl
      */
     public Request poll(LifeCycle lifeCycle);
+
+    /**
+     * 爬取完毕后对调度器进行清理
+     * @param siteId crawled site's id
+     */
+    default void clean(String siteId) {
+
+    }
 
 }
