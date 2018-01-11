@@ -9,6 +9,7 @@
     <finishTime>2018-12-31</finishTime>
 
     <hosts>
+        <!-- 由于hostIndex唯一，所以根据此生成唯一ID，其他实现也要确保hostId全局唯一 -->
         <host>
             <hostName>嘉兴残联</hostName>
             <hostIndex>http://www.jxdpf.org.cn</hostIndex>

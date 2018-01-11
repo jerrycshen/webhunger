@@ -54,7 +54,7 @@
             {
                 "data": "taskName",
                 "render": function (data, type, row) {
-                    return "<a href='${AppContext}task/"+row.taskId+"/host/list'>"+data+"</a>";
+                    return "<a href='${AppContext}task/"+row.taskName+"/host/list'>"+data+"</a>";
                 }
             },
             {

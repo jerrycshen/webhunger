@@ -28,11 +28,16 @@ class ControllerSupport {
         taskAccessor = getTaskAccessor(controlConfig);
     }
 
-    /**
-     * 重新向数据源读取数据
-     */
     List<Task> loadTasks() {
         return taskAccessor.loadTasks();
+    }
+
+    Task loadTaskById(String taskName) {
+        return taskAccessor.loadTaskByName(taskName);
+    }
+
+    Host loadHostById(String hostId) {
+        return taskAccessor.loadHostById(hostId);
     }
 
     /**

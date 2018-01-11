@@ -7,14 +7,13 @@ import me.shenchao.webhunger.control.controller.MasterController;
 import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostState;
+import me.shenchao.webhunger.entity.Task;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.List;
 
 /**
  * @author Jerry Shen
@@ -27,17 +26,16 @@ public class HostController {
 
     @RequestMapping(value = "/task/{taskId}/host/list", method = RequestMethod.GET)
     public String viewHostTable(@PathVariable("taskId") String taskId, Model model) {
-        model.addAttribute("taskName", masterController.getTaskById(taskId).getTaskName());
-        model.addAttribute("taskId", taskId);
+        model.addAttribute("taskName", masterController.getTaskByName(taskId).getTaskName());
         return "host/view_host.jsp";
     }
 
-    @RequestMapping(value = "/task/{taskId}/host/list", method = RequestMethod.POST ,produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/task/{taskName}/host/list", method = RequestMethod.POST ,produces = {"application/json;charset=UTF-8"})
     @ResponseBody
-    public String viewHostData(@PathVariable("taskId") String taskId) {
-        List<Host> hosts = masterController.getHostsByTaskId(taskId);
+    public String viewHostData(@PathVariable("taskName") String taskName) {
+        Task task = masterController.getTaskByName(taskName);
         JSONObject result = new JSONObject();
-        result.put("data", hosts);
+        result.put("data", task.getHosts());
         return result.toJSONString();
     }
 

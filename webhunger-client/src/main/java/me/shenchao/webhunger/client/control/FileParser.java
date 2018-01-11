@@ -25,9 +25,10 @@ class FileParser {
     /**
      * 解析task文件
      * @param taskFile *.task
+     * @param needHostParsed 是否需要进一步解析host
      * @return parsed task
      */
-    static Task parseTask(File taskFile) throws TaskParseException {
+    static Task parseTask(File taskFile, boolean needHostParsed) {
 
         SAXReader reader = new SAXReader();
         try {
@@ -61,8 +62,10 @@ class FileParser {
                 task.setFinishTime(FileAccessSupport.parseDate(finishTimeElement.getText()));
             }
 
-            task.setHostConfig(parseHostConfig(root.element("config")));
-            task.setHosts(parseHost(task, root.element("hosts")));
+            if (needHostParsed) {
+                task.setHostConfig(parseHostConfig(root.element("config")));
+                task.setHosts(parseHost(task, root.element("hosts")));
+            }
 
             return task;
         } catch (Exception e) {
@@ -137,7 +140,7 @@ class FileParser {
         return urlFilterConfig;
     }
 
-    private static List<Host> parseHost(Task task, Element hostsElement) throws TaskParseException {
+    private static List<Host> parseHost(Task task, Element hostsElement) {
         if (hostsElement == null || hostsElement.elements("host").size() == 0) {
             return new ArrayList<>();
         }
@@ -155,7 +158,7 @@ class FileParser {
             host.setHostIndex(hostIndexElement.getText());
             host.setHostName(hostNameElement.getText());
             // 根据host name 的MD5 值作为HOST ID
-            host.setHostId(MD5Utils.get16bitMD5(host.getHostName()));
+            host.setHostId(MD5Utils.get16bitMD5(host.getHostIndex()));
             hosts.add(host);
 
             host.setHostConfig(parseHostConfig(hostElement.element("config")));

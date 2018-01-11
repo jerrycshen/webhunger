@@ -34,38 +34,52 @@ public class FileTaskAccessor implements TaskAccessor {
         List<Task> tasks = new ArrayList<>();
         // 1. 获取task配置文件
         File[] taskFiles = FileAccessSupport.getTaskFiles(DEFAULT_TASK_PATH);
-        logger.info("共找到{}个task文件", taskFiles.length);
 
         // 2. 解析task配置文件
         for (File taskFile : taskFiles) {
-            try {
-                logger.info("解析{}......", taskFile.getName());
-                Task task = FileParser.parseTask(taskFile);
-                tasks.add(task);
-            } catch (TaskParseException e) {
-                logger.error("解析{}失败，请检查文件格式......{}", taskFile.getAbsoluteFile(), e);
-            }
+            Task task = FileParser.parseTask(taskFile, false);
+            tasks.add(task);
         }
-
-        // 3. 从快照日志中恢复站点状态
-        for (Task task : tasks) {
-            List<Host> hosts = task.getHosts();
-            for (Host host : hosts) {
-                HostSnapshot hostSnapshot = null;
-                try {
-                    hostSnapshot = FileAccessSupport.getLatestSnapshot(getSnapshotPath(host));
-                } catch (IOException e) {
-                    logger.error("读取：{} 快照文件失败......{}", getSnapshotPath(host), e);
-                }
-                if (hostSnapshot != null) {
-                    host.setState(hostSnapshot.getState());
-                } else {
-                    host.setState(0);
-                }
-            }
-        }
-
         return tasks;
+    }
+
+    @Override
+    public Task loadTaskByName(String taskName) {
+        File taskFile = FileAccessSupport.getTaskFile(DEFAULT_TASK_PATH, taskName);
+        if (taskFile == null) {
+            throw new RuntimeException("找不到指定任务文件: " + taskFile.getAbsolutePath());
+        }
+        Task task = FileParser.parseTask(taskFile, true);
+        List<Host> hosts = task.getHosts();
+        // 从快照日志中恢复站点状态
+        for (Host host : hosts) {
+            HostSnapshot hostSnapshot = null;
+            try {
+                hostSnapshot = FileAccessSupport.getLatestSnapshot(getSnapshotPath(host));
+            } catch (IOException e) {
+                logger.error("读取：{} 快照文件失败......{}", getSnapshotPath(host), e);
+            }
+            if (hostSnapshot != null) {
+                host.setState(hostSnapshot.getState());
+            } else {
+                host.setState(0);
+            }
+        }
+        return task;
+    }
+
+    @Override
+    public Host loadHostById(String hostId) {
+        File[] taskFiles = FileAccessSupport.getTaskFiles(DEFAULT_TASK_PATH);
+        for (File file : taskFiles) {
+            Task task = FileParser.parseTask(file, true);
+            for (Host host : task.getHosts()) {
+                if (host.getHostId().equals(hostId)) {
+                    return host;
+                }
+            }
+        }
+        throw new RuntimeException("未找到指定站点......");
     }
 
     @Override

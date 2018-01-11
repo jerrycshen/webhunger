@@ -91,7 +91,7 @@
 
     hostTable = $("#host_table").DataTable({
         "ajax": {
-            "url": "${AppContext}task/${taskId}/host/list",
+            "url": "${AppContext}task/${taskName}/host/list",
             "type": "POST"
         },
         "columns": [

@@ -15,11 +15,26 @@ import java.util.List;
 public interface TaskAccessor {
 
     /**
-     * 从指定数据源加载任务数据
+     * 从指定数据源加载任务数据，这里只加载task的具体信息，不会加载host
      *
-     * <note>由于快照记录有站点的最新状态信息，自定义实现时需要将最新的状态读取出来</note>
+     * @return all tasks
      */
     List<Task> loadTasks();
+
+    /**
+     * 获取指定任务及其所包含的所有站点
+     *
+     *  @param taskName 指定任务
+     * @return task
+     */
+    Task loadTaskByName(String taskName);
+
+    /**
+     * 获取指定Host
+     * @param hostId hostId
+     * @return host
+     */
+    Host loadHostById(String hostId);
 
     /**
      * 为站点状态创建快照，记录重要时间节点，

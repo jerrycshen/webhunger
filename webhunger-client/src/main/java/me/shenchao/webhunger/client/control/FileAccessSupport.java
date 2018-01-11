@@ -36,6 +36,16 @@ class FileAccessSupport {
         return taskFiles;
     }
 
+    static File getTaskFile(String parentDir, String fileName) {
+        File[] allTaskFiles = getTaskFiles(parentDir);
+        for (File file : allTaskFiles) {
+            if (file.getName().equals(fileName + ".task")) {
+                return file;
+            }
+        }
+        return null;
+    }
+
     static Date parseDate(String dateStr) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         try {

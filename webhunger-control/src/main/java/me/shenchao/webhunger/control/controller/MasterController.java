@@ -11,8 +11,6 @@ import me.shenchao.webhunger.util.thread.CountableThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -49,29 +47,9 @@ public abstract class MasterController {
     private Condition newHostCondition = newHostLock.newCondition();
 
     /**
-     * taskMap: 保存taskId 与 Task之间的映射关系<br>
-     * 更新时机: <br>
-     *     <ul>
-     *         <li>
-     *              只有在<b>任务页面</b>中点击刷新按钮时，会触发重新从数据源读取
-     *         </li>
-     *         <li>
-     *              其余操作，例如读取站点列表、启动爬虫，停止等操作，只会从缓冲中读取，所以在程序运行过程中手动修改了数据源，
-     *              请在任务显示页面刷新重新加载数据
-     *         </li>
-     *     </ul>
-     */
-    private Map<String, Task> taskMap;
-
-    /**
-     * hostMap: 保存hostId 与 Host之间的映射关系
-     */
-    private Map<String, Host> hostMap;
-
-    /**
      * 当前正在爬取或者页面处理的站点集合
      */
-    protected Map<String, Host> crawlingHostMap = Maps.newHashMap();
+    protected Map<String, Host> crawlingHostMap = Maps.newConcurrentMap();
 
     protected Map<String, AtomicReference<HostCrawlingSnapshotDTO>> currentHostCrawlingSnapshotMap = Maps.newConcurrentMap();
 
@@ -84,47 +62,19 @@ public abstract class MasterController {
     }
 
     public List<Task> getTasks() {
-        loadTasks();
-        List<Task> tasks = new ArrayList<>();
-        for (Map.Entry<String, Task> entry : taskMap.entrySet()) {
-            tasks.add(entry.getValue());
-        }
-        return tasks;
+        return controllerSupport.loadTasks();
     }
 
-    public List<Host> getHostsByTaskId(String taskId) {
-        if (taskMap == null) {
-            loadTasks();
-        }
-        return taskMap.get(taskId).getHosts();
-    }
-
-    public Task getTaskById(String taskId) {
-        if (taskMap == null) {
-            loadTasks();
-        }
-        return taskMap.get(taskId);
+    public Task getTaskByName(String taskName) {
+        return controllerSupport.loadTaskById(taskName);
     }
 
     public Host getHostById(String hostId) {
-        return hostMap.get(hostId);
-    }
-
-    private void loadTasks() {
-        List<Task> tasks = controllerSupport.loadTasks();
-        taskMap = new HashMap<>();
-        hostMap = new HashMap<>();
-        for (Task task : tasks) {
-            List<Host> hosts = task.getHosts();
-            taskMap.put(task.getTaskId(), task);
-            for (Host host : hosts) {
-                hostMap.put(host.getHostId(), host);
-            }
-        }
+        return controllerSupport.loadHostById(hostId);
     }
 
     public void start(String hostId) {
-        Host host = hostMap.get(hostId);
+        Host host = controllerSupport.loadHostById(hostId);
         logger.info("准备对站点：{} 爬取......", host.getHostName());
         // 清理数据，准备环境 todo
 //        crawlersControlSupport.rollbackHost(host);
