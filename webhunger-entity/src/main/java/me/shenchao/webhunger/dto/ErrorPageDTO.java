@@ -15,13 +15,13 @@ public class ErrorPageDTO {
     private Integer responseCode;
     private String errorMsg;
 
-    private ErrorPageDTO(Builder builder) {
-        this.hostId = builder.hostId;
-        this.url = builder.url;
-        this.parentUrl = builder.parentUrl;
-        this.depth = builder.depth;
-        this.responseCode = builder.responseCode;
-        this.errorMsg = builder.errorMsg;
+    public ErrorPageDTO(String hostId, String url, String parentUrl, Integer depth, Integer responseCode, String errorMsg) {
+        this.hostId = hostId;
+        this.url = url;
+        this.parentUrl = parentUrl;
+        this.depth = depth;
+        this.responseCode = responseCode;
+        this.errorMsg = errorMsg;
     }
 
     public String getHostId() {
@@ -48,6 +48,30 @@ public class ErrorPageDTO {
         return errorMsg;
     }
 
+    public void setHostId(String hostId) {
+        this.hostId = hostId;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setParentUrl(String parentUrl) {
+        this.parentUrl = parentUrl;
+    }
+
+    public void setDepth(Integer depth) {
+        this.depth = depth;
+    }
+
+    public void setResponseCode(Integer responseCode) {
+        this.responseCode = responseCode;
+    }
+
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
+    }
+
     @Override
     public String toString() {
         return "ErrorPageDTO{" +
@@ -60,42 +84,4 @@ public class ErrorPageDTO {
                 '}';
     }
 
-    public static class Builder {
-
-        private final String hostId;
-        private final String url;
-        private String parentUrl;
-        private Integer depth;
-        private Integer responseCode;
-        private String errorMsg;
-
-        public Builder(String hostId, String url) {
-            this.hostId = hostId;
-            this.url = url;
-        }
-
-        public Builder parentUrl(String parentUrl) {
-            this.parentUrl = parentUrl;
-            return this;
-        }
-
-        public Builder depth(int depth) {
-            this.depth = depth;
-            return this;
-        }
-
-        public Builder responseCode(Integer responseCode) {
-            this.responseCode = responseCode;
-            return this;
-        }
-
-        public Builder errorMsg(String errorMsg) {
-            this.errorMsg = errorMsg;
-            return this;
-        }
-
-        public ErrorPageDTO build() {
-            return new ErrorPageDTO(this);
-        }
-    }
 }

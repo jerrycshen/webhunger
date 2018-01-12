@@ -12,29 +12,52 @@ public class RedisPrefixConsts {
      * 待爬队列前缀, 格式如下：<br>
      *     <code>
      *         key -> queue:hostId
-     *         value -> url
+     *         value(list) -> urls
      *     </code>
      */
-    public static final String QUEUE_PREFIX = "queue:";
+    private static final String QUEUE_PREFIX = "queue:";
 
     /**
      * 已爬列表前缀, 格式：<br>
      *     <code>
      *          key -> set:hostId
-     *          value -> url
+     *          value(set) -> urls
      *     </code>
      */
-    public static final String SET_PREFIX = "set:";
+    private static final String SET_PREFIX = "set:";
 
     /**
      * 存放URL对应的具体内容，例如该URL属于第几层等信息，格式如下：
      *      <code>
      *          key -> item:hostId
-     *          value -> key -> url
-     *                   value -> request
+     *          value(hash) ->
+     *                         key1 -> url
+     *                         value1(string) -> request
      *      </code>
      */
-    public static final String ITEM_PREFIX = "item:";
+    private static final String ITEM_PREFIX = "item:";
+
+    /**
+     * 记录站点爬取过程中的统计信息，格式如下：
+     *      <code>
+     *          key -> count:hostId
+     *          value(hash) ->
+     *                        key1 -> success_page_num
+     *                        value1(int) -> num
+     *                        key2 -> error_page_num
+     *                        value2(int) -> num
+     *                        key3 -> error_pages
+     *                        value3(list) -> error pages
+     *      </code>
+     *
+     */
+    private static final String COUNT_PREFIX = "count:";
+
+    public static final String COUNT_SUCCESS_NUM = "success_page_num";
+
+    public static final String COUNT_ERROR_NUM = "error_page_num";
+
+    private static final String ERROR_PREFIX = "error:";
 
     public static String getQueueKey(String hostId) {
         return QUEUE_PREFIX + hostId;
@@ -46,5 +69,13 @@ public class RedisPrefixConsts {
 
     public static String getItemKey(String hostId) {
         return ITEM_PREFIX + hostId;
+    }
+
+    public static String getCountKey(String hostId) {
+        return COUNT_PREFIX + hostId;
+    }
+
+    public static String getErrorPrefix(String hostId) {
+        return ERROR_PREFIX + hostId;
     }
 }

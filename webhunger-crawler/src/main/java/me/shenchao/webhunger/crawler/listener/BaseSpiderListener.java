@@ -31,10 +31,10 @@ public abstract class BaseSpiderListener implements SpiderListener {
     public void onError(Request request) {
         SiteStatusStatistics statusStatistics = getSiteStatusStatistics(request.getSiteId());
         statusStatistics.getErrorPageNum().incrementAndGet();
-        ErrorPageDTO errorPage = new ErrorPageDTO.Builder(request.getSiteId(), request.getUrl())
-                .depth(request.getNowDepth()).parentUrl(request.getParentUrl())
-                .responseCode((Integer) request.getExtra(Request.STATUS_CODE))
-                .errorMsg((String) request.getExtra(Request.ERROR_MSG)).build();
+        ErrorPageDTO errorPage = new ErrorPageDTO(request.getSiteId(), request.getUrl(),
+                request.getParentUrl(), request.getNowDepth(),
+                (Integer) request.getExtra(Request.STATUS_CODE),
+                (String) request.getExtra(Request.ERROR_MSG));
         statusStatistics.getErrorRequests().add(errorPage);
     }
 
