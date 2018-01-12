@@ -3,6 +3,7 @@ package me.shenchao.webhunger.control.controller;
 import com.google.common.collect.Maps;
 import me.shenchao.webhunger.config.ControlConfig;
 import me.shenchao.webhunger.control.scheduler.HostScheduler;
+import me.shenchao.webhunger.dto.ErrorPageDTO;
 import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostState;
@@ -63,18 +64,37 @@ public abstract class MasterController {
         schedulerThread.start();
     }
 
+    /**
+     * 获得所有任务信息
+     * @return all tasks
+     */
     public List<Task> getTasks() {
         return controllerSupport.loadTasks();
     }
 
+    /**
+     * 根据任务名称获得指定任务
+     * @param taskName taskName
+     * @return the task whose name is taskName
+     */
     public Task getTaskByName(String taskName) {
         return controllerSupport.loadTaskById(taskName);
     }
 
+    /**
+     * 获得指定ID的站点
+     * @param hostId hostId
+     * @return the host whose id is hostId
+     */
     public Host getHostById(String hostId) {
         return controllerSupport.loadHostById(hostId);
     }
 
+    /**
+     * 启动对该站点爬取
+     *
+     * @param hostId hostId
+     */
     public synchronized void start(String hostId) {
         Host host = controllerSupport.loadHostById(hostId);
         // 检查是否已经开始爬取
@@ -95,9 +115,30 @@ public abstract class MasterController {
         signalNewHost();
     }
 
+    /**
+     * 当前爬取环境是否为分布式
+     * @return return true if is distributed mode
+     */
     public boolean isDistributed() {
         return distributed;
     }
+
+    /**
+     * 分页获取错误请求页面
+     *
+     * @param hostId hostId
+     * @param startPos start index
+     * @param size list size
+     * @return partition error pages
+     */
+    public abstract List<ErrorPageDTO> getErrorPages(String hostId, int startPos, int size);
+
+    /**
+     * 获得错误页面的总数量
+     * @param hostId hostId
+     * @return the total num of error pages
+     */
+    public abstract int getErrorPageNum(String hostId);
 
     /**
      * 获取站点当前快照

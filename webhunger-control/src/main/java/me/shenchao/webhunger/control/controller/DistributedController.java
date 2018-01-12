@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSON;
 import me.shenchao.webhunger.config.ControlConfig;
 import me.shenchao.webhunger.constant.RedisPrefixConsts;
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
+import me.shenchao.webhunger.dto.ErrorPageDTO;
 import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Crawler;
 import me.shenchao.webhunger.entity.Host;
@@ -67,6 +68,16 @@ public class DistributedController extends MasterController {
     @Override
     void processingCompleted(Host host) {
 
+    }
+
+    @Override
+    public List<ErrorPageDTO> getErrorPages(String hostId, int startPos, int size) {
+        return null;
+    }
+
+    @Override
+    public int getErrorPageNum(String hostId) {
+        return 0;
     }
 
     @Override

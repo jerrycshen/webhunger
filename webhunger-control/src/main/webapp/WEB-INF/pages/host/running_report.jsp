@@ -110,7 +110,12 @@
     <div class="page-header">
         <ul class="nav nav-pills" role="tablist">
             <li>
-                <h1 id="error_num"></h1>
+                <h1 id="errorPageNum"></h1>
+            </li>
+            <li class="navbar-right" style="margin-top: 20px; margin-right: 5px">
+                <button id="refreshBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-refresh"
+                                                                                    aria-hidden="true"></span> Refresh
+                </button>
             </li>
         </ul>
         <div>
@@ -138,7 +143,7 @@
             "url": "${AppContext}host/${hostId}/progress",
             "type": "POST",
             "success": function (data) {
-                if (data.data === null) {
+                if (data.data === null || data.data == undefined) {
                     return;
                 }
                 var crawlingSnapshot = data.data;
@@ -167,11 +172,80 @@
                     $("#processingProgressBar").text(Math.ceil(crawlingProgress) + "%");
                     $("#processingProgressBar").attr("style", "min-width: 2em; " + "width:" + crawlingProgress + "%");
                 }
+
+                // update error page table
+                if (errorPageNum === 0) {
+                    $("#errorPageNum").text("No Error");
+                } else if (errorPageNum === 1) {
+                    $("#errorPageNum").text("1 Error");
+                } else {
+                    $("#errorPageNum").text(errorPageNum + " Errors");
+                }
             }
         });
     }
 
     window.setInterval(pullProgress, ${flushInterval});
+
+    $("#refreshBtn").click(function () {
+        // 这里有个大坑，主要的是dataTable（） 与 DataTable（） 两个方法的作用也不相同，唉，搞了一晚上
+        var table = $("#errorPageTable").dataTable();
+        table.fnStandingRedraw();
+    });
+
+    var errorPageTable = $('#errorPageTable').DataTable({
+
+        "serverSide": true,
+
+        "ajax": {
+            "url": "${AppContext}host/${hostId}/error_pages",
+            "type": "POST",
+            "data": function (data) {
+                planify(data);
+            }
+        },
+        "columns": [
+            {
+                "data": "responseCode",
+                "render": function (data) {
+                    if (data === 0)
+                        return "<i>Unknown</i>";
+                    else
+                        return data;
+                }
+            },
+            {
+                "data": 'url',
+                "render": function (data) {
+                    return "<a target='_blank' href=\'" + data + "\'>" + data + "</a>"
+                }
+            },
+            {
+                "data": 'errorMsg',
+                "defaultContent": "<i>Unknown</i>"
+            },
+            {
+                "data": 'depth'
+            }
+        ],
+        "ordering": false,
+        "lengthChange": false,
+        "pageLength": 5,
+        "pagingType": "full_numbers",
+        "processing": true,
+        "searching": false
+    });
+
+    //处理datatables数据
+    function planify(data) {
+        var column;//对datatables某些特殊列（三维列）进行处理
+        for (var i = 0; i < data.columns.length; i++) {
+            column = data.columns[i];
+            column.searchRegex = column.search.regex;
+            column.searchValue = column.search.value;
+            delete(column.search);
+        }
+    }
 
 </script>
 

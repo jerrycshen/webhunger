@@ -3,16 +3,18 @@ package me.shenchao.webhunger.web.controller;
 import com.alibaba.fastjson.JSONObject;
 import me.shenchao.webhunger.control.controller.ControllerFactory;
 import me.shenchao.webhunger.control.controller.MasterController;
+import me.shenchao.webhunger.control.util.DataTableCriterias;
+import me.shenchao.webhunger.dto.ErrorPageDTO;
 import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostState;
 import me.shenchao.webhunger.entity.Task;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Jerry Shen
@@ -84,6 +86,29 @@ public class HostController {
         JSONObject result = new JSONObject();
         HostCrawlingSnapshotDTO snapshot = masterController.getCurrentCrawlingSnapshot(hostId);
         result.put("data", snapshot);
+        return result.toJSONString();
+    }
+
+    @RequestMapping(value = "/host/{hostId}/error_pages", method = RequestMethod.POST)
+    @ResponseBody
+    public String pullErrorPage(@ModelAttribute DataTableCriterias dataTableCriterias, @PathVariable String hostId) {
+        Host host = masterController.getHostById(hostId);
+        HostState hostState = HostState.valueOf(host.getState());
+        List<ErrorPageDTO> errorPages = new ArrayList<>();
+        int errorPageNum = 0;
+        switch (hostState) {
+            case Crawling:
+                errorPages = masterController.getErrorPages(hostId, dataTableCriterias.getStart(), dataTableCriterias.getLength());
+                errorPageNum = masterController.getErrorPageNum(hostId);
+                break;
+            default:
+                // TODO
+        }
+        JSONObject result = new JSONObject();
+        result.put("data", errorPages);
+        result.put("draw", dataTableCriterias.getDraw());
+        result.put("recordsTotal", errorPageNum);
+        result.put("recordsFiltered", errorPageNum);
         return result.toJSONString();
     }
 }

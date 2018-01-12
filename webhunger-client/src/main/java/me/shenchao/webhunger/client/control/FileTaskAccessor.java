@@ -4,7 +4,6 @@ import me.shenchao.webhunger.client.api.control.TaskAccessor;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostSnapshot;
 import me.shenchao.webhunger.entity.Task;
-import me.shenchao.webhunger.exception.TaskParseException;
 import me.shenchao.webhunger.util.common.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,17 +52,7 @@ public class FileTaskAccessor implements TaskAccessor {
         List<Host> hosts = task.getHosts();
         // 从快照日志中恢复站点状态
         for (Host host : hosts) {
-            HostSnapshot hostSnapshot = null;
-            try {
-                hostSnapshot = FileAccessSupport.getLatestSnapshot(getSnapshotPath(host));
-            } catch (IOException e) {
-                logger.error("读取：{} 快照文件失败......{}", getSnapshotPath(host), e);
-            }
-            if (hostSnapshot != null) {
-                host.setState(hostSnapshot.getState());
-            } else {
-                host.setState(0);
-            }
+            resumeHostStat(host);
         }
         return task;
     }
@@ -75,6 +64,7 @@ public class FileTaskAccessor implements TaskAccessor {
             Task task = FileParser.parseTask(file, true);
             for (Host host : task.getHosts()) {
                 if (host.getHostId().equals(hostId)) {
+                    resumeHostStat(host);
                     return host;
                 }
             }
@@ -94,6 +84,24 @@ public class FileTaskAccessor implements TaskAccessor {
     @Override
     public void saveErrorPages(Host host) {
 
+    }
+
+    /**
+     * 根据站点的快照信息，设置其最新状态信息
+     * @param host host
+     */
+    private void resumeHostStat(Host host) {
+        HostSnapshot hostSnapshot = null;
+        try {
+            hostSnapshot = FileAccessSupport.getLatestSnapshot(getSnapshotPath(host));
+        } catch (IOException e) {
+            logger.error("读取：{} 快照文件失败......{}", getSnapshotPath(host), e);
+        }
+        if (hostSnapshot != null) {
+            host.setState(hostSnapshot.getState());
+        } else {
+            host.setState(0);
+        }
     }
 
     private String getSnapshotPath(Host host) {

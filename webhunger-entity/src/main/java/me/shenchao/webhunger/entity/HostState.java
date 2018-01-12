@@ -41,7 +41,7 @@ public enum HostState {
         return state;
     }
 
-    public static HostState getHostState(int state) {
+    public static HostState valueOf(int state) {
         for (HostState crawlerState : HostState.values()) {
             if (crawlerState.getState() == state) {
                 return crawlerState;

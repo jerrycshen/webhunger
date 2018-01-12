@@ -20,7 +20,7 @@ public class HostCrawlingSnapshotDTO {
     private Integer errorPageNum;
     private Date startTime;
     private Date endTime;
-    private List<ErrorPageDTO> errorPages;
+    private transient List<ErrorPageDTO> errorPages;
 
     public HostCrawlingSnapshotDTO(Builder builder) {
         this.hostId = builder.hostId;

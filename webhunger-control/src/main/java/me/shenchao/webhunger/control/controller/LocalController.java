@@ -3,6 +3,7 @@ package me.shenchao.webhunger.control.controller;
 import com.google.common.collect.Maps;
 import me.shenchao.webhunger.config.ControlConfig;
 import me.shenchao.webhunger.crawler.CrawlerBootstrap;
+import me.shenchao.webhunger.dto.ErrorPageDTO;
 import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.rpc.api.crawler.CrawlerCallable;
@@ -60,14 +61,32 @@ class LocalController extends MasterController {
     }
 
     @Override
+    public List<ErrorPageDTO> getErrorPages(String hostId, int startPos, int size) {
+        HostCrawlingSnapshotDTO currentHostCrawlingSnapshot = currentHostCrawlingSnapshotMap.get(hostId).get();
+        List<ErrorPageDTO> allErrorPages = currentHostCrawlingSnapshot.getErrorPages();
+        return allErrorPages.subList(startPos, Math.min(startPos + size, allErrorPages.size()));
+    }
+
+    @Override
+    public int getErrorPageNum(String hostId) {
+        HostCrawlingSnapshotDTO currentHostCrawlingSnapshot = currentHostCrawlingSnapshotMap.get(hostId).get();
+        List<ErrorPageDTO> allErrorPages = currentHostCrawlingSnapshot.getErrorPages();
+        return allErrorPages.size();
+    }
+
+    @Override
     public HostCrawlingSnapshotDTO getCurrentCrawlingSnapshot(String hostId) {
         return currentHostCrawlingSnapshotMap.computeIfAbsent(hostId, k -> new AtomicReference<>(createCrawlingSnapshot(hostId))).get();
     }
 
     private HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId) {
+        Host crawlingHost;
+        if ((crawlingHost = crawlingHostMap.get(hostId)) == null) {
+            return null;
+        }
         HostCrawlingSnapshotDTO snapshot = crawlerCallable.createSnapshot(hostId);
-        snapshot.setHostName(crawlingHostMap.get(hostId).getHostName());
-        snapshot.setHostIndex(crawlingHostMap.get(hostId).getHostIndex());
+        snapshot.setHostName(crawlingHost.getHostName());
+        snapshot.setHostIndex(crawlingHost.getHostIndex());
         return snapshot;
     }
 
