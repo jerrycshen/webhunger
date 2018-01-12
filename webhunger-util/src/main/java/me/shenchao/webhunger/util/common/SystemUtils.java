@@ -7,6 +7,12 @@ import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
+/**
+ * 系统工具类
+ *
+ * @author Jerry Shen
+ * @since 0.1
+ */
 public class SystemUtils {
 
     private static String INTRANET_IP = getIntranetIp();

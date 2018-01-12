@@ -24,7 +24,7 @@ public class Host {
 
     private String hostIndex;
 
-    private int state;
+    private HostSnapshot latestSnapshot;
 
     private HostConfig hostConfig;
 
@@ -82,16 +82,12 @@ public class Host {
         setHostSecondDomain(UrlUtils.getHostSecondDomain(getHostDomain()));
     }
 
-    public int getState() {
-        return state;
+    public HostSnapshot getLatestSnapshot() {
+        return latestSnapshot;
     }
 
-    public void setState(int state) {
-        this.state = state;
-    }
-
-    public void setState(HostState hostState) {
-        this.state = hostState.getState();
+    public void setLatestSnapshot(HostSnapshot latestSnapshot) {
+        this.latestSnapshot = latestSnapshot;
     }
 
     public HostConfig getHostConfig() {

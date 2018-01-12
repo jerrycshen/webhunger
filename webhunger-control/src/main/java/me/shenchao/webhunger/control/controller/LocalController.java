@@ -87,6 +87,7 @@ class LocalController extends MasterController {
         HostCrawlingSnapshotDTO snapshot = crawlerCallable.createSnapshot(hostId);
         snapshot.setHostName(crawlingHost.getHostName());
         snapshot.setHostIndex(crawlingHost.getHostIndex());
+        snapshot.setStartTime(crawlingHost.getLatestSnapshot().getCreateTime());
         return snapshot;
     }
 

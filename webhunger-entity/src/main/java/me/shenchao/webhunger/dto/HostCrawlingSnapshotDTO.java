@@ -20,6 +20,7 @@ public class HostCrawlingSnapshotDTO {
     private Integer errorPageNum;
     private Date startTime;
     private Date endTime;
+    private Date createTime;
     private transient List<ErrorPageDTO> errorPages;
 
     public HostCrawlingSnapshotDTO(Builder builder) {
@@ -28,9 +29,8 @@ public class HostCrawlingSnapshotDTO {
         this.leftPageNum = builder.leftPageNum;
         this.successPageNum = builder.successPageNum;
         this.errorPageNum = builder.errorPageNum;
-        this.startTime = builder.startTime;
-        this.endTime = builder.endTime;
         this.errorPages = builder.errorPages;
+        this.createTime = new Date();
     }
 
     public String getHostId() {
@@ -51,14 +51,6 @@ public class HostCrawlingSnapshotDTO {
 
     public Integer getErrorPageNum() {
         return errorPageNum;
-    }
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
     }
 
     public List<ErrorPageDTO> getErrorPages() {
@@ -89,6 +81,26 @@ public class HostCrawlingSnapshotDTO {
         this.leftPageNum = leftPageNum;
     }
 
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
     @Override
     public String toString() {
         return "HostCrawlingSnapshotDTO{" +
@@ -99,8 +111,7 @@ public class HostCrawlingSnapshotDTO {
                 ", leftPageNum=" + leftPageNum +
                 ", successPageNum=" + successPageNum +
                 ", errorPageNum=" + errorPageNum +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
+                ", createTime=" + createTime +
                 ", errorPageNum=" + errorPages.size() +
                 '}';
     }
@@ -112,8 +123,6 @@ public class HostCrawlingSnapshotDTO {
         private Integer leftPageNum;
         private Integer successPageNum;
         private Integer errorPageNum;
-        private Date startTime;
-        private Date endTime;
         private List<ErrorPageDTO> errorPages;
 
         public Builder(String hostId) {
@@ -137,16 +146,6 @@ public class HostCrawlingSnapshotDTO {
 
         public Builder errorPageNum(Integer errorPageNum) {
             this.errorPageNum = errorPageNum;
-            return this;
-        }
-
-        public Builder startTime(Date startTime) {
-            this.startTime = startTime;
-            return this;
-        }
-
-        public Builder endTime(Date endTime) {
-            this.endTime = endTime;
             return this;
         }
 

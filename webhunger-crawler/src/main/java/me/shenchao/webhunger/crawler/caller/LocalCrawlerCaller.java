@@ -2,7 +2,7 @@ package me.shenchao.webhunger.crawler.caller;
 
 import com.google.common.collect.Lists;
 import me.shenchao.webhunger.crawler.dominate.LocalSiteDominate;
-import me.shenchao.webhunger.crawler.listener.CommonSpiderListener;
+import me.shenchao.webhunger.crawler.listener.BaseSpiderListener;
 import me.shenchao.webhunger.crawler.util.HostSnapshotHelper;
 import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
@@ -21,9 +21,9 @@ public class LocalCrawlerCaller implements CrawlerCallable {
 
     private LocalSiteDominate siteDominate;
 
-    private CommonSpiderListener spiderListener;
+    private BaseSpiderListener spiderListener;
 
-    public LocalCrawlerCaller(LocalSiteDominate siteDominate, CommonSpiderListener spiderListener) {
+    public LocalCrawlerCaller(LocalSiteDominate siteDominate, BaseSpiderListener spiderListener) {
         this.siteDominate = siteDominate;
         this.spiderListener = spiderListener;
     }

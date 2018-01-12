@@ -3,6 +3,7 @@ package me.shenchao.webhunger.client.control;
 import com.google.common.base.Charsets;
 import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
+import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostSnapshot;
 
 import java.io.*;
@@ -74,7 +75,7 @@ class FileAccessSupport {
     /**
      * 获取最新的快照记录
      */
-    static HostSnapshot getLatestSnapshot(String snapshotPath) throws IOException {
+    static HostSnapshot getLatestSnapshot(Host host, String snapshotPath) throws IOException {
         File snapshotFile = new File(snapshotPath);
         if (snapshotFile.exists()) {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(snapshotFile));
@@ -86,7 +87,7 @@ class FileAccessSupport {
             if (prev == null) {
                 return null;
             }
-            return FileParser.parseSnapshot(prev);
+            return FileParser.parseSnapshot(host, prev);
         }
         return null;
     }

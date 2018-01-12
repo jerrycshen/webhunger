@@ -52,7 +52,7 @@ public class FileTaskAccessor implements TaskAccessor {
         List<Host> hosts = task.getHosts();
         // 从快照日志中恢复站点状态
         for (Host host : hosts) {
-            resumeHostStat(host);
+            recoveryHostStat(host);
         }
         return task;
     }
@@ -64,7 +64,7 @@ public class FileTaskAccessor implements TaskAccessor {
             Task task = FileParser.parseTask(file, true);
             for (Host host : task.getHosts()) {
                 if (host.getHostId().equals(hostId)) {
-                    resumeHostStat(host);
+                    recoveryHostStat(host);
                     return host;
                 }
             }
@@ -90,17 +90,18 @@ public class FileTaskAccessor implements TaskAccessor {
      * 根据站点的快照信息，设置其最新状态信息
      * @param host host
      */
-    private void resumeHostStat(Host host) {
+    private void recoveryHostStat(Host host) {
         HostSnapshot hostSnapshot = null;
         try {
-            hostSnapshot = FileAccessSupport.getLatestSnapshot(getSnapshotPath(host));
+            hostSnapshot = FileAccessSupport.getLatestSnapshot(host, getSnapshotPath(host));
         } catch (IOException e) {
             logger.error("读取：{} 快照文件失败......{}", getSnapshotPath(host), e);
         }
         if (hostSnapshot != null) {
-            host.setState(hostSnapshot.getState());
+            host.setLatestSnapshot(hostSnapshot);
         } else {
-            host.setState(0);
+            HostSnapshot emptySnapshot = new HostSnapshot.Builder(host, 0, new Date()).build();
+            host.setLatestSnapshot(emptySnapshot);
         }
     }
 

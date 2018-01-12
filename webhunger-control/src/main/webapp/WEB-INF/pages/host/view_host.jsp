@@ -103,7 +103,7 @@
                 }
             },
             {
-                "data": "state",
+                "data": "latestSnapshot.state",
                 "render": function (data) {
                     if (data === 0) {
                         return "<span class='label label-info'>Ready</span>";
@@ -121,40 +121,40 @@
                 }
             },
             {
-                "data": "hostId",
+                "data": "latestSnapshot.state",
                 "render": function (data, type, row) {
                     var buttonStr = "";
                     // Ready
-                    if (row.state === 0) {
-                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='startCrawlingHost(\""+data+"\")'>Start</button> ";
+                    if (data === 0) {
+                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='startCrawlingHost(\""+row.hostId+"\")'>Start</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Suspend</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Stop</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>ReStart</button>";
-                    } else if (row.state === 1) {
+                    } else if (data === 1) {
                         // 正在爬取
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Start</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' >Suspend</button> ";
-                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='stopCrawlingHost("+data+")'>Stop</button> ";
+                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='stopCrawlingHost("+row.hostId+")'>Stop</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>ReStart</button>";
-                    } else if (row.state === 5) {
+                    } else if (data === 5) {
                         // 结束状态
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Start</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Suspend</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Stop</button> ";
-                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='reStartCrawlingHost("+data+")'>ReStart</button>";
-                    } else if (row.state === -1) {
+                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='reStartCrawlingHost("+row.hostId+")'>ReStart</button>";
+                    } else if (data === -1) {
                         // Waiting
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Start</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Suspend</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Stop</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>ReStart</button>";
-                    } else if (row.state === 2) {
+                    } else if (data === 2) {
                         // 爬取结束，正在页面处理阶段
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Start</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Suspend</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Stop</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>ReStart</button>";
-                    } else if (row.state === 3) {
+                    } else if (data === 3) {
                         // 暂停阶段
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Start</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Resume</button> ";
@@ -168,7 +168,7 @@
                 "data": "hostId",
                 "render": function (data, type, row) {
                     var buttonStr = "";
-                    if (row.state === 0 || row.state === -1) {
+                    if (row.latestSnapshot.state === 0 || row.latestSnapshot.state === -1) {
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Report</button> ";
                     } else {
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='viewReport(\""+data+"\")'>Report</button> ";

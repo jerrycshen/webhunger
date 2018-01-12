@@ -93,21 +93,7 @@ public class DistributedController extends MasterController {
      * @return 站点当前快照
      */
     private HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId) {
-        List<HostCrawlingSnapshotDTO> collectedHostCrawlingSnapshotList = new ArrayList<>(crawlerRPCMap.size());
-        for (Map.Entry<String, ReferenceConfig<CrawlerCallable>> entry : crawlerRPCMap.entrySet()) {
-            CrawlerCallable crawlerCallable = entry.getValue().get();
-            collectedHostCrawlingSnapshotList.add(crawlerCallable.createSnapshot(hostId));
-        }
-        if (collectedHostCrawlingSnapshotList.size() == 0) {
-            return null;
-        } else {
-            HostCrawlingSnapshotDTO snapshot = HostSnapshotHelper.combine(collectedHostCrawlingSnapshotList);
-            snapshot.setHostName(crawlingHostMap.get(hostId).getHostName());
-            snapshot.setHostIndex(crawlingHostMap.get(hostId).getHostIndex());
-            snapshot.setLeftPageNum(redisSupport.getLeftRequestsCount(crawlingHostMap.get(hostId)));
-            snapshot.setTotalPageNum(redisSupport.getTotalRequestsCount(crawlingHostMap.get(hostId)));
-            return snapshot;
-        }
+        return null;
     }
 
     /**
@@ -370,34 +356,4 @@ public class DistributedController extends MasterController {
         }
     }
 
-    private static class HostSnapshotHelper {
-
-        private static HostCrawlingSnapshotDTO combine(List<HostCrawlingSnapshotDTO> snapshotList) {
-            int successPageNum = 0;
-            int errorPageNum = 0;
-            Date startTime = null;
-            Date endTime = null;
-            for (HostCrawlingSnapshotDTO snapshot : snapshotList) {
-                successPageNum += snapshot.getSuccessPageNum();
-                errorPageNum += snapshot.getErrorPageNum();
-                if (startTime == null) {
-                    startTime = snapshot.getStartTime();
-                } else {
-                    if (snapshot.getStartTime().before(startTime)) {
-                        startTime = snapshot.getStartTime();
-                    }
-                }
-                if (endTime == null) {
-                    endTime = snapshot.getEndTime();
-                } else {
-                    if (snapshot.getEndTime().after(endTime)) {
-                        endTime = snapshot.getEndTime();
-                    }
-                }
-            }
-            String hostId = snapshotList.get(0).getHostId();
-            return new HostCrawlingSnapshotDTO.Builder(hostId).successPageNum(successPageNum).errorPageNum(errorPageNum)
-                    .startTime(startTime).endTime(endTime).build();
-        }
-    }
 }

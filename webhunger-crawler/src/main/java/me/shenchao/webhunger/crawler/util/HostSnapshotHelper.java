@@ -12,10 +12,12 @@ import me.shenchao.webhunger.entity.SiteStatusStatistics;
 public class HostSnapshotHelper {
 
     public static HostCrawlingSnapshotDTO create(String siteId, SiteStatusStatistics siteStatusStatistics) {
-        return new HostCrawlingSnapshotDTO.Builder(siteId).totalPageNum(siteStatusStatistics.getTotalPageNum())
-                .leftPageNum(siteStatusStatistics.getLeftPageNum()).successPageNum(siteStatusStatistics.getSuccessPageNum().get())
-                .errorPageNum(siteStatusStatistics.getErrorPageNum().get()).startTime(siteStatusStatistics.getStartTime())
-                .endTime(siteStatusStatistics.getEndTime()).errorPages(siteStatusStatistics.getErrorRequests())
+        return new HostCrawlingSnapshotDTO.Builder(siteId)
+                .totalPageNum(siteStatusStatistics.getTotalPageNum())
+                .leftPageNum(siteStatusStatistics.getLeftPageNum())
+                .successPageNum(siteStatusStatistics.getSuccessPageNum().get())
+                .errorPageNum(siteStatusStatistics.getErrorPageNum().get())
+                .errorPages(siteStatusStatistics.getErrorRequests())
                 .build();
     }
 

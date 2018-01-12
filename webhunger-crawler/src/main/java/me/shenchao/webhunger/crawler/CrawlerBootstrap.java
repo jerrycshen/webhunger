@@ -10,7 +10,8 @@ import me.shenchao.webhunger.crawler.caller.LocalCrawlerCaller;
 import me.shenchao.webhunger.crawler.dominate.BaseSiteDominate;
 import me.shenchao.webhunger.crawler.dominate.DistributedSiteDominate;
 import me.shenchao.webhunger.crawler.dominate.LocalSiteDominate;
-import me.shenchao.webhunger.crawler.listener.CommonSpiderListener;
+import me.shenchao.webhunger.crawler.listener.BaseSpiderListener;
+import me.shenchao.webhunger.crawler.listener.DistributedSpiderListener;
 import me.shenchao.webhunger.crawler.listener.LocalSpiderListener;
 import me.shenchao.webhunger.crawler.listener.SpiderListener;
 import me.shenchao.webhunger.crawler.pipeline.DistributedPipeline;
@@ -20,9 +21,9 @@ import me.shenchao.webhunger.crawler.caller.RpcCrawlerCaller;
 import me.shenchao.webhunger.crawler.scheduler.LocalQueueUrlScheduler;
 import me.shenchao.webhunger.crawler.scheduler.RedisQueueUrlScheduler;
 import me.shenchao.webhunger.crawler.selector.RoundRobinSiteSelector;
-import me.shenchao.webhunger.crawler.util.HostSnapshotHelper;
 import me.shenchao.webhunger.exception.ConfigParseException;
 import me.shenchao.webhunger.rpc.api.crawler.CrawlerCallable;
+import me.shenchao.webhunger.util.common.RedisUtils;
 import me.shenchao.webhunger.util.common.SystemUtils;
 import me.shenchao.webhunger.util.common.ZookeeperUtils;
 import org.apache.zookeeper.CreateMode;
@@ -30,6 +31,7 @@ import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.JedisPool;
 import us.codecraft.webmagic.Spider;
 
 import java.io.File;
@@ -78,10 +80,12 @@ public class CrawlerBootstrap {
         // 配置爬虫
         Spider spider = Spider.create(new WholeSiteCrawledProcessor());
         BaseSiteDominate siteDominate;
-        CommonSpiderListener spiderListener;
+        BaseSpiderListener spiderListener;
         if (crawlerConfig.isDistributed()) {
+            // 获取redis连接池
+            JedisPool jedisPool = RedisUtils.initJedisPool(crawlerConfig.getRedisAddress());
             // 创建监听器
-            spiderListener = new CommonSpiderListener();
+            spiderListener = new DistributedSpiderListener(jedisPool);
             // 启动zookeeper,注册本爬虫节点
             ZooKeeper zooKeeper = initZookeeper();
             // 创建分布式站点管理类
@@ -92,7 +96,7 @@ public class CrawlerBootstrap {
             initDubbo(crawlerCaller);
             // 爬虫配置
             spider.addPipeline(new DistributedPipeline());
-            spider.setScheduler(new RedisQueueUrlScheduler(new RoundRobinSiteSelector(siteDominate), crawlerConfig.getRedisAddress()));
+            spider.setScheduler(new RedisQueueUrlScheduler(new RoundRobinSiteSelector(siteDominate), jedisPool));
         } else {
             // 创建监听器
             spiderListener = new LocalSpiderListener(spider);

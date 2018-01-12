@@ -3,7 +3,6 @@ package me.shenchao.webhunger.entity;
 import com.google.common.collect.Lists;
 import me.shenchao.webhunger.dto.ErrorPageDTO;
 
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -24,10 +23,6 @@ public class SiteStatusStatistics {
     private AtomicInteger errorPageNum = new AtomicInteger(0);
 
     private List<ErrorPageDTO> errorRequests = Lists.newCopyOnWriteArrayList();
-
-    private Date startTime;
-
-    private Date endTime;
 
     public int getTotalPageNum() {
         return totalPageNum;
@@ -57,19 +52,4 @@ public class SiteStatusStatistics {
         return errorRequests;
     }
 
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
 }

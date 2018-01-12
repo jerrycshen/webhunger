@@ -9,7 +9,6 @@ import me.shenchao.webhunger.entity.webmagic.Site;
 import me.shenchao.webhunger.util.common.MD5Utils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 import us.codecraft.webmagic.LifeCycle;
 import us.codecraft.webmagic.scheduler.DuplicateRemovedScheduler;
 import us.codecraft.webmagic.scheduler.component.DuplicateRemover;
@@ -26,24 +25,9 @@ public class RedisQueueUrlScheduler extends DuplicateRemovedScheduler implements
 
     private SiteSelector siteSelector;
 
-    public RedisQueueUrlScheduler(SiteSelector siteSelector, String redisAddress) {
+    public RedisQueueUrlScheduler(SiteSelector siteSelector, JedisPool pool) {
         this.siteSelector = siteSelector;
-        this.pool = initPool(redisAddress);
-    }
-
-    private JedisPool initPool(String redisAddress) {
-        String host;
-        int port;
-        int index = redisAddress.indexOf(":");
-        if (index == -1) {
-            port = 6379;
-            host = redisAddress;
-        } else {
-            String[] ss = redisAddress.split(":");
-            host = ss[0];
-            port = Integer.parseInt(ss[1]);
-        }
-        return new JedisPool(new JedisPoolConfig(), host, port);
+        this.pool = pool;
     }
 
     @Override

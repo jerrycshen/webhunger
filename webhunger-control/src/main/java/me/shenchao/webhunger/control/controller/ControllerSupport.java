@@ -4,6 +4,7 @@ import me.shenchao.webhunger.client.api.control.TaskAccessor;
 import me.shenchao.webhunger.config.ControlConfig;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostSnapshot;
+import me.shenchao.webhunger.entity.HostState;
 import me.shenchao.webhunger.entity.Task;
 import me.shenchao.webhunger.util.classloader.ThirdPartyClassLoader;
 import org.slf4j.Logger;
@@ -55,11 +56,8 @@ class ControllerSupport {
         return taskAccessor;
     }
 
-    void createSnapshot(Host host) {
-        HostSnapshot snapshot = HostSnapshot.build()
-                .setCreateTime(new Date())
-                .setHost(host)
-                .setState(host.getState());
+    void createSnapshot(Host host, HostState hostState) {
+        HostSnapshot snapshot = new HostSnapshot.Builder(host, hostState.getState(), new Date()).build();
         taskAccessor.createSnapshot(snapshot);
     }
 }

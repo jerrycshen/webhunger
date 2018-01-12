@@ -98,7 +98,7 @@ public abstract class MasterController {
     public synchronized void start(String hostId) {
         Host host = controllerSupport.loadHostById(hostId);
         // 检查是否已经开始爬取
-        if (host.getState() != HostState.Ready.getState()) {
+        if (host.getLatestSnapshot().getState() != HostState.Ready.getState()) {
             logger.warn("站点：{} 已经开始爬取......", host.getHostName());
             return;
         }
@@ -106,10 +106,8 @@ public abstract class MasterController {
         logger.info("准备对站点：{} 爬取......", host.getHostName());
         // 清理数据，准备环境 todo
 //        crawlersControlSupport.rollbackHost(host);
-        // 修改host状态
-        host.setState(HostState.Waiting.getState());
         // 生成host快照，记录当前状态情况
-        controllerSupport.createSnapshot(host);
+        controllerSupport.createSnapshot(host, HostState.Waiting);
         hostScheduler.push(host);
         logger.info("站点：{} 加入待爬站点队列......", host.getHostName());
         signalNewHost();
@@ -159,8 +157,7 @@ public abstract class MasterController {
      */
     void crawlingCompleted(Host host) {
         crawlingHostMap.remove(host.getHostId());
-        host.setState(HostState.Processing);
-        controllerSupport.createSnapshot(host);
+        controllerSupport.createSnapshot(host, HostState.Processing);
         System.out.println(host.getHostName() + "爬取完毕");
     }
 
@@ -220,8 +217,7 @@ public abstract class MasterController {
                     threadPool.execute(new Runnable() {
                         @Override
                         public void run() {
-                            host.setState(HostState.Crawling);
-                            controllerSupport.createSnapshot(host);
+                            controllerSupport.createSnapshot(host, HostState.Crawling);
                             addCrawlingHost(host);
                             logger.info("站点：{} 开始爬取......", host.getHostName());
 

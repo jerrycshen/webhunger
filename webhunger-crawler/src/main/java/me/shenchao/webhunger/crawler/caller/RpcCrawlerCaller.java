@@ -3,7 +3,7 @@ package me.shenchao.webhunger.crawler.caller;
 import com.alibaba.fastjson.JSON;
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
 import me.shenchao.webhunger.crawler.dominate.DistributedSiteDominate;
-import me.shenchao.webhunger.crawler.listener.CommonSpiderListener;
+import me.shenchao.webhunger.crawler.listener.BaseSpiderListener;
 import me.shenchao.webhunger.crawler.util.HostSnapshotHelper;
 import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
@@ -33,9 +33,9 @@ public class RpcCrawlerCaller implements CrawlerCallable {
 
     private DistributedSiteDominate siteDominate;
 
-    private CommonSpiderListener spiderListener;
+    private BaseSpiderListener spiderListener;
 
-    public RpcCrawlerCaller(DistributedSiteDominate siteDominate, CommonSpiderListener spiderListener, ZooKeeper zooKeeper) {
+    public RpcCrawlerCaller(DistributedSiteDominate siteDominate, BaseSpiderListener spiderListener, ZooKeeper zooKeeper) {
         this.siteDominate = siteDominate;
         this.zooKeeper = zooKeeper;
         this.spiderListener = spiderListener;

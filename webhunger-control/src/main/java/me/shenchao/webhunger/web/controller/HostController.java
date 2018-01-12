@@ -67,7 +67,7 @@ public class HostController {
         model.addAttribute("hostId", hostId);
         model.addAttribute("isDistributed", isDistributed);
         Host host = masterController.getHostById(hostId);
-        if (host.getState() == HostState.Completed.getState()) {
+        if (host.getLatestSnapshot().getState() == HostState.Completed.getState()) {
             return "host/completed_report.jsp";
         } else {
             // 根据不同爬取模式，设置不同的站点进度刷新间隔
@@ -93,7 +93,7 @@ public class HostController {
     @ResponseBody
     public String pullErrorPage(@ModelAttribute DataTableCriterias dataTableCriterias, @PathVariable String hostId) {
         Host host = masterController.getHostById(hostId);
-        HostState hostState = HostState.valueOf(host.getState());
+        HostState hostState = HostState.valueOf(host.getLatestSnapshot().getState());
         List<ErrorPageDTO> errorPages = new ArrayList<>();
         int errorPageNum = 0;
         switch (hostState) {

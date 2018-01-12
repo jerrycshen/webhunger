@@ -170,13 +170,9 @@ class FileParser {
         return hostList;
     }
 
-    static HostSnapshot parseSnapshot(String snapshotStr) {
+    static HostSnapshot parseSnapshot(Host host, String snapshotStr) {
         String[] fields = snapshotStr.split("\t");
-        Host host = new Host();
-        host.setHostId(fields[0]);
-        return HostSnapshot.build()
-                .setHost(host)
-                .setState(Integer.parseInt(fields[1]))
-                .setCreateTime(FileAccessSupport.parsePreciseDate(fields[2]));
+        return new HostSnapshot.Builder(host, Integer.parseInt(fields[1]),
+                FileAccessSupport.parsePreciseDate(fields[2])).build();
     }
 }

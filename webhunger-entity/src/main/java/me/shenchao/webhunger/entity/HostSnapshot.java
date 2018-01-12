@@ -10,64 +10,53 @@ import java.util.Date;
  */
 public class HostSnapshot {
 
-    private Host host;
-
-    private int successPageNum;
-
-    private int errorPageNum;
+    private transient Host host;
 
     private int state;
 
     private Date createTime;
 
-    private HostSnapshot() {}
-
-    public static HostSnapshot build() {
-        return new HostSnapshot();
+    private HostSnapshot(Builder builder) {
+        this.host = builder.host;
+        this.state = builder.state;
+        this.createTime = builder.createTime;
     }
 
     public Host getHost() {
         return host;
     }
 
-    public HostSnapshot setHost(Host host) {
-        this.host = host;
-        return this;
-    }
-
-    public int getSuccessPageNum() {
-        return successPageNum;
-    }
-
-    public HostSnapshot setSuccessPageNum(int successPageNum) {
-        this.successPageNum = successPageNum;
-        return this;
-    }
-
-    public int getErrorPageNum() {
-        return errorPageNum;
-    }
-
-    public HostSnapshot setErrorPageNum(int errorPageNum) {
-        this.errorPageNum = errorPageNum;
-        return this;
-    }
-
     public int getState() {
         return state;
-    }
-
-    public HostSnapshot setState(int state) {
-        this.state = state;
-        return this;
     }
 
     public Date getCreateTime() {
         return createTime;
     }
 
-    public HostSnapshot setCreateTime(Date createTime) {
-        this.createTime = createTime;
-        return this;
+    @Override
+    public String toString() {
+        return "HostSnapshot{" +
+                "host=" + host +
+                ", state=" + state +
+                ", createTime=" + createTime +
+                '}';
+    }
+
+    public static class Builder {
+        private Host host;
+        private int state;
+        private Date createTime;
+
+        public Builder(Host host, int state, Date createTime) {
+            this.host = host;
+            this.state = state;
+            this.createTime = createTime;
+        }
+
+        public HostSnapshot build() {
+            return new HostSnapshot(this);
+        }
+
     }
 }

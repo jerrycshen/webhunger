@@ -10,7 +10,7 @@ import us.codecraft.webmagic.Spider;
  * @author Jerry Shen
  * @since 0.1
  */
-public class LocalSpiderListener extends CommonSpiderListener {
+public class LocalSpiderListener extends BaseSpiderListener {
 
     private Spider spider;
 

@@ -7,7 +7,6 @@ import me.shenchao.webhunger.entity.webmagic.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -16,9 +15,9 @@ import java.util.Map;
  * @author Jerry Shen
  * @since 0.1
  */
-public class CommonSpiderListener implements SpiderListener {
+public abstract class BaseSpiderListener implements SpiderListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(CommonSpiderListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(BaseSpiderListener.class);
 
     protected Map<String, SiteStatusStatistics> siteStatusStatisticsMap = Maps.newConcurrentMap();
 
@@ -26,10 +25,6 @@ public class CommonSpiderListener implements SpiderListener {
     public void onSuccess(Request request) {
         SiteStatusStatistics statusStatistics = getSiteStatusStatistics(request.getSiteId());
         statusStatistics.getSuccessPageNum().incrementAndGet();
-        if (statusStatistics.getStartTime() == null) {
-            statusStatistics.setStartTime(new Date());
-        }
-        statusStatistics.setEndTime(new Date());
     }
 
     @Override
