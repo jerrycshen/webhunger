@@ -41,7 +41,7 @@ public class DistributedController extends MasterController {
     private ZookeeperSupport zookeeperSupport = new ZookeeperSupport();
 
     DistributedController(ControlConfig controlConfig) {
-        super(controlConfig);
+        super(controlConfig, true);
         // 监控所有爬虫节点
         zookeeperSupport.watchCrawlerStatus();
     }

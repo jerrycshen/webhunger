@@ -2,7 +2,6 @@ package me.shenchao.webhunger.web.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import me.shenchao.webhunger.control.controller.ControllerFactory;
-import me.shenchao.webhunger.control.controller.DistributedController;
 import me.shenchao.webhunger.control.controller.MasterController;
 import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
@@ -62,7 +61,7 @@ public class HostController {
 
     @RequestMapping(value = "/host/{hostId}/report", method = RequestMethod.GET)
     public String reportCrawler(@PathVariable String hostId, Model model) {
-        boolean isDistributed = masterController instanceof DistributedController;
+        boolean isDistributed = masterController.isDistributed();
         model.addAttribute("hostId", hostId);
         model.addAttribute("isDistributed", isDistributed);
         Host host = masterController.getHostById(hostId);

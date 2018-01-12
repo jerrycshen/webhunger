@@ -1,6 +1,7 @@
 package us.codecraft.webmagic;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import me.shenchao.webhunger.crawler.dominate.BaseSiteDominate;
 import me.shenchao.webhunger.entity.webmagic.Page;
 import me.shenchao.webhunger.entity.webmagic.Request;
@@ -121,7 +122,7 @@ public class Spider implements Runnable, LifeCycle {
      *  注意该字段与 {@link BaseSiteDominate#siteList} {@link BaseSiteDominate#siteMap} 两者的区别，该字段粒度更细，精确到URL，
      *  而后两者是site层；此外，该字段实时性更高，事实上，后两者列表的维护就是通过该字段判断得到
      */
-    private Map<String, List<Request>> currentCrawlingRequests = new ConcurrentHashMap<>();
+    private Map<String, List<Request>> currentCrawlingRequests = Maps.newConcurrentMap();
 
     /**
      * create a spider with pageProcessor.

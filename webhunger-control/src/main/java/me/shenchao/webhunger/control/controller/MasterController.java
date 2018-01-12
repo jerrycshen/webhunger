@@ -31,6 +31,8 @@ public abstract class MasterController {
 
     protected ControlConfig controlConfig;
 
+    private boolean distributed;
+
     /**
      * 重用WebMagic的线程池类，进行线程数量控制
      */
@@ -48,10 +50,13 @@ public abstract class MasterController {
     /**
      * 当前正在爬取或者页面处理的站点集合
      */
-    protected Map<String, Host> crawlingHostMap = Maps.newConcurrentMap();
+    protected Map<String, Host> crawlingHostMap = Maps.newHashMap();
 
-    MasterController(ControlConfig controlConfig) {
+    protected ReentrantLock lock = new ReentrantLock();
+
+    MasterController(ControlConfig controlConfig, boolean distributed) {
         this.controlConfig = controlConfig;
+        this.distributed = distributed;
         controllerSupport = new ControllerSupport(controlConfig);
         // 启动站点调度器
         Thread schedulerThread = new Thread(new SchedulerThread());
@@ -70,8 +75,14 @@ public abstract class MasterController {
         return controllerSupport.loadHostById(hostId);
     }
 
-    public void start(String hostId) {
+    public synchronized void start(String hostId) {
         Host host = controllerSupport.loadHostById(hostId);
+        // 检查是否已经开始爬取
+        if (host.getState() != HostState.Ready.getState()) {
+            logger.warn("站点：{} 已经开始爬取......", host.getHostName());
+            return;
+        }
+
         logger.info("准备对站点：{} 爬取......", host.getHostName());
         // 清理数据，准备环境 todo
 //        crawlersControlSupport.rollbackHost(host);
@@ -82,6 +93,10 @@ public abstract class MasterController {
         hostScheduler.push(host);
         logger.info("站点：{} 加入待爬站点队列......", host.getHostName());
         signalNewHost();
+    }
+
+    public boolean isDistributed() {
+        return distributed;
     }
 
     /**
@@ -114,7 +129,44 @@ public abstract class MasterController {
      */
     abstract void processingCompleted(Host host);
 
+    private void addCrawlingHost(Host host) {
+        if (isDistributed()) {
+            crawlingHostMap.put(host.getHostId(), host);
+        } else {
+            lock.lock();
+            try {
+                crawlingHostMap.put(host.getHostId(), host);
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
     private class SchedulerThread implements Runnable {
+
+        /**
+         * 初始化控制相关组件
+         */
+        private void initComponent() {
+            String hostSchedulerStr = controlConfig.getHostSchedulerClass();
+            try {
+                Class<HostScheduler> hostSchedulerClass = (Class<HostScheduler>) Class.forName(hostSchedulerStr);
+                hostScheduler = hostSchedulerClass.newInstance();
+            } catch (Exception e) {
+                logger.error("获取站点调度器失败，程序退出......", e);
+                System.exit(1);
+            }
+            // 如果并行度设置小于0，表示同时爬取所有站点
+            if (controlConfig.getParallelism() > 0) {
+                threadPool = new CountableThreadPool(controlConfig.getParallelism());
+            } else {
+                threadPool = new CountableThreadPool(Integer.MAX_VALUE);
+            }
+
+            logger.info("站点调度器初始化完成，使用如下配置启动：");
+            logger.info("Host Scheduler Name: {}", hostScheduler.getClass());
+            logger.info("Host Crawling Parallelism: {}", controlConfig.getParallelism() > 0 ? controlConfig.getParallelism() : "all");
+        }
 
         @Override
         public void run() {
@@ -129,7 +181,7 @@ public abstract class MasterController {
                         public void run() {
                             host.setState(HostState.Crawling);
                             controllerSupport.createSnapshot(host);
-                            crawlingHostMap.put(host.getHostId(), host);
+                            addCrawlingHost(host);
                             logger.info("站点：{} 开始爬取......", host.getHostName());
 
                             crawl(host);
@@ -138,6 +190,7 @@ public abstract class MasterController {
                 }
             }
         }
+
     }
 
     private void waitNewHost() {
@@ -158,30 +211,6 @@ public abstract class MasterController {
         } finally {
             newHostLock.unlock();
         }
-    }
-
-    /**
-     * 初始化控制相关组件
-     */
-    private void initComponent() {
-        String hostSchedulerStr = controlConfig.getHostSchedulerClass();
-        try {
-            Class<HostScheduler> hostSchedulerClass = (Class<HostScheduler>) Class.forName(hostSchedulerStr);
-            hostScheduler = hostSchedulerClass.newInstance();
-        } catch (Exception e) {
-            logger.error("获取站点调度器失败，程序退出......", e);
-            System.exit(1);
-        }
-        // 如果并行度设置小于0，表示同时爬取所有站点
-        if (controlConfig.getParallelism() > 0) {
-            threadPool = new CountableThreadPool(controlConfig.getParallelism());
-        } else {
-            threadPool = new CountableThreadPool(Integer.MAX_VALUE);
-        }
-
-        logger.info("站点调度器初始化完成，使用如下配置启动：");
-        logger.info("Host Scheduler Name: {}", hostScheduler.getClass());
-        logger.info("Host Crawling Parallelism: {}", controlConfig.getParallelism() > 0 ? controlConfig.getParallelism() : "all");
     }
 
 }

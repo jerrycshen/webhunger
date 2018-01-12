@@ -34,7 +34,7 @@ public class CrawlerController {
     @ResponseBody
     public String viewCrawlerData() {
         List<Crawler> crawlers = new ArrayList<>();
-        if (masterController instanceof DistributedController) {
+        if (masterController.isDistributed()) {
             DistributedController distributedController = (DistributedController) masterController;
             crawlers = distributedController.getOnlineCrawlers();
         }
@@ -48,7 +48,7 @@ public class CrawlerController {
     public String runCrawler(@PathVariable("crawlerIP") String crawlerIP) {
         JSONObject result =  new JSONObject();
         result.put("res_code", 1);
-        if (masterController instanceof DistributedController) {
+        if (masterController.isDistributed()) {
             DistributedController distributedController = (DistributedController) masterController;
             distributedController.runCrawler(crawlerIP);
             result.put("res_code", 0);

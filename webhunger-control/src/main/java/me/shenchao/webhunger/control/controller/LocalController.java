@@ -29,7 +29,7 @@ class LocalController extends MasterController {
     private Map<String, AtomicReference<HostCrawlingSnapshotDTO>> currentHostCrawlingSnapshotMap = Maps.newConcurrentMap();
 
     LocalController(ControlConfig controlConfig) {
-        super(controlConfig);
+        super(controlConfig, false);
         initCrawler();
     }
 
@@ -38,7 +38,10 @@ class LocalController extends MasterController {
         crawlerBootstrap.start();
         this.crawlerCallable = crawlerBootstrap.getCrawlerCaller();
         // 启动定时检查线程
-        new Thread(new HostCrawledCompletedCheckThread()).start();
+        Thread thread = new Thread(new HostCrawledCompletedCheckThread());
+        thread.setDaemon(true);
+        thread.start();
+        logger.info("启动站点爬取完成检测线程......");
     }
 
     /**
@@ -81,14 +84,23 @@ class LocalController extends MasterController {
         @Override
         public void run() {
             while (true) {
-                for (Map.Entry<String, Host> entry : crawlingHostMap.entrySet()) {
-                    HostCrawlingSnapshotDTO currentCrawlingSnapshot = createCrawlingSnapshot(entry.getKey());
-                    currentHostCrawlingSnapshotMap.computeIfAbsent(entry.getKey(), k -> new AtomicReference<>())
-                            .set(currentCrawlingSnapshot);
-                    // 如果剩余数量为0，表明已经爬取完毕
-                    if (currentCrawlingSnapshot.getLeftPageNum() == 0) {
-                        crawlingCompleted(entry.getValue());
+                lock.lock();
+                List<Host> completedHosts = new ArrayList<>();
+                try {
+                    for (Map.Entry<String, Host> entry : crawlingHostMap.entrySet()) {
+                        HostCrawlingSnapshotDTO currentCrawlingSnapshot = createCrawlingSnapshot(entry.getKey());
+                        currentHostCrawlingSnapshotMap.computeIfAbsent(entry.getKey(), k -> new AtomicReference<>())
+                                .set(currentCrawlingSnapshot);
+                        // 如果剩余数量为0，表明已经爬取完毕
+                        if (currentCrawlingSnapshot.getLeftPageNum() == 0) {
+                            completedHosts.add(entry.getValue());
+                        }
                     }
+                } finally {
+                    lock.unlock();
+                }
+                for (Host host : completedHosts) {
+                    crawlingCompleted(host);
                 }
                 try {
                     Thread.sleep(CHECK_INTERVAL);
