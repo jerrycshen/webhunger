@@ -17,9 +17,7 @@ import me.shenchao.webhunger.util.common.ZookeeperUtils;
 import org.apache.zookeeper.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.*;
 
 import java.util.*;
 
@@ -72,28 +70,17 @@ public class DistributedController extends MasterController {
 
     @Override
     public List<ErrorPageDTO> getErrorPages(String hostId, int startPos, int size) {
-        return null;
+        return redisSupport.getErrorPages(hostId, startPos, startPos + size -1);
     }
 
     @Override
     public int getErrorPageNum(String hostId) {
-        return 0;
+        return redisSupport.getErrorPageNum(hostId);
     }
 
     @Override
     public HostCrawlingSnapshotDTO getCurrentCrawlingSnapshot(String hostId) {
-        return createCrawlingSnapshot(hostId);
-    }
-
-
-    /**
-     * 分布式中创建站点快照相对耗时，因为要汇总所有节点该站点的状态
-     *
-     * @param hostId hostId
-     * @return 站点当前快照
-     */
-    private HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId) {
-        return null;
+        return redisSupport.getCurrentCrawlingSnapshot(hostId);
     }
 
     /**
@@ -335,14 +322,25 @@ public class DistributedController extends MasterController {
             }
         }
 
-        private int getTotalRequestsCount(Host host) {
+        private HostCrawlingSnapshotDTO getCurrentCrawlingSnapshot(String hostId) {
             Jedis jedis = pool.getResource();
+            String successPageNum;
+            String errorPageNum;
+            Long totalPageNum;
+            Long leftPageNum;
             try {
-                Long size = jedis.scard(RedisPrefixConsts.getSetKey(host.getHostId()));
-                return size.intValue();
+                Pipeline pipeline = jedis.pipelined();
+                successPageNum = pipeline.hget(RedisPrefixConsts.getCountKey(hostId), RedisPrefixConsts.COUNT_SUCCESS_NUM).get();
+                errorPageNum = pipeline.hget(RedisPrefixConsts.getCountKey(hostId), RedisPrefixConsts.COUNT_ERROR_NUM).get();
+                totalPageNum = pipeline.scard(RedisPrefixConsts.getSetKey(hostId)).get();
+                leftPageNum = pipeline.llen(RedisPrefixConsts.getQueueKey(hostId)).get();
+                pipeline.sync();
             } finally {
                 pool.returnResource(jedis);
             }
+            return new HostCrawlingSnapshotDTO.Builder(hostId).successPageNum(Integer.parseInt(successPageNum))
+                    .errorPageNum(Integer.parseInt(errorPageNum)).totalPageNum(totalPageNum.intValue())
+                    .leftPageNum(leftPageNum.intValue()).build();
         }
 
         private void remove(Host host) {
@@ -350,6 +348,31 @@ public class DistributedController extends MasterController {
             try {
                 String hostId = host.getHostId();
                 jedis.del(RedisPrefixConsts.getQueueKey(hostId), RedisPrefixConsts.getSetKey(hostId), RedisPrefixConsts.getItemKey(hostId));
+            } finally {
+                pool.returnResource(jedis);
+            }
+        }
+
+        private List<ErrorPageDTO> getErrorPages(String hostId, int startPos, int endPos) {
+            Jedis jedis = pool.getResource();
+            try {
+                List<String> list = jedis.lrange(RedisPrefixConsts.getErrorPrefix(hostId), startPos, endPos);
+                List<ErrorPageDTO> errorPages = new ArrayList<>(list.size());
+                for (String errorPageStr : list) {
+                    ErrorPageDTO errorPage = JSON.parseObject(errorPageStr, ErrorPageDTO.class);
+                    errorPages.add(errorPage);
+                }
+                return errorPages;
+            } finally {
+                pool.returnResource(jedis);
+            }
+        }
+
+        private int getErrorPageNum(String hostId) {
+            Jedis jedis = pool.getResource();
+            try {
+                Long errorPageNum = jedis.llen(RedisPrefixConsts.getErrorPrefix(hostId));
+                return errorPageNum.intValue();
             } finally {
                 pool.returnResource(jedis);
             }

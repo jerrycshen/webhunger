@@ -24,6 +24,8 @@ public class ErrorPageDTO {
         this.errorMsg = errorMsg;
     }
 
+    public ErrorPageDTO() {}
+
     public String getHostId() {
         return hostId;
     }
