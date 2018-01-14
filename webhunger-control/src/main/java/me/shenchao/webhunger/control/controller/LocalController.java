@@ -71,20 +71,8 @@ class LocalController extends MasterController {
     }
 
     @Override
-    public HostCrawlingSnapshotDTO getCurrentCrawlingSnapshot(String hostId) {
-        return createCrawlingSnapshot(hostId);
-    }
-
-    private HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId) {
-        Host crawlingHost;
-        if ((crawlingHost = crawlingHostMap.get(hostId)) == null) {
-            return null;
-        }
-        HostCrawlingSnapshotDTO snapshot = crawlerCallable.createSnapshot(hostId);
-        snapshot.setHostName(crawlingHost.getHostName());
-        snapshot.setHostIndex(crawlingHost.getHostIndex());
-        snapshot.setStartTime(crawlingHost.getLatestSnapshot().getCreateTime());
-        return snapshot;
+    protected HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId) {
+        return crawlerCallable.createSnapshot(hostId);
     }
 
     /**

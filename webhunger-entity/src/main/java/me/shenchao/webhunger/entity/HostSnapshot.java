@@ -16,10 +16,24 @@ public class HostSnapshot {
 
     private Date createTime;
 
-    private HostSnapshot(Builder builder) {
-        this.host = builder.host;
-        this.state = builder.state;
-        this.createTime = builder.createTime;
+    public HostSnapshot(Host host, int state, Date createTime) {
+        this.host = host;
+        this.state = state;
+        this.createTime = createTime;
+    }
+
+    public HostSnapshot() {}
+
+    public void setHost(Host host) {
+        this.host = host;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
     public Host getHost() {
@@ -43,20 +57,4 @@ public class HostSnapshot {
                 '}';
     }
 
-    public static class Builder {
-        private Host host;
-        private int state;
-        private Date createTime;
-
-        public Builder(Host host, int state, Date createTime) {
-            this.host = host;
-            this.state = state;
-            this.createTime = createTime;
-        }
-
-        public HostSnapshot build() {
-            return new HostSnapshot(this);
-        }
-
-    }
 }

@@ -143,7 +143,24 @@ public abstract class MasterController {
      * @param hostId hostId
      * @return the crawling snapshot of host
      */
-    public abstract HostCrawlingSnapshotDTO getCurrentCrawlingSnapshot(String hostId);
+    public HostCrawlingSnapshotDTO getCurrentCrawlingSnapshot(String hostId) {
+        Host crawlingHost;
+        if ((crawlingHost = crawlingHostMap.get(hostId)) == null) {
+            return null;
+        }
+        HostCrawlingSnapshotDTO snapshot = createCrawlingSnapshot(hostId);
+        snapshot.setHostName(crawlingHost.getHostName());
+        snapshot.setHostIndex(crawlingHost.getHostIndex());
+        snapshot.setStartTime(crawlingHost.getLatestSnapshot().getCreateTime());
+        return snapshot;
+    }
+
+    /**
+     * 创建站点快照
+     * @param hostId hostId
+     * @return snapshot of the host
+     */
+    protected abstract HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId);
 
     /**
      * 向爬虫发送种子URL，开始爬取

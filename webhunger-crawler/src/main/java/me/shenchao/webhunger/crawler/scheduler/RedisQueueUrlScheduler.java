@@ -28,6 +28,7 @@ public class RedisQueueUrlScheduler extends DuplicateRemovedScheduler implements
     public RedisQueueUrlScheduler(SiteSelector siteSelector, JedisPool pool) {
         this.siteSelector = siteSelector;
         this.pool = pool;
+        setDuplicateRemover(this);
     }
 
     @Override

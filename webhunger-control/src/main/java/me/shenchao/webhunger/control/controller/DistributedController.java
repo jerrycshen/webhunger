@@ -79,7 +79,7 @@ public class DistributedController extends MasterController {
     }
 
     @Override
-    public HostCrawlingSnapshotDTO getCurrentCrawlingSnapshot(String hostId) {
+    protected HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId) {
         return redisSupport.getCurrentCrawlingSnapshot(hostId);
     }
 
@@ -233,6 +233,8 @@ public class DistributedController extends MasterController {
                 if (runningCrawlerNum == completedCrawlerNum) {
                     checkHostCrawlingCompleted(host);
                 }
+            } catch (KeeperException.NoNodeException e){
+                logger.debug("{} 爬取完毕，该节点已经被删除......");
             } catch (KeeperException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -330,11 +332,15 @@ public class DistributedController extends MasterController {
             Long leftPageNum;
             try {
                 Pipeline pipeline = jedis.pipelined();
-                successPageNum = pipeline.hget(RedisPrefixConsts.getCountKey(hostId), RedisPrefixConsts.COUNT_SUCCESS_NUM).get();
-                errorPageNum = pipeline.hget(RedisPrefixConsts.getCountKey(hostId), RedisPrefixConsts.COUNT_ERROR_NUM).get();
-                totalPageNum = pipeline.scard(RedisPrefixConsts.getSetKey(hostId)).get();
-                leftPageNum = pipeline.llen(RedisPrefixConsts.getQueueKey(hostId)).get();
+                Response<String> successNumRes = pipeline.hget(RedisPrefixConsts.getCountKey(hostId), RedisPrefixConsts.COUNT_SUCCESS_NUM);
+                Response<String> errorNumRes = pipeline.hget(RedisPrefixConsts.getCountKey(hostId), RedisPrefixConsts.COUNT_ERROR_NUM);
+                Response<Long> totalNumRes = pipeline.scard(RedisPrefixConsts.getSetKey(hostId));
+                Response<Long> leftNumRes = pipeline.llen(RedisPrefixConsts.getQueueKey(hostId));
                 pipeline.sync();
+                successPageNum = successNumRes.get();
+                errorPageNum = errorNumRes.get();
+                totalPageNum = totalNumRes.get();
+                leftPageNum = leftNumRes.get();
             } finally {
                 pool.returnResource(jedis);
             }
@@ -357,6 +363,7 @@ public class DistributedController extends MasterController {
             Jedis jedis = pool.getResource();
             try {
                 List<String> list = jedis.lrange(RedisPrefixConsts.getErrorPrefix(hostId), startPos, endPos);
+                System.out.println(list.size());
                 List<ErrorPageDTO> errorPages = new ArrayList<>(list.size());
                 for (String errorPageStr : list) {
                     ErrorPageDTO errorPage = JSON.parseObject(errorPageStr, ErrorPageDTO.class);
@@ -372,6 +379,7 @@ public class DistributedController extends MasterController {
             Jedis jedis = pool.getResource();
             try {
                 Long errorPageNum = jedis.llen(RedisPrefixConsts.getErrorPrefix(hostId));
+                System.out.println(errorPageNum);
                 return errorPageNum.intValue();
             } finally {
                 pool.returnResource(jedis);

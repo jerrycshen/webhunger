@@ -100,7 +100,7 @@ public class FileTaskAccessor implements TaskAccessor {
         if (hostSnapshot != null) {
             host.setLatestSnapshot(hostSnapshot);
         } else {
-            HostSnapshot emptySnapshot = new HostSnapshot.Builder(host, 0, new Date()).build();
+            HostSnapshot emptySnapshot = new HostSnapshot(host, 0, new Date());
             host.setLatestSnapshot(emptySnapshot);
         }
     }

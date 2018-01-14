@@ -57,7 +57,7 @@ class ControllerSupport {
     }
 
     void createSnapshot(Host host, HostState hostState) {
-        HostSnapshot snapshot = new HostSnapshot.Builder(host, hostState.getState(), new Date()).build();
+        HostSnapshot snapshot = new HostSnapshot(host, hostState.getState(), new Date());
         taskAccessor.createSnapshot(snapshot);
     }
 }

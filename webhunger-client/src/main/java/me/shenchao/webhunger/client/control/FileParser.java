@@ -172,7 +172,7 @@ class FileParser {
 
     static HostSnapshot parseSnapshot(Host host, String snapshotStr) {
         String[] fields = snapshotStr.split("\t");
-        return new HostSnapshot.Builder(host, Integer.parseInt(fields[1]),
-                FileAccessSupport.parsePreciseDate(fields[2])).build();
+        return new HostSnapshot(host, Integer.parseInt(fields[1]),
+                FileAccessSupport.parsePreciseDate(fields[2]));
     }
 }
