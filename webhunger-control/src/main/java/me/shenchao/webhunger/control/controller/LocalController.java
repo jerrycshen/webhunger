@@ -1,6 +1,5 @@
 package me.shenchao.webhunger.control.controller;
 
-import com.google.common.collect.Maps;
 import me.shenchao.webhunger.config.ControlConfig;
 import me.shenchao.webhunger.crawler.CrawlerBootstrap;
 import me.shenchao.webhunger.dto.ErrorPageDTO;
@@ -13,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 单机版站点调度控制器
@@ -26,8 +24,6 @@ class LocalController extends MasterController {
     private static final Logger logger = LoggerFactory.getLogger(LocalController.class);
 
     private CrawlerCallable crawlerCallable;
-
-    private Map<String, AtomicReference<HostCrawlingSnapshotDTO>> currentHostCrawlingSnapshotMap = Maps.newConcurrentMap();
 
     LocalController(ControlConfig controlConfig) {
         super(controlConfig, false);
@@ -62,21 +58,21 @@ class LocalController extends MasterController {
 
     @Override
     public List<ErrorPageDTO> getErrorPages(String hostId, int startPos, int size) {
-        HostCrawlingSnapshotDTO currentHostCrawlingSnapshot = currentHostCrawlingSnapshotMap.get(hostId).get();
+        HostCrawlingSnapshotDTO currentHostCrawlingSnapshot = createCrawlingSnapshot(hostId);
         List<ErrorPageDTO> allErrorPages = currentHostCrawlingSnapshot.getErrorPages();
         return allErrorPages.subList(startPos, Math.min(startPos + size, allErrorPages.size()));
     }
 
     @Override
     public int getErrorPageNum(String hostId) {
-        HostCrawlingSnapshotDTO currentHostCrawlingSnapshot = currentHostCrawlingSnapshotMap.get(hostId).get();
+        HostCrawlingSnapshotDTO currentHostCrawlingSnapshot = createCrawlingSnapshot(hostId);
         List<ErrorPageDTO> allErrorPages = currentHostCrawlingSnapshot.getErrorPages();
         return allErrorPages.size();
     }
 
     @Override
     public HostCrawlingSnapshotDTO getCurrentCrawlingSnapshot(String hostId) {
-        return currentHostCrawlingSnapshotMap.computeIfAbsent(hostId, k -> new AtomicReference<>(createCrawlingSnapshot(hostId))).get();
+        return createCrawlingSnapshot(hostId);
     }
 
     private HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId) {
@@ -108,11 +104,7 @@ class LocalController extends MasterController {
                 List<Host> completedHosts = new ArrayList<>();
                 try {
                     for (Map.Entry<String, Host> entry : crawlingHostMap.entrySet()) {
-                        HostCrawlingSnapshotDTO currentCrawlingSnapshot = createCrawlingSnapshot(entry.getKey());
-                        currentHostCrawlingSnapshotMap.computeIfAbsent(entry.getKey(), k -> new AtomicReference<>())
-                                .set(currentCrawlingSnapshot);
-                        // 如果剩余数量为0，表明已经爬取完毕
-                        if (currentCrawlingSnapshot.getLeftPageNum() == 0) {
+                        if (crawlerCallable.checkCrawledCompleted(entry.getKey())) {
                             completedHosts.add(entry.getValue());
                         }
                     }

@@ -26,6 +26,13 @@ public interface CrawlerCallable {
     void crawl(List<Host> hosts);
 
     /**
+     * 判断在该爬虫节点对该站点的爬取是否结束
+     * @param hostId hostId
+     * @return if completed return true
+     */
+    boolean checkCrawledCompleted(String hostId);
+
+    /**
      * 创建站点当前快照信息
      *
      * @param hostId hostId

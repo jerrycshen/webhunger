@@ -20,7 +20,7 @@ public class LocalSiteDominate extends BaseSiteDominate {
 
     @Override
     public boolean checkCrawledCompleted(String siteId, SiteListener siteListener) {
-        if (checkLocalCrawledCompleted(siteId)) {
+        if (!isLocalCrawlingNow(siteId)) {
             removeSiteFromList(siteId);
             complete(siteId);
             return true;

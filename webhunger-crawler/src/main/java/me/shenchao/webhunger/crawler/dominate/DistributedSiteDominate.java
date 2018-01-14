@@ -38,7 +38,7 @@ public class DistributedSiteDominate extends BaseSiteDominate {
 
     @Override
     public boolean checkCrawledCompleted(String siteId, SiteListener siteListener) {
-        if (!checkLocalCrawledCompleted(siteId)) {
+        if (isLocalCrawlingNow(siteId)) {
             return false;
         } else {
             // 将该站点从待爬列表移除，但并没有真正移除该站点在map中的缓存，因为之后可能会恢复

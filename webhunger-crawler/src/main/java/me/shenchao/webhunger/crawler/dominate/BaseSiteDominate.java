@@ -64,14 +64,14 @@ public abstract class BaseSiteDominate {
     }
 
     /**
-     * 检查本爬虫节点对该站点的爬取是否已经结束
+     * 检查本爬虫节点当前是否在对该站点进行爬取
      * @param siteId siteId
-     * @return 如果爬取完成返回true，反之false
+     * @return 如果当前正在爬取返回true
      */
-    protected boolean checkLocalCrawledCompleted(String siteId) {
+    public boolean isLocalCrawlingNow(String siteId) {
         // 获取当前spider正在爬取的请求
         Map<String, List<Request>> currentCrawlingRequests = spider.getCurrentCrawlingRequests();
-        return currentCrawlingRequests.get(siteId).size() == 0;
+        return currentCrawlingRequests.get(siteId).size() != 0;
     }
 
     /**

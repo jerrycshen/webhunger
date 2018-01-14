@@ -16,20 +16,8 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li id="taskMenu"><a href="${AppContext}task/list">Task</a></li>
-                <li id="crawlerMenu" class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Crawler <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="${AppContext}crawler/list">View</a></li>
-                        <li><a href="#">Status</a></li>
-                    </ul>
-                </li>
-                <li id="processorMenu" class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Processor <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">View</a></li>
-                        <li><a href="#">Status</a></li>
-                    </ul>
-                </li>
+                <li id="crawlerMenu"><a href="${AppContext}crawler/list">Crawler</a></li>
+                <li id="processorMenu"><a href="#">Processor</a></li>
             </ul>
         </div><!--/.nav-collapse -->
     </div>
