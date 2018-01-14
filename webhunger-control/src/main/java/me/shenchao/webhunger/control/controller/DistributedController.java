@@ -363,7 +363,6 @@ public class DistributedController extends MasterController {
             Jedis jedis = pool.getResource();
             try {
                 List<String> list = jedis.lrange(RedisPrefixConsts.getErrorPrefix(hostId), startPos, endPos);
-                System.out.println(list.size());
                 List<ErrorPageDTO> errorPages = new ArrayList<>(list.size());
                 for (String errorPageStr : list) {
                     ErrorPageDTO errorPage = JSON.parseObject(errorPageStr, ErrorPageDTO.class);

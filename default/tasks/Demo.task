@@ -30,5 +30,25 @@
                 </urlFilterConfig>
             </config>
         </host>
+        <host>
+            <hostName>浙江残联</hostName>
+            <hostIndex>http://www.zjcl.com.cn/</hostIndex>
+            <!-- TODO 关于配置的覆盖问题，实现不够完善 -->
+            <config>
+                <depth>2</depth>
+                <interval>1000</interval>
+                <retry>0</retry>
+                <timeout>10000</timeout>
+                <userAgent>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.94 Safari/537.36</userAgent>
+                <urlFilterConfig>
+                    <urlFilterJarDir>/Users/jerry/IdeaProjects/webhunger/default/accessor</urlFilterJarDir>
+                    <filters>
+                        <filter>me.shenchao.webhunger.client.crawler.filter.DepthFilter</filter>
+                        <filter>me.shenchao.webhunger.client.crawler.filter.SameDomainFilter</filter>
+                        <filter>me.shenchao.webhunger.client.crawler.filter.UrlsSuffixExcludeFilter</filter>
+                    </filters>
+                </urlFilterConfig>
+            </config>
+        </host>
     </hosts>
 </task>

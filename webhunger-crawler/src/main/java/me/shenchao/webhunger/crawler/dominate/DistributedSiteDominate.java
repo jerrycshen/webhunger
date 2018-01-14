@@ -60,6 +60,7 @@ public class DistributedSiteDominate extends BaseSiteDominate {
 
     @Override
     void complete(String siteId) {
+        super.complete(siteId);
         // 移除检测线程中map中的相关记录
         siteCrawledCompletedCheckThread.remove(siteId);
         // 彻底移除对该站点的所有缓存

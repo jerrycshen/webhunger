@@ -71,7 +71,8 @@ public abstract class BaseSiteDominate {
     public boolean isLocalCrawlingNow(String siteId) {
         // 获取当前spider正在爬取的请求
         Map<String, List<Request>> currentCrawlingRequests = spider.getCurrentCrawlingRequests();
-        return currentCrawlingRequests.get(siteId).size() != 0;
+        // 如果一次都没有爬取过
+        return currentCrawlingRequests.get(siteId) == null || currentCrawlingRequests.get(siteId).size() != 0;
     }
 
     /**
@@ -86,7 +87,10 @@ public abstract class BaseSiteDominate {
      * 站点爬取结束回调方法
      * @param siteId siteId
      */
-    abstract void complete(String siteId);
+    void complete(String siteId) {
+        // 移除正在爬取列表中的缓存
+        spider.getCurrentCrawlingRequests().remove(siteId);
+    }
 
     /**
      * 更新本地爬虫列表

@@ -30,6 +30,7 @@ public class LocalSiteDominate extends BaseSiteDominate {
 
     @Override
     void complete(String siteId) {
+        super.complete(siteId);
         // 彻底移除对该站点的所有缓存
         removeSite(siteId);
         // 移除站点对应的相关URL队列
