@@ -1,4 +1,4 @@
-package me.shenchao.webhunger.exception;
+package me.shenchao.webhunger.client.exceptioin;
 
 /**
  * 解析task文件异常

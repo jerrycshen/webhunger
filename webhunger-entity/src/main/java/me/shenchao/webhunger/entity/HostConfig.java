@@ -27,7 +27,9 @@ public class HostConfig {
 
     private Map<String, String> cookies = new HashMap<>();
 
-    private URLFilterConfig urlFilterConfig;
+    private UrlFilterConfig urlFilterConfig;
+
+    private HandlerConfig handlerConfig;
 
     public int getDepth() {
         return depth;
@@ -93,11 +95,19 @@ public class HostConfig {
         cookies.put(key, value);
     }
 
-    public URLFilterConfig getUrlFilterConfig() {
+    public UrlFilterConfig getUrlFilterConfig() {
         return urlFilterConfig;
     }
 
-    public void setUrlFilterConfig(URLFilterConfig urlFilterConfig) {
+    public void setUrlFilterConfig(UrlFilterConfig urlFilterConfig) {
         this.urlFilterConfig = urlFilterConfig;
+    }
+
+    public HandlerConfig getHandlerConfig() {
+        return handlerConfig;
+    }
+
+    public void setHandlerConfig(HandlerConfig handlerConfig) {
+        this.handlerConfig = handlerConfig;
     }
 }

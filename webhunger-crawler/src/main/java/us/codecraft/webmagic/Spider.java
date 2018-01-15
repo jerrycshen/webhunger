@@ -6,6 +6,7 @@ import me.shenchao.webhunger.crawler.dominate.BaseSiteDominate;
 import me.shenchao.webhunger.entity.webmagic.Page;
 import me.shenchao.webhunger.entity.webmagic.Request;
 import me.shenchao.webhunger.entity.webmagic.Site;
+import me.shenchao.webhunger.util.common.SystemUtils;
 import me.shenchao.webhunger.util.thread.CountableThreadPool;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
@@ -319,7 +320,7 @@ public class Spider implements Runnable, LifeCycle {
     public void run() {
         checkRunningStat();
         initComponent();
-        logger.info("Spider {} 启动完成......", getUUID());
+        logger.info("Spider {} 启动完成......", SystemUtils.getHostName());
         while (!Thread.currentThread().isInterrupted() && stat.get() == STAT_RUNNING) {
             final Request request = scheduler.poll(this);
             if (request == null) {

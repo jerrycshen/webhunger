@@ -21,7 +21,6 @@ import me.shenchao.webhunger.crawler.caller.RpcCrawlerCaller;
 import me.shenchao.webhunger.crawler.scheduler.LocalQueueUrlScheduler;
 import me.shenchao.webhunger.crawler.scheduler.RedisQueueUrlScheduler;
 import me.shenchao.webhunger.crawler.selector.RoundRobinSiteSelector;
-import me.shenchao.webhunger.exception.ConfigParseException;
 import me.shenchao.webhunger.rpc.api.crawler.CrawlerCallable;
 import me.shenchao.webhunger.util.common.RedisUtils;
 import me.shenchao.webhunger.util.common.SystemUtils;
@@ -58,8 +57,6 @@ public class CrawlerBootstrap {
         crawlerConfig = new CrawlerConfig();
         try {
             crawlerConfig.parse(SystemUtils.getWebHungerConfigDir() + File.separator + CONF_NAME);
-        } catch (ConfigParseException e) {
-            logger.warn(e.toString());
         } catch (IOException e) {
             logger.error("爬虫模块配置文件读取失败，程序退出......", e);
             System.exit(1);

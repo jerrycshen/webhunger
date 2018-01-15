@@ -2,7 +2,7 @@ package me.shenchao.webhunger.crawler.scheduler;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import me.shenchao.webhunger.crawler.listener.SiteListener;
+import me.shenchao.webhunger.crawler.listener.SiteUrlNumListener;
 import me.shenchao.webhunger.crawler.selector.SiteSelector;
 import me.shenchao.webhunger.entity.webmagic.Request;
 import me.shenchao.webhunger.entity.webmagic.Site;
@@ -21,7 +21,7 @@ import java.util.concurrent.LinkedBlockingDeque;
  * @author Jerry Shen
  * @since 0.1
  */
-public class LocalQueueUrlScheduler extends DuplicateRemovedScheduler implements DuplicateRemover, SiteListener {
+public class LocalQueueUrlScheduler extends DuplicateRemovedScheduler implements DuplicateRemover, SiteUrlNumListener {
 
     private Map<String, BlockingQueue<Request>> queueMap = Maps.newConcurrentMap();
 
@@ -57,12 +57,12 @@ public class LocalQueueUrlScheduler extends DuplicateRemovedScheduler implements
     }
 
     @Override
-    public int getLeftRequestsCount(String siteId) {
+    public int getLeftRequestsNum(String siteId) {
         return queueMap.get(siteId).size();
     }
 
     @Override
-    public int getTotalRequestsCount(String siteId) {
+    public int getTotalRequestsNum(String siteId) {
         return duplicateMap.get(siteId).size();
     }
 

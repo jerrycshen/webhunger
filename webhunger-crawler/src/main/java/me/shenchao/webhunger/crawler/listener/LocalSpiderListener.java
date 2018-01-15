@@ -27,10 +27,10 @@ public class LocalSpiderListener extends BaseSpiderListener {
     }
 
     private int getLeftRequestsCount(String siteId) {
-        return ((SiteListener) spider.getScheduler()).getLeftRequestsCount(siteId);
+        return ((SiteUrlNumListener) spider.getScheduler()).getLeftRequestsNum(siteId);
     }
 
     private int getTotalRequestsCount(String siteId) {
-        return ((SiteListener) spider.getScheduler()).getTotalRequestsCount(siteId);
+        return ((SiteUrlNumListener) spider.getScheduler()).getTotalRequestsNum(siteId);
     }
 }

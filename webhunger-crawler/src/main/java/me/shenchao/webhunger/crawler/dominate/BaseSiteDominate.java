@@ -2,7 +2,7 @@ package me.shenchao.webhunger.crawler.dominate;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import me.shenchao.webhunger.crawler.listener.SiteListener;
+import me.shenchao.webhunger.crawler.listener.SiteUrlNumListener;
 import me.shenchao.webhunger.entity.webmagic.Request;
 import me.shenchao.webhunger.entity.webmagic.Site;
 import us.codecraft.webmagic.Spider;
@@ -10,7 +10,7 @@ import us.codecraft.webmagic.Spider;
 import java.util.*;
 
 /**
- * 站点管理类
+ * 页面爬取站点管理类
  *
  * @author Jerry Shen
  * @since 0.1
@@ -81,7 +81,7 @@ public abstract class BaseSiteDominate {
      * @param siteListener siteListener
      * @return 是否爬取完毕
      */
-    public abstract boolean checkCrawledCompleted(String siteId, SiteListener siteListener);
+    public abstract boolean checkCrawledCompleted(String siteId, SiteUrlNumListener siteListener);
 
     /**
      * 站点爬取结束回调方法

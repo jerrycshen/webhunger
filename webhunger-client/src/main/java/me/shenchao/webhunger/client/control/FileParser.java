@@ -1,7 +1,7 @@
 package me.shenchao.webhunger.client.control;
 
 import me.shenchao.webhunger.entity.*;
-import me.shenchao.webhunger.exception.TaskParseException;
+import me.shenchao.webhunger.client.exceptioin.TaskParseException;
 import me.shenchao.webhunger.util.common.FileUtils;
 import me.shenchao.webhunger.util.common.MD5Utils;
 import org.dom4j.Document;
@@ -116,15 +116,16 @@ class FileParser {
                     hostConfig.addCookie(cookieElement.attributeValue("key"), cookieElement.attributeValue("value"));
                 }
             }
-            hostConfig.setUrlFilterConfig(parseURLFilterConfig(configElement.element("urlFilterConfig")));
+            hostConfig.setUrlFilterConfig(parseUrlFilterConfig(configElement.element("urlFilterConfig")));
+            hostConfig.setHandlerConfig(parseHandlerConfig(configElement.element("handlerConfig")));
         }
         return hostConfig;
     }
 
-    private static URLFilterConfig parseURLFilterConfig(Element configElement) {
-        URLFilterConfig urlFilterConfig = null;
+    private static UrlFilterConfig parseUrlFilterConfig(Element configElement) {
+        UrlFilterConfig urlFilterConfig = null;
         if (configElement != null) {
-            urlFilterConfig = new URLFilterConfig();
+            urlFilterConfig = new UrlFilterConfig();
             Element jarPathElement = configElement.element("urlFilterJarDir");
             if (jarPathElement != null) {
                 urlFilterConfig.setUrlFilterJarDir(jarPathElement.getText());
@@ -138,6 +139,25 @@ class FileParser {
             }
         }
         return urlFilterConfig;
+    }
+
+    private static HandlerConfig parseHandlerConfig(Element configElement) {
+        HandlerConfig handlerConfig = null;
+        if (configElement != null) {
+            handlerConfig = new HandlerConfig();
+            Element jarPathElement = configElement.element("handlerJarDir");
+            if (jarPathElement != null) {
+                handlerConfig.setHandlerJarDir(jarPathElement.getText());
+            }
+            Element handlersElement = configElement.element("handlers");
+            if (handlersElement != null && handlersElement.elements("handler").size() > 0) {
+                List<Element> handlerList = handlersElement.elements("handler");
+                for (Element handlerElement : handlerList) {
+                    handlerConfig.addHandlerClass(handlerElement.getText());
+                }
+            }
+        }
+        return handlerConfig;
     }
 
     private static List<Host> parseHost(Task task, Element hostsElement) {

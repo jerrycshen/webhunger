@@ -97,12 +97,9 @@ public abstract class MasterController {
      */
     public synchronized void start(String hostId) {
         Host host = controllerSupport.loadHostById(hostId);
-        // 检查是否已经开始爬取
-        if (host.getLatestSnapshot().getState() != HostState.Ready.getState()) {
-            logger.warn("站点：{} 已经开始爬取......", host.getHostName());
+        if (!checkBeforeStart(host)) {
             return;
         }
-
         logger.info("准备对站点：{} 爬取......", host.getHostName());
         // 清理数据，准备环境 todo
 //        crawlersControlSupport.rollbackHost(host);
@@ -114,11 +111,42 @@ public abstract class MasterController {
     }
 
     /**
+     * 爬取之前进行验证是否可以进行爬取
+     * @param host host
+     * @return if pass the check return true
+     */
+    boolean checkBeforeStart(Host host) {
+        // 检查是否已经开始爬取
+        if (host.getLatestSnapshot().getState() != HostState.Ready.getState()) {
+            logger.warn("站点：{} 已经开始爬取......", host.getHostName());
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * 当前爬取环境是否为分布式
      * @return return true if is distributed mode
      */
     public boolean isDistributed() {
         return distributed;
+    }
+
+    /**
+     * 获取站点当前快照
+     * @param hostId hostId
+     * @return the crawling snapshot of host
+     */
+    public HostCrawlingSnapshotDTO getCurrentCrawlingSnapshot(String hostId) {
+        Host crawlingHost;
+        if ((crawlingHost = crawlingHostMap.get(hostId)) == null) {
+            return null;
+        }
+        HostCrawlingSnapshotDTO snapshot = createCrawlingSnapshot(hostId);
+        snapshot.setHostName(crawlingHost.getHostName());
+        snapshot.setHostIndex(crawlingHost.getHostIndex());
+        snapshot.setStartTime(crawlingHost.getLatestSnapshot().getCreateTime());
+        return snapshot;
     }
 
     /**
@@ -139,23 +167,6 @@ public abstract class MasterController {
     public abstract int getErrorPageNum(String hostId);
 
     /**
-     * 获取站点当前快照
-     * @param hostId hostId
-     * @return the crawling snapshot of host
-     */
-    public HostCrawlingSnapshotDTO getCurrentCrawlingSnapshot(String hostId) {
-        Host crawlingHost;
-        if ((crawlingHost = crawlingHostMap.get(hostId)) == null) {
-            return null;
-        }
-        HostCrawlingSnapshotDTO snapshot = createCrawlingSnapshot(hostId);
-        snapshot.setHostName(crawlingHost.getHostName());
-        snapshot.setHostIndex(crawlingHost.getHostIndex());
-        snapshot.setStartTime(crawlingHost.getLatestSnapshot().getCreateTime());
-        return snapshot;
-    }
-
-    /**
      * 创建站点快照
      * @param hostId hostId
      * @return snapshot of the host
@@ -168,6 +179,13 @@ public abstract class MasterController {
      */
     abstract void crawl(Host host);
 
+
+    /**
+     * 处理完毕操纵
+     * @param host host
+     */
+    abstract void processingCompleted(Host host);
+
     /**
      * 爬取完成操作
      * @param host host
@@ -177,12 +195,6 @@ public abstract class MasterController {
         controllerSupport.createSnapshot(host, HostState.Processing);
         System.out.println(host.getHostName() + "爬取完毕");
     }
-
-    /**
-     * 处理完毕操纵
-     * @param host host
-     */
-    abstract void processingCompleted(Host host);
 
     private void addCrawlingHost(Host host) {
         if (isDistributed()) {

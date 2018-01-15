@@ -38,17 +38,17 @@ public class ControlConfig {
 
     private String redisAddress;
 
-    public void parse(String fileName) throws IOException, ConfigParseException {
+    public void parse(String fileName) throws IOException {
         parse(new FileInputStream(fileName));
     }
 
-    public void parse(InputStream in) throws IOException, ConfigParseException {
+    public void parse(InputStream in) throws IOException {
         Properties properties = new Properties();
         properties.load(in);
         parseProperties(properties);
     }
 
-    private void parseProperties(Properties properties) throws ConfigParseException {
+    private void parseProperties(Properties properties) {
         this.distributed = Boolean.parseBoolean(properties.getProperty("distributed", "false"));
         try {
             this.port = Integer.parseInt(properties.getProperty("port", "5572"));

@@ -1,7 +1,7 @@
 package me.shenchao.webhunger.crawler.selector;
 
 import me.shenchao.webhunger.crawler.dominate.BaseSiteDominate;
-import me.shenchao.webhunger.crawler.listener.SiteListener;
+import me.shenchao.webhunger.crawler.listener.SiteUrlNumListener;
 import me.shenchao.webhunger.entity.webmagic.Site;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,7 +37,7 @@ public class RoundRobinSiteSelector implements SiteSelector {
     }
 
     @Override
-    public Site select(SiteListener siteListener) {
+    public Site select(SiteUrlNumListener siteListener) {
         Site nextSite;
         if ((nextSite = nextSite()) == null) {
             return null;
@@ -47,8 +47,8 @@ public class RoundRobinSiteSelector implements SiteSelector {
                 return null;
             }
             // 该站点剩余多少URL未爬取
-            int leftRequestCount = siteListener.getLeftRequestsCount(nextSite.getHost().getHostId());
-            if (leftRequestCount > 0) {
+            int leftRequestNum = siteListener.getLeftRequestsNum(nextSite.getHost().getHostId());
+            if (leftRequestNum > 0) {
                 long isFrequent;
                 if ((isFrequent = nextSite.isFrequent()) > 0) {
                     // 如果可以访问

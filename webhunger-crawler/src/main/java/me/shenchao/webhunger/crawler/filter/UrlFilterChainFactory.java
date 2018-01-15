@@ -3,7 +3,7 @@ package me.shenchao.webhunger.crawler.filter;
 import me.shenchao.webhunger.client.api.crawler.URLFilter;
 import me.shenchao.webhunger.client.api.crawler.URLFilterChain;
 import me.shenchao.webhunger.crawler.filter.embed.FormatUrlsFilter;
-import me.shenchao.webhunger.entity.URLFilterConfig;
+import me.shenchao.webhunger.entity.UrlFilterConfig;
 import me.shenchao.webhunger.util.classloader.ThirdPartyClassLoader;
 import me.shenchao.webhunger.entity.webmagic.Site;
 
@@ -45,7 +45,7 @@ public class UrlFilterChainFactory {
         // 添加内嵌的默认过滤器
         urlFilterChain.addFilter(new FormatUrlsFilter());
         // 添加自定义过滤器
-        URLFilterConfig urlFilterConfig = site.getHost().getHostConfig().getUrlFilterConfig();
+        UrlFilterConfig urlFilterConfig = site.getHost().getHostConfig().getUrlFilterConfig();
         List<URLFilter> urlFilters = ThirdPartyClassLoader.loadClasses(urlFilterConfig.getUrlFilterJarDir(), urlFilterConfig.getFilterClassList(), URLFilter.class);
         for (URLFilter urlFilter : urlFilters) {
             urlFilterChain.addFilter(urlFilter);

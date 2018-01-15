@@ -9,7 +9,7 @@ import java.util.List;
  * @author Jerry Shen
  * @since 0.1
  */
-public class URLFilterConfig {
+public class UrlFilterConfig {
 
     private String urlFilterJarDir;
 

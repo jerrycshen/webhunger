@@ -1,7 +1,6 @@
 package us.codecraft.webmagic.scheduler;
 
 import me.shenchao.webhunger.entity.webmagic.Request;
-import me.shenchao.webhunger.entity.webmagic.Site;
 import us.codecraft.webmagic.LifeCycle;
 
 /**

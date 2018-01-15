@@ -6,18 +6,16 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * 爬虫模块启动配置
+ * 处理模块启动配置
  *
  * @author Jerry Shen
  * @since 0.1
  */
-public class CrawlerConfig {
+public class ProcessorConfig {
 
     private boolean distributed = false;
 
     private String zkAddress;
-
-    private String redisAddress;
 
     public void parse(String fileName) throws IOException {
         parse(new FileInputStream(fileName));
@@ -33,7 +31,6 @@ public class CrawlerConfig {
         this.distributed = Boolean.parseBoolean(properties.getProperty("distributed", "false"));
         if (distributed) {
             this.zkAddress = properties.getProperty("zkAddress");
-            this.redisAddress = properties.getProperty("redisAddress");
         }
     }
 
@@ -43,9 +40,5 @@ public class CrawlerConfig {
 
     public String getZkAddress() {
         return zkAddress;
-    }
-
-    public String getRedisAddress() {
-        return redisAddress;
     }
 }

@@ -1,6 +1,6 @@
 package me.shenchao.webhunger.crawler.dominate;
 
-import me.shenchao.webhunger.crawler.listener.SiteListener;
+import me.shenchao.webhunger.crawler.listener.SiteUrlNumListener;
 import me.shenchao.webhunger.entity.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 
@@ -19,7 +19,7 @@ public class LocalSiteDominate extends BaseSiteDominate {
     }
 
     @Override
-    public boolean checkCrawledCompleted(String siteId, SiteListener siteListener) {
+    public boolean checkCrawledCompleted(String siteId, SiteUrlNumListener siteListener) {
         if (!isLocalCrawlingNow(siteId)) {
             removeSiteFromList(siteId);
             complete(siteId);

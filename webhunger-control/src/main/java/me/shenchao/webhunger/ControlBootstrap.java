@@ -2,7 +2,6 @@ package me.shenchao.webhunger;
 
 import me.shenchao.webhunger.config.ControlConfig;
 import me.shenchao.webhunger.control.controller.ControllerFactory;
-import me.shenchao.webhunger.exception.ConfigParseException;
 import me.shenchao.webhunger.util.common.SystemUtils;
 import me.shenchao.webhunger.web.WebConsoleStarter;
 import org.slf4j.Logger;
@@ -29,8 +28,6 @@ public class ControlBootstrap {
         controlConfig = new ControlConfig();
         try {
             controlConfig.parse(SystemUtils.getWebHungerConfigDir() + File.separator + CONF_NAME);
-        } catch (ConfigParseException e) {
-            logger.warn(e.toString());
         } catch (IOException e) {
             logger.error("控制模块配置文件读取失败，程序退出......", e);
             System.exit(1);

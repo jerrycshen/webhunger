@@ -2,7 +2,7 @@ package me.shenchao.webhunger.crawler.scheduler;
 
 import com.alibaba.fastjson.JSON;
 import me.shenchao.webhunger.constant.RedisPrefixConsts;
-import me.shenchao.webhunger.crawler.listener.SiteListener;
+import me.shenchao.webhunger.crawler.listener.SiteUrlNumListener;
 import me.shenchao.webhunger.crawler.selector.SiteSelector;
 import me.shenchao.webhunger.entity.webmagic.Request;
 import me.shenchao.webhunger.entity.webmagic.Site;
@@ -19,7 +19,7 @@ import us.codecraft.webmagic.scheduler.component.DuplicateRemover;
  * @author Jerry Shen
  * @since 0.1
  */
-public class RedisQueueUrlScheduler extends DuplicateRemovedScheduler implements SiteListener, DuplicateRemover {
+public class RedisQueueUrlScheduler extends DuplicateRemovedScheduler implements SiteUrlNumListener, DuplicateRemover {
 
     private JedisPool pool;
 
@@ -87,7 +87,7 @@ public class RedisQueueUrlScheduler extends DuplicateRemovedScheduler implements
     }
 
     @Override
-    public int getLeftRequestsCount(String siteId) {
+    public int getLeftRequestsNum(String siteId) {
         Jedis jedis = pool.getResource();
         try {
             Long size = jedis.llen(RedisPrefixConsts.getQueueKey(siteId));
@@ -98,7 +98,7 @@ public class RedisQueueUrlScheduler extends DuplicateRemovedScheduler implements
     }
 
     @Override
-    public int getTotalRequestsCount(String siteId) {
+    public int getTotalRequestsNum(String siteId) {
         Jedis jedis = pool.getResource();
         try {
             Long size = jedis.scard(RedisPrefixConsts.getSetKey(siteId));

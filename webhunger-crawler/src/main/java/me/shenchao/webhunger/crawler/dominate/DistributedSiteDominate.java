@@ -1,7 +1,7 @@
 package me.shenchao.webhunger.crawler.dominate;
 
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
-import me.shenchao.webhunger.crawler.listener.SiteListener;
+import me.shenchao.webhunger.crawler.listener.SiteUrlNumListener;
 import me.shenchao.webhunger.entity.webmagic.Site;
 import me.shenchao.webhunger.util.common.ZookeeperUtils;
 import org.apache.zookeeper.KeeperException;
@@ -37,7 +37,7 @@ public class DistributedSiteDominate extends BaseSiteDominate {
     }
 
     @Override
-    public boolean checkCrawledCompleted(String siteId, SiteListener siteListener) {
+    public boolean checkCrawledCompleted(String siteId, SiteUrlNumListener siteListener) {
         if (isLocalCrawlingNow(siteId)) {
             return false;
         } else {
@@ -131,7 +131,7 @@ public class DistributedSiteDominate extends BaseSiteDominate {
         /**
          * 记录站点监听器，用于获取各个站点的待爬URL数量
          */
-        private Map<String, SiteListener> siteListenerMap = new HashMap<>();
+        private Map<String, SiteUrlNumListener> siteListenerMap = new HashMap<>();
 
         private ReentrantLock lock = new ReentrantLock();
 
@@ -143,7 +143,7 @@ public class DistributedSiteDominate extends BaseSiteDominate {
                 lock.lock();
                 try {
                     for (Map.Entry<String, Long> entry : checkTimeoutMap.entrySet()) {
-                        int leftRequestCount = siteListenerMap.get(entry.getKey()).getLeftRequestsCount(entry.getKey());
+                        int leftRequestCount = siteListenerMap.get(entry.getKey()).getLeftRequestsNum(entry.getKey());
                         // 如果该站点剩余URL数量为0，进一步检测是否过了timeout
                         if (leftRequestCount == 0) {
                             long currentTime = System.currentTimeMillis();
@@ -178,7 +178,7 @@ public class DistributedSiteDominate extends BaseSiteDominate {
          * @param siteId siteId
          * @param siteListener siteListener
          */
-        private void check(String siteId, SiteListener siteListener) {
+        private void check(String siteId, SiteUrlNumListener siteListener) {
             lock.lock();
             try {
                 checkTimeoutMap.put(siteId, siteMap.get(siteId).getTimeOut() + System.currentTimeMillis());
