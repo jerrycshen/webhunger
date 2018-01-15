@@ -18,6 +18,11 @@ public class ZookeeperPathConsts {
     public static final String CRAWLER = APP_PREFIX + "/crawler";
 
     /**
+     * 记录所有页面处理节点
+     */
+    public static final String PROCESSOR = APP_PREFIX + "/processor";
+
+    /**
      * 记录所有在爬站点的详细信息，站点信息使用json保存
      */
     public static final String DETAIL_HOST = APP_PREFIX + "/detail_host";
@@ -33,6 +38,10 @@ public class ZookeeperPathConsts {
 
     public static String getCrawlerNodePath() {
         return CRAWLER + "/" + SystemUtils.getHostName();
+    }
+
+    public static String getProcessorNodePath() {
+        return PROCESSOR + "/" + SystemUtils.getHostName();
     }
 
 }

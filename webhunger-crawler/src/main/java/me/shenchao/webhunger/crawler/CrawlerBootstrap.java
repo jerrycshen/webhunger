@@ -64,7 +64,7 @@ public class CrawlerBootstrap {
 
         // log config info
         logger.info("配置解析完成，使用如下参数启动爬虫程序：");
-        logger.info("Distributed: {}", crawlerConfig.isDistributed());
+        logger.info("{}", crawlerConfig);
     }
 
     /**
@@ -90,7 +90,7 @@ public class CrawlerBootstrap {
             // 创建爬虫控制类
             crawlerCaller = new RpcCrawlerCaller((DistributedSiteDominate) siteDominate, spiderListener,zooKeeper);
             // 启动dubbo，暴露接口与控制器RPC通信
-            initDubbo(crawlerCaller);
+            initDubbo();
             // 爬虫配置
             spider.addPipeline(new DistributedPipeline());
             spider.setScheduler(new RedisQueueUrlScheduler(new RoundRobinSiteSelector(siteDominate), jedisPool));
@@ -125,7 +125,7 @@ public class CrawlerBootstrap {
         return zooKeeper;
     }
 
-    private void initDubbo(CrawlerCallable crawlerCallable) {
+    private void initDubbo() {
         ApplicationConfig applicationConfig = new ApplicationConfig();
         applicationConfig.setName("Crawler");
 
@@ -145,7 +145,7 @@ public class CrawlerBootstrap {
         serviceConfig.setRegistry(registryConfig);
         serviceConfig.setProtocol(protocolConfig);
         serviceConfig.setInterface(CrawlerCallable.class);
-        serviceConfig.setRef(crawlerCallable);
+        serviceConfig.setRef(crawlerCaller);
         serviceConfig.setVersion("0.1");
 
         // 暴露服务

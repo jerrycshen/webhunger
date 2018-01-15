@@ -79,7 +79,7 @@ public class Spider implements Runnable, LifeCycle {
 
     protected String uuid;
 
-    protected Scheduler scheduler = new QueueScheduler();
+    protected Scheduler scheduler;
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
 

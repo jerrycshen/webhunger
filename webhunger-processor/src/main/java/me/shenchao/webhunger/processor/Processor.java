@@ -50,6 +50,12 @@ public class Processor implements Runnable, LifeCycle {
 
     private Date startTime;
 
+    private Processor() {}
+
+    public static Processor create() {
+        return new Processor();
+    }
+
     @Override
     public void run() {
         checkRunningStat();
@@ -141,6 +147,10 @@ public class Processor implements Runnable, LifeCycle {
     @Override
     public Map<String, Host> getSites() {
         return null;
+    }
+
+    public void setThreadNum(int threadNum) {
+        this.threadNum = threadNum;
     }
 
     public Processor setPageScheduler(PageScheduler pageScheduler) {

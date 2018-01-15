@@ -176,10 +176,14 @@ public class DistributedController extends MasterController {
                 if (needCreateDetailHostNode) {
                     zooKeeper.create(getDetailHostNodePath(host), hostDetail.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
                 }
-                // 创建站点爬取统计节点
+                // 创建站点待爬取节点
                 zooKeeper.create(getCrawlingHostNodePath(host), "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+                // 创建站点待处理节点
+                zooKeeper.create(getProcessingHostNodePath(host), "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
                 // 监控该站点的爬取状态
                 zookeeperSupport.watchHostCrawlingStatus(host);
+                // 监控该站点的页面处理状态
+                zookeeperSupport.watchHostProcessingStatus(host);
             } catch (KeeperException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -229,6 +233,31 @@ public class DistributedController extends MasterController {
         }
 
         /**
+         * 监控站点的页面处理状态，判断站点页面是否已经处理完毕，是否可以从该正在处理列表中删除该节点
+         * @param host host
+         */
+        private void watchHostProcessingStatus(Host host) {
+            try {
+                byte[] data = zooKeeper.getData(getProcessingHostNodePath(host), new Watcher() {
+                    @Override
+                    public void process(WatchedEvent watchedEvent) {
+                        watchHostProcessingStatus(host);
+                    }
+                }, null);
+                int state = Integer.parseInt(new String(data));
+                if (state > 0) {
+                    // TODO host processed completed
+                }
+            } catch (KeeperException.NoNodeException e){
+                logger.debug("{} 页面处理完毕，该节点已经被删除......", host.getHostName());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (KeeperException e) {
+                e.printStackTrace();
+            }
+        }
+
+        /**
          * 监控站点的爬取状态，判断站点是否已经爬取完毕，是否从正在爬取站点列表中删除该节点
          * @param host host
          */
@@ -247,7 +276,7 @@ public class DistributedController extends MasterController {
                     checkHostCrawlingCompleted(host);
                 }
             } catch (KeeperException.NoNodeException e){
-                logger.debug("{} 爬取完毕，该节点已经被删除......");
+                logger.debug("{} 爬取完毕，该节点已经被删除......", host.getHostName());
             } catch (KeeperException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -257,6 +286,10 @@ public class DistributedController extends MasterController {
 
         private String getCrawlingHostNodePath(Host host) {
             return ZookeeperPathConsts.CRAWLING_HOST + "/" + host.getHostId();
+        }
+
+        private String getProcessingHostNodePath(Host host) {
+            return ZookeeperPathConsts.PROCESSING_HOST + "/" + host.getHostId();
         }
 
         private String getDetailHostNodePath(Host host) {

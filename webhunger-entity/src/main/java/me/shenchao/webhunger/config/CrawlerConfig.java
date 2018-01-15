@@ -48,4 +48,13 @@ public class CrawlerConfig {
     public String getRedisAddress() {
         return redisAddress;
     }
+
+    @Override
+    public String toString() {
+        return "CrawlerConfig{" +
+                "distributed=" + distributed +
+                ", zkAddress='" + zkAddress + '\'' +
+                ", redisAddress='" + redisAddress + '\'' +
+                '}';
+    }
 }

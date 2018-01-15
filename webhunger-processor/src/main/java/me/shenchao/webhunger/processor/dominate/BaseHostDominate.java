@@ -7,4 +7,6 @@ package me.shenchao.webhunger.processor.dominate;
  * @since 0.1
  */
 public class BaseHostDominate {
+
+
 }

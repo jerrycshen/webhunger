@@ -41,4 +41,12 @@ public class ProcessorConfig {
     public String getZkAddress() {
         return zkAddress;
     }
+
+    @Override
+    public String toString() {
+        return "ProcessorConfig{" +
+                "distributed=" + distributed +
+                ", zkAddress='" + zkAddress + '\'' +
+                '}';
+    }
 }
