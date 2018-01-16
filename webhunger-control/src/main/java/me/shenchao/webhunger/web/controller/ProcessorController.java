@@ -15,42 +15,42 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 爬虫节点控制器
+ * 页面处理节点控制器
  *
  * @author Jerry Shen
  * @since 0.1
  */
 @Controller
-public class CrawlerController {
+public class ProcessorController {
 
     private MasterController masterController = ControllerFactory.getController();
 
-    @RequestMapping(value = "/crawler/list", method = RequestMethod.GET)
-    public String viewCrawlerTable() {
-        return "crawler/crawler_view.jsp";
+    @RequestMapping(value = "/processor/list", method = RequestMethod.GET)
+    public String viewProcessorTable() {
+        return "processor/processor_view.jsp";
     }
 
-    @RequestMapping(value = "/crawler/list", method = RequestMethod.POST)
+    @RequestMapping(value = "/processor/list", method = RequestMethod.POST)
     @ResponseBody
-    public String viewCrawlerData() {
-        List<DistributedNode> crawlers = new ArrayList<>();
+    public String viewProcessorData() {
+        List<DistributedNode> processors = new ArrayList<>();
         if (masterController.isDistributed()) {
             DistributedController distributedController = (DistributedController) masterController;
-            crawlers = distributedController.getOnlineCrawlers();
+            processors = distributedController.getOnlineProcessors();
         }
         JSONObject result = new JSONObject();
-        result.put("data", crawlers);
+        result.put("data", processors);
         return result.toJSONString();
     }
 
-    @RequestMapping(value = "/crawler/{crawlerIP}/run", method = RequestMethod.POST)
+    @RequestMapping(value = "/processor/{processorIP}/run", method = RequestMethod.POST)
     @ResponseBody
-    public String runCrawler(@PathVariable("crawlerIP") String crawlerIP) {
+    public String runProcessor(@PathVariable("processorIP") String processorIP) {
         JSONObject result =  new JSONObject();
         result.put("res_code", 1);
         if (masterController.isDistributed()) {
             DistributedController distributedController = (DistributedController) masterController;
-            distributedController.runCrawler(crawlerIP);
+            distributedController.runProcessor(processorIP);
             result.put("res_code", 0);
         }
         return result.toJSONString();

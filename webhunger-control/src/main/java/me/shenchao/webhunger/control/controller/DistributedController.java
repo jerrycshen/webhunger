@@ -8,10 +8,11 @@ import me.shenchao.webhunger.constant.RedisPrefixConsts;
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
 import me.shenchao.webhunger.dto.ErrorPageDTO;
 import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
-import me.shenchao.webhunger.entity.Crawler;
+import me.shenchao.webhunger.entity.DistributedNode;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.webmagic.Request;
 import me.shenchao.webhunger.rpc.api.crawler.CrawlerCallable;
+import me.shenchao.webhunger.rpc.api.processor.ProcessorCallable;
 import me.shenchao.webhunger.util.common.MD5Utils;
 import me.shenchao.webhunger.util.common.ZookeeperUtils;
 import org.apache.zookeeper.*;
@@ -33,6 +34,8 @@ public class DistributedController extends MasterController {
 
     private Map<String, ReferenceConfig<CrawlerCallable>> crawlerRPCMap = new HashMap<>();
 
+    private Map<String, ReferenceConfig<ProcessorCallable>> processorRPCMap = new HashMap<>();
+
     private RedisSupport redisSupport = new RedisSupport();
 
     private DubboSupport dubboSupport = new DubboSupport();
@@ -41,8 +44,6 @@ public class DistributedController extends MasterController {
 
     DistributedController(ControlConfig controlConfig) {
         super(controlConfig, true);
-        // 监控所有爬虫节点
-        zookeeperSupport.watchCrawlerStatus();
     }
 
     /**
@@ -107,11 +108,21 @@ public class DistributedController extends MasterController {
         crawlerCallable.run();
     }
 
+    public void runProcessor(String processorIP) {
+        ReferenceConfig<ProcessorCallable> referenceConfig = processorRPCMap.get(processorIP);
+        ProcessorCallable processorCallable = referenceConfig.get();
+        processorCallable.run();
+    }
+
     /**
      * 获得所有在线的爬虫节点，包括正在爬取的和处在Ready状态的
      */
-    public List<Crawler> getOnlineCrawlers() {
-        return zookeeperSupport.watchCrawlerStatus();
+    public List<DistributedNode> getOnlineCrawlers() {
+        return zookeeperSupport.getOnlineNodes(DistributedNode.NodeType.CRAWLER);
+    }
+
+    public List<DistributedNode> getOnlineProcessors() {
+        return zookeeperSupport.getOnlineNodes(DistributedNode.NodeType.PROCESSOR);
     }
 
     /**
@@ -149,8 +160,6 @@ public class DistributedController extends MasterController {
 
         private ZooKeeper zooKeeper;
 
-        private volatile List<Crawler> onlineCrawlers = new ArrayList<>();
-
         private ZookeeperSupport() {
             // 获取zookeeper连接
             String zkServer = controlConfig.getZkAddress();
@@ -158,15 +167,19 @@ public class DistributedController extends MasterController {
             logger.info("控制器连接Zookeeper成功......");
         }
 
-        private List<Crawler> getRunningCrawlers() {
-            List<Crawler> runningCrawlers = new ArrayList<>();
-            List<Crawler> temp = onlineCrawlers;
-            for (Crawler crawler : temp) {
-                if (crawler.getState() == Crawler.State.RUNNING.getValue()) {
-                    runningCrawlers.add(crawler);
+        /**
+         * 获取指定节点下所有正在运行的节点列表
+         * @param nodeType 节点类型
+         */
+        private List<DistributedNode> getRunningNodes(DistributedNode.NodeType nodeType) {
+            List<DistributedNode> runningNodes = new ArrayList<>();
+            List<DistributedNode> onlineNodes = getOnlineNodes(nodeType);
+            for (DistributedNode onlineNode : onlineNodes) {
+                if (onlineNode.getState() == DistributedNode.State.RUNNING.getValue()) {
+                    runningNodes.add(onlineNode);
                 }
             }
-            return runningCrawlers;
+            return runningNodes;
         }
 
         private void createHostNode(Host host, boolean needCreateDetailHostNode) {
@@ -201,35 +214,44 @@ public class DistributedController extends MasterController {
             }
         }
 
-        private List<Crawler> watchCrawlerStatus() {
+        /**
+         * 返回该节点下当前所有子节点
+         * @param nodeType 节点类型
+         * @return 该节点下当前所有的节点信息
+         */
+        private List<DistributedNode> getOnlineNodes(DistributedNode.NodeType nodeType) {
+            List<DistributedNode> distributedNodes = new ArrayList<>();
+            String nodePath = null;
+            switch (nodeType) {
+                case CRAWLER:
+                    nodePath = ZookeeperPathConsts.CRAWLER;
+                    break;
+                case PROCESSOR:
+                    nodePath = ZookeeperPathConsts.PROCESSOR;
+                    break;
+                default:
+            }
             try {
-                List<String> nodeList = zooKeeper.getChildren(ZookeeperPathConsts.CRAWLER, new Watcher() {
-                    @Override
-                    public void process(WatchedEvent watchedEvent) {
-                        watchCrawlerStatus();
-                    }
-                });
-                List<Crawler> newOnlineCrawlers = new ArrayList<>();
+                List<String> nodeList = zooKeeper.getChildren(nodePath, false);
                 for (String nodeName : nodeList) {
                     String[] ss = nodeName.split("@");
-                    Crawler crawler = new Crawler();
-                    crawler.setHostName(ss[0]);
-                    crawler.setIp(ss[1]);
+                    DistributedNode distributedNode = new DistributedNode();
+                    distributedNode.setHostName(ss[0]);
+                    distributedNode.setIp(ss[1]);
 
-                    String nodePath = ZookeeperPathConsts.CRAWLER + "/" + nodeName;
-                    byte[] res = zooKeeper.getData(nodePath, false, null);
-                    crawler.setState(Crawler.State.valueOf(Integer.parseInt(new String(res))));
-                    newOnlineCrawlers.add(crawler);
+                    String childPath = nodePath + "/" + nodeName;
+                    byte[] res = zooKeeper.getData(childPath, false, null);
+                    distributedNode.setState(DistributedNode.State.valueOf(Integer.parseInt(new String(res))));
+                    distributedNodes.add(distributedNode);
                 }
-                this.onlineCrawlers = newOnlineCrawlers;
                 // 检查RPC连接是否建立
-                dubboSupport.checkRpcConnection();
+                dubboSupport.checkRpcConnection(distributedNodes, nodeType);
             } catch (KeeperException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            return onlineCrawlers;
+            return distributedNodes;
         }
 
         /**
@@ -269,7 +291,7 @@ public class DistributedController extends MasterController {
                         watchHostCrawlingStatus(host);
                     }
                 }, null);
-                int runningCrawlerNum = getRunningCrawlers().size();
+                int runningCrawlerNum = getRunningNodes(DistributedNode.NodeType.CRAWLER).size();
                 // 获取对该站点已经爬取完毕的数量
                 int completedCrawlerNum = Integer.parseInt(new String(data));
                 if (runningCrawlerNum == completedCrawlerNum) {
@@ -303,32 +325,44 @@ public class DistributedController extends MasterController {
      */
     private class DubboSupport {
 
-        private void initDubbo(String crawlerIP) {
+        private <T> void initDubbo(String crawlerIP, Map<String, ReferenceConfig<T>> rpcMap, Class<T> callableClass) {
             ApplicationConfig applicationConfig = new ApplicationConfig();
             applicationConfig.setName("Controller");
 
             // 引用远程服务
             // 此实例很重，封装了与注册中心的连接以及与提供者的连接，请自行缓存，否则可能造成内存和连接泄漏
-            ReferenceConfig<CrawlerCallable> referenceConfig = new ReferenceConfig<>();
+            ReferenceConfig<T> referenceConfig = new ReferenceConfig<>();
             referenceConfig.setApplication(applicationConfig);
-            referenceConfig.setInterface(CrawlerCallable.class);
+            referenceConfig.setInterface(callableClass);
             referenceConfig.setVersion("0.1");
             referenceConfig.setUrl(getDubboUrl(crawlerIP));
 
-            crawlerRPCMap.put(crawlerIP, referenceConfig);
+            rpcMap.put(crawlerIP, referenceConfig);
         }
 
         private String getDubboUrl(String crawlerIP) {
             return "dubbo://" + crawlerIP + ":20880";
         }
 
-        private void checkRpcConnection() {
-            List<Crawler> onlineCrawlers = zookeeperSupport.onlineCrawlers;
-            for (Crawler crawler : onlineCrawlers) {
-                // 如果还未建立RPC连接
-                if (crawlerRPCMap.get(crawler.getIp()) == null) {
-                    initDubbo(crawler.getIp());
-                }
+        private void checkRpcConnection(List<DistributedNode> onlineNodes, DistributedNode.NodeType nodeType) {
+            switch (nodeType) {
+                case CRAWLER:
+                    for (DistributedNode onlineNode : onlineNodes) {
+                        // 如果还未建立RPC连接
+                        if (crawlerRPCMap.get(onlineNode.getIp()) == null) {
+                            initDubbo(onlineNode.getIp(), crawlerRPCMap, CrawlerCallable.class);
+                        }
+                    }
+                    break;
+                case PROCESSOR:
+                    for (DistributedNode onlineNode : onlineNodes) {
+                        // 如果还未建立RPC连接
+                        if (processorRPCMap.get(onlineNode.getIp()) == null) {
+                            initDubbo(onlineNode.getIp(), processorRPCMap, ProcessorCallable.class);
+                        }
+                    }
+                    break;
+                default:
             }
         }
     }

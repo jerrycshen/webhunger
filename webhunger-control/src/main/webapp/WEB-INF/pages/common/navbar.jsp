@@ -17,7 +17,7 @@
             <ul class="nav navbar-nav">
                 <li id="taskMenu"><a href="${AppContext}task/list">Task</a></li>
                 <li id="crawlerMenu"><a href="${AppContext}crawler/list">Crawler</a></li>
-                <li id="processorMenu"><a href="#">Processor</a></li>
+                <li id="processorMenu"><a href="${AppContext}processor/list">Processor</a></li>
             </ul>
         </div><!--/.nav-collapse -->
     </div>

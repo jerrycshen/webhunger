@@ -1,12 +1,12 @@
 package me.shenchao.webhunger.entity;
 
 /**
- * 爬虫节点信息
+ * 系统节点信息，例如爬虫节点、页面处理节点
  *
  * @author Jerry Shen
  * @since 0.1
  */
-public class Crawler {
+public class DistributedNode {
 
     /**
      * 主机名
@@ -68,5 +68,9 @@ public class Crawler {
                     return null;
             }
         }
+    }
+
+    public enum NodeType {
+        CRAWLER, PROCESSOR;
     }
 }
