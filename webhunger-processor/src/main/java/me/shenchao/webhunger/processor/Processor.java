@@ -1,5 +1,6 @@
 package me.shenchao.webhunger.processor;
 
+import me.shenchao.webhunger.client.api.processor.AbstractHostHandler;
 import me.shenchao.webhunger.client.api.processor.AbstractPageHandler;
 import me.shenchao.webhunger.dto.PageDTO;
 import me.shenchao.webhunger.entity.HandlerConfig;
@@ -100,6 +101,10 @@ public class Processor implements Runnable {
         pageHandlerChain.handle(page);
     }
 
+    public void processHost(Host host) {
+
+    }
+
     private void waitNewPage() {
         newPageLock.lock();
         try {
@@ -172,25 +177,25 @@ public class Processor implements Runnable {
 
     private class PageHandlerChainFactory {
 
-        private Map<String, AbstractPageHandler> handlerChainMap = new HashMap<>();
+        private Map<String, AbstractPageHandler> pageHandlerChainMap = new HashMap<>();
 
         private AbstractPageHandler getPageHandlerChain(Host host) {
             String hostId = host.getHostId();
-            if (handlerChainMap.get(hostId) != null) {
-                return handlerChainMap.get(hostId);
+            if (pageHandlerChainMap.get(hostId) != null) {
+                return pageHandlerChainMap.get(hostId);
             }
             synchronized (PageHandlerChainFactory.class) {
-                if (handlerChainMap.get(hostId) != null) {
-                    return handlerChainMap.get(hostId);
+                if (pageHandlerChainMap.get(hostId) != null) {
+                    return pageHandlerChainMap.get(hostId);
                 } else {
-                    AbstractPageHandler headHandler = buildHandlerChain(host);
-                    handlerChainMap.put(hostId, headHandler);
+                    AbstractPageHandler headHandler = buildPageHandlerChain(host);
+                    pageHandlerChainMap.put(hostId, headHandler);
                     return headHandler;
                 }
             }
         }
 
-        private AbstractPageHandler buildHandlerChain(Host host) {
+        private AbstractPageHandler buildPageHandlerChain(Host host) {
             HandlerConfig handlerConfig = host.getHostConfig().getHandlerConfig();
             List<AbstractPageHandler> handlers = ThirdPartyClassLoader.loadClasses(handlerConfig.getHandlerJarDir(), handlerConfig.getHandlerClassList(), AbstractPageHandler.class);
             if (handlers.size() == 0) {
@@ -205,6 +210,31 @@ public class Processor implements Runnable {
             return handlers.get(0);
         }
 
+    }
+
+    private class HostHandlerChainFactory {
+
+        private Map<String, AbstractHostHandler> hostHandlerChainMap = new HashMap<>();
+
+        private AbstractHostHandler getHostHandlerChain(Host host) {
+            String hostId = host.getHostId();
+            if (hostHandlerChainMap.get(hostId) != null) {
+                return hostHandlerChainMap.get(hostId);
+            }
+            synchronized (HostHandlerChainFactory.class) {
+                if (hostHandlerChainMap.get(hostId) != null) {
+                    return hostHandlerChainMap.get(hostId);
+                } else {
+                    AbstractHostHandler headHandler = buildHostHandlerChain(host);
+                    hostHandlerChainMap.put(hostId, headHandler);
+                    return headHandler;
+                }
+            }
+        }
+
+        private AbstractHostHandler buildHostHandlerChain(Host host) {
+            return null;
+        }
     }
 
 }

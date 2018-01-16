@@ -162,6 +162,7 @@ public class DistributedController extends MasterController {
      */
     private void checkHostProcessingCompleted(Host host) {
         // TODO
+        zookeeperSupport.deleteProcessingHostNode(host);
     }
 
     private class ZookeeperSupport {
@@ -215,6 +216,16 @@ public class DistributedController extends MasterController {
         private void deleteCrawlingHostNode(Host host) {
             try {
                 zooKeeper.delete(getCrawlingHostNodePath(host), -1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (KeeperException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private void deleteProcessingHostNode(Host host) {
+            try {
+                zooKeeper.delete(getProcessingHostNodePath(host), -1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (KeeperException e) {

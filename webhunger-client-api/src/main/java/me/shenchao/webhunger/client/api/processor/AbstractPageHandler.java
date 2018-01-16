@@ -8,7 +8,7 @@ import me.shenchao.webhunger.dto.PageDTO;
  *     每一个基础该类的处理器，必须有一个无参构造函数
  *
  * @author Jerry Shen
- * @since 3.0
+ * @since 0.1
  */
 public abstract class AbstractPageHandler {
 

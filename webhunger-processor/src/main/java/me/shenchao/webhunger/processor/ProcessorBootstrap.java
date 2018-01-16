@@ -41,7 +41,7 @@ public class ProcessorBootstrap {
     /**
      * 启动处理节点
      */
-    public void start() {
+    private void start() {
         logger.info("页面处理节点正在启动......");
         // 解析配置
         parseProcessorConfig();

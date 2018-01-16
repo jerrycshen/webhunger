@@ -77,7 +77,7 @@ public class RpcCrawlerCaller implements CrawlerCallable {
 
     @Override
     public HostCrawlingSnapshotDTO createSnapshot(String hostId) {
-        return HostSnapshotHelper.create(hostId, spiderListener.getSiteStatusStatistics(hostId));
+        throw new UnsupportedOperationException();
     }
 
     /**

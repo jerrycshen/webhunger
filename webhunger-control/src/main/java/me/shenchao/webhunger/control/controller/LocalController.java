@@ -5,7 +5,10 @@ import me.shenchao.webhunger.crawler.CrawlerBootstrap;
 import me.shenchao.webhunger.dto.ErrorPageDTO;
 import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
+import me.shenchao.webhunger.entity.HostState;
+import me.shenchao.webhunger.processor.Processor;
 import me.shenchao.webhunger.rpc.api.crawler.CrawlerCallable;
+import me.shenchao.webhunger.util.thread.CountableThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,35 +28,25 @@ class LocalController extends MasterController {
 
     private CrawlerCallable crawlerCallable;
 
+    private Processor processor;
+
+    private CountableThreadPool threadPool = new CountableThreadPool(1);
+
     LocalController(ControlConfig controlConfig) {
         super(controlConfig, false);
-        initCrawler();
+        init();
     }
 
-    private void initCrawler() {
+    private void init() {
         CrawlerBootstrap crawlerBootstrap = new CrawlerBootstrap();
         crawlerBootstrap.start();
         this.crawlerCallable = crawlerBootstrap.getCrawlerCaller();
+        processor = Processor.create();
         // 启动定时检查线程
         Thread thread = new Thread(new HostCrawledCompletedCheckThread());
         thread.setDaemon(true);
         thread.start();
         logger.info("启动站点爬取完成检测线程......");
-    }
-
-    /**
-     * 在单机版中，直接通过方法调用，开始爬取站点
-     */
-    @Override
-    void crawl(Host host) {
-        List<Host> hosts = new ArrayList<>(1);
-        hosts.add(host);
-        crawlerCallable.crawl(hosts);
-    }
-
-    @Override
-    void processingCompleted(Host host) {
-
     }
 
     @Override
@@ -73,6 +66,42 @@ class LocalController extends MasterController {
     @Override
     protected HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId) {
         return crawlerCallable.createSnapshot(hostId);
+    }
+
+    /**
+     * 在单机版中，直接通过方法调用，开始爬取站点
+     */
+    @Override
+    void crawl(Host host) {
+        List<Host> hosts = new ArrayList<>(1);
+        hosts.add(host);
+        crawlerCallable.crawl(hosts);
+    }
+
+    @Override
+    void processingCompleted(Host host) {
+        controllerSupport.createSnapshot(host, HostState.Completed);
+        // TODO 保存结果
+    }
+
+    @Override
+    void crawlingCompleted(Host host) {
+        super.crawlingCompleted(host);
+        /*
+         * 单机爬取中，由于爬取线程与页面处理线程在同一线程中，所以爬取结束也意味着所有页面处理结束，
+         * 接下来对站点全局做处理
+         */
+        processHost(host);
+    }
+
+    private void processHost(Host host) {
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                processor.processHost(host);
+                processingCompleted(host);
+            }
+        });
     }
 
     /**
