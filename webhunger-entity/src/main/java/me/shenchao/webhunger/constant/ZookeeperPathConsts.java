@@ -34,7 +34,9 @@ public class ZookeeperPathConsts {
 
     public static final String PROCESSING_HOST = APP_PREFIX + "/processing_host";
 
-    public static final String LOCK = APP_PREFIX + "/lock";
+    public static final String CRAWLER_LOCK = APP_PREFIX + "/crawler_lock";
+
+    public static final String PROCESSOR_LOCK = APP_PREFIX + "/processor_lock";
 
     public static String getCrawlerNodePath() {
         return CRAWLER + "/" + SystemUtils.getHostName();

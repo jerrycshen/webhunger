@@ -6,11 +6,14 @@ import com.alibaba.dubbo.config.RegistryConfig;
 import com.alibaba.dubbo.config.ServiceConfig;
 import me.shenchao.webhunger.config.ProcessorConfig;
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
+import me.shenchao.webhunger.processor.caller.RpcProcessorCaller;
+import me.shenchao.webhunger.processor.dominate.BaseHostDominate;
+import me.shenchao.webhunger.processor.scheduler.RocketMQPageScheduler;
+import me.shenchao.webhunger.processor.selector.RoundRobinHostSelector;
 import me.shenchao.webhunger.rpc.api.processor.ProcessorCallable;
 import me.shenchao.webhunger.util.common.SystemUtils;
 import me.shenchao.webhunger.util.common.ZookeeperUtils;
 import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
@@ -42,14 +45,19 @@ public class ProcessorBootstrap {
         logger.info("页面处理节点正在启动......");
         // 解析配置
         parseProcessorConfig();
-        Processor processor = Processor.create();
         if (!processorConfig.isDistributed()) {
             throw new IllegalStateException("单机模式无需启动页面处理模块......");
         }
+        Processor processor = Processor.create();
         // 启动zookeeper,注册本页面处理节点
         ZooKeeper zooKeeper = initZookeeper();
+        // 创建站点管理器
+        BaseHostDominate hostDominate = new BaseHostDominate(processor, zooKeeper);
+        // 创建页面处理控制器
+        processorCallable = new RpcProcessorCaller(hostDominate, zooKeeper);
         // 启动dubbo，暴露接口与控制器RPC通信
         initDubbo();
+        processor.setPageScheduler(new RocketMQPageScheduler(new RoundRobinHostSelector(hostDominate)));
         processor.setThreadNum(5);
         processor.runAsync();
         logger.info("页面处理节点启动成功，等待调度运行......");

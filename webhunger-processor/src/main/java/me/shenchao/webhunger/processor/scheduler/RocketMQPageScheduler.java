@@ -2,7 +2,6 @@ package me.shenchao.webhunger.processor.scheduler;
 
 import me.shenchao.webhunger.dto.PageDTO;
 import me.shenchao.webhunger.entity.Host;
-import me.shenchao.webhunger.processor.LifeCycle;
 import me.shenchao.webhunger.processor.listener.HostPageNumListener;
 import me.shenchao.webhunger.processor.selector.HostSelector;
 
@@ -21,7 +20,7 @@ public class RocketMQPageScheduler implements PageScheduler, HostPageNumListener
     }
 
     @Override
-    public PageDTO poll(LifeCycle lifeCycle) {
+    public PageDTO poll() {
         Host host = hostSelector.select(this);
         return null;
     }

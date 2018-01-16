@@ -63,14 +63,12 @@ public class DistributedSiteDominate extends BaseSiteDominate {
         super.complete(siteId);
         // 移除检测线程中map中的相关记录
         siteCrawledCompletedCheckThread.remove(siteId);
-        // 彻底移除对该站点的所有缓存
-        removeSite(siteId);
 
         // 更新zookeeper中该节点的值 + 1
         // 由于可能多个爬虫节点同时更新该值，所以这里使用分布式锁控制并发操作
-        ZookeeperUtils.DistributedLock distributedLock = new ZookeeperUtils.DistributedLock(zooKeeper, ZookeeperPathConsts.LOCK);
+        ZookeeperUtils.DistributedLock distributedLock = new ZookeeperUtils.DistributedLock(zooKeeper, ZookeeperPathConsts.CRAWLER_LOCK);
+        distributedLock.lock();
         try {
-            distributedLock.lock();
             try {
                 byte[] dataBytes = zooKeeper.getData(ZookeeperPathConsts.CRAWLING_HOST + "/" + siteId, false, null);
                 int value = Integer.parseInt(new String(dataBytes));
@@ -88,6 +86,7 @@ public class DistributedSiteDominate extends BaseSiteDominate {
     private void resumeSite(String siteId) {
         siteCrawledCompletedCheckThread.remove(siteId);
         addSiteToList(siteId);
+        spider.signalNewUrl();
     }
 
     /**
@@ -143,12 +142,12 @@ public class DistributedSiteDominate extends BaseSiteDominate {
                 lock.lock();
                 try {
                     for (Map.Entry<String, Long> entry : checkTimeoutMap.entrySet()) {
-                        int leftRequestCount = siteListenerMap.get(entry.getKey()).getLeftRequestsNum(entry.getKey());
+                        int leftRequestNum = siteListenerMap.get(entry.getKey()).getLeftRequestsNum(entry.getKey());
                         // 如果该站点剩余URL数量为0，进一步检测是否过了timeout
-                        if (leftRequestCount == 0) {
+                        if (leftRequestNum == 0) {
                             long currentTime = System.currentTimeMillis();
                             // 如果发现已经超过了timeout时间，表示可以认为本节点对该站点已经爬取完毕，那么加入结束列表
-                            if (currentTime > checkTimeoutMap.get(entry.getKey())) {
+                            if (currentTime > entry.getValue()) {
                                 completedList.add(entry.getKey());
                             }
                         } else {

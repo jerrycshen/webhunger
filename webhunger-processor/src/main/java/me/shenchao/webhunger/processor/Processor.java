@@ -1,7 +1,6 @@
 package me.shenchao.webhunger.processor;
 
 import me.shenchao.webhunger.dto.PageDTO;
-import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.processor.scheduler.PageScheduler;
 import me.shenchao.webhunger.util.common.SystemUtils;
 import me.shenchao.webhunger.util.thread.CountableThreadPool;
@@ -10,8 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -22,7 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Jerry Shen
  * @since 0.1
  */
-public class Processor implements Runnable, LifeCycle {
+public class Processor implements Runnable {
 
     private Logger logger = LoggerFactory.getLogger(Processor.class);
 
@@ -48,8 +45,6 @@ public class Processor implements Runnable, LifeCycle {
 
     private int threadNum = 1;
 
-    private Date startTime;
-
     private Processor() {}
 
     public static Processor create() {
@@ -62,7 +57,7 @@ public class Processor implements Runnable, LifeCycle {
         initComponent();
         logger.info("Processor {} 启动完成......", SystemUtils.getHostName());
         while (!Thread.currentThread().isInterrupted() && stat.get() == STAT_RUNNING) {
-            final PageDTO page = pageScheduler.poll(this);
+            final PageDTO page = pageScheduler.poll();
             if (page == null) {
                 waitNewPage();
             } else {
@@ -114,7 +109,6 @@ public class Processor implements Runnable, LifeCycle {
 
     private void initComponent() {
         threadPool = new CountableThreadPool(threadNum);
-        startTime = new Date();
     }
 
     private void checkRunningStat() {
@@ -144,11 +138,6 @@ public class Processor implements Runnable, LifeCycle {
         }
     }
 
-    @Override
-    public Map<String, Host> getSites() {
-        return null;
-    }
-
     public void setThreadNum(int threadNum) {
         this.threadNum = threadNum;
     }
@@ -157,4 +146,5 @@ public class Processor implements Runnable, LifeCycle {
         this.pageScheduler = pageScheduler;
         return this;
     }
+
 }

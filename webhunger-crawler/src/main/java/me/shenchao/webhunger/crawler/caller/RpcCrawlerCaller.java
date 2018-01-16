@@ -85,7 +85,7 @@ public class RpcCrawlerCaller implements CrawlerCallable {
      */
     private void watchCrawlingHostListChanged() {
         try {
-            List<String> nodeList = zooKeeper.getChildren(ZookeeperPathConsts.DETAIL_HOST, new Watcher() {
+            List<String> nodeList = zooKeeper.getChildren(ZookeeperPathConsts.CRAWLING_HOST, new Watcher() {
                 @Override
                 public void process(WatchedEvent watchedEvent) {
                     watchCrawlingHostListChanged();

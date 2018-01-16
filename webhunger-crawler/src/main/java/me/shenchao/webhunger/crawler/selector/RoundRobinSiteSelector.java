@@ -68,7 +68,7 @@ public class RoundRobinSiteSelector implements SiteSelector {
                     nextSite = nextSite();
                 }
             } else {
-                // 如果该站点待爬URL数量为0，控制权交还给SiteDominate决定站点是否爬取完毕
+                // 如果该站点待爬URL数量为0，检查站点是否爬取完毕
                 boolean isCompleted = siteDominate.checkCrawledCompleted(nextSite.getHost().getHostId(), siteListener);
                 // 如果对该站点的爬取还没有结束并且当前只有一个带爬取站点的时候，说明当前有其他线程正在对该站点进行爬取，所以睡眠一段时间后继续检测
                 if (!isCompleted && prevSite == nextSite) {

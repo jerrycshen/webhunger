@@ -156,6 +156,14 @@ public class DistributedController extends MasterController {
         }
     }
 
+    /**
+     * 进一步确认站点是否已经爬取完毕、处理完毕
+     * @param host host
+     */
+    private void checkHostProcessingCompleted(Host host) {
+        // TODO
+    }
+
     private class ZookeeperSupport {
 
         private ZooKeeper zooKeeper;
@@ -258,7 +266,7 @@ public class DistributedController extends MasterController {
          * 监控站点的页面处理状态，判断站点页面是否已经处理完毕，是否可以从该正在处理列表中删除该节点
          * @param host host
          */
-        private void watchHostProcessingStatus(Host host) {
+        private synchronized void watchHostProcessingStatus(Host host) {
             try {
                 byte[] data = zooKeeper.getData(getProcessingHostNodePath(host), new Watcher() {
                     @Override
@@ -268,7 +276,7 @@ public class DistributedController extends MasterController {
                 }, null);
                 int state = Integer.parseInt(new String(data));
                 if (state > 0) {
-                    // TODO host processed completed
+                    checkHostProcessingCompleted(host);
                 }
             } catch (KeeperException.NoNodeException e){
                 logger.debug("{} 页面处理完毕，该节点已经被删除......", host.getHostName());

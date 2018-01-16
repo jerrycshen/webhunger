@@ -18,7 +18,6 @@
         <module>webhunger-assembly</module>
         <module>webhunger-client-api</module>
         <module>webhunger-rpc-api</module>
-        <module>webhunger-processor</module>
     </modules>
 
     <developers>

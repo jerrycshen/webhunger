@@ -23,7 +23,7 @@ public abstract class BaseSiteDominate {
     protected Map<String, Site> siteMap = Maps.newConcurrentMap();
 
     /**
-     * 列表中所有站点的state为Crawling 状态
+     * 记录所有状态为state为Crawling的站点
      */
     protected volatile List<Site> siteList = Lists.newCopyOnWriteArrayList();
 
@@ -88,6 +88,8 @@ public abstract class BaseSiteDominate {
      * @param siteId siteId
      */
     void complete(String siteId) {
+        // 彻底移除对该站点的所有缓存
+        removeSite(siteId);
         // 移除正在爬取列表中的缓存
         spider.getCurrentCrawlingRequests().remove(siteId);
     }
