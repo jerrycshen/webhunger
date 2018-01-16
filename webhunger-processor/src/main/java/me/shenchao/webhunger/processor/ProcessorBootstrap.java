@@ -57,6 +57,7 @@ public class ProcessorBootstrap {
         processorCallable = new RpcProcessorCaller(hostDominate, zooKeeper);
         // 启动dubbo，暴露接口与控制器RPC通信
         initDubbo();
+        processor.setHostDominate(hostDominate);
         processor.setPageScheduler(new RocketMQPageScheduler(new RoundRobinHostSelector(hostDominate)));
         processor.setThreadNum(5);
         processor.runAsync();

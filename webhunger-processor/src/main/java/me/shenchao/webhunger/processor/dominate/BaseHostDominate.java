@@ -64,6 +64,10 @@ public class BaseHostDominate {
         return hostList;
     }
 
+    public Map<String, Host> getHostMap() {
+        return hostMap;
+    }
+
     public void checkProcessedCompleted(String hostId, HostPageNumListener hostListener) {
         // 将站点从待处理站点列表移除，但并没有真正移除该站点在map中的缓存，因为之后可能会恢复
         removeHostFromList(hostId);

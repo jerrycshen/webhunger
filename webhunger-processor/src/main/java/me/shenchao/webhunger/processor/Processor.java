@@ -1,7 +1,13 @@
 package me.shenchao.webhunger.processor;
 
+import me.shenchao.webhunger.client.api.processor.AbstractPageHandler;
 import me.shenchao.webhunger.dto.PageDTO;
+import me.shenchao.webhunger.entity.HandlerConfig;
+import me.shenchao.webhunger.entity.Host;
+import me.shenchao.webhunger.processor.dominate.BaseHostDominate;
+import me.shenchao.webhunger.processor.handler.NullHandler;
 import me.shenchao.webhunger.processor.scheduler.PageScheduler;
+import me.shenchao.webhunger.util.classloader.ThirdPartyClassLoader;
 import me.shenchao.webhunger.util.common.SystemUtils;
 import me.shenchao.webhunger.util.thread.CountableThreadPool;
 import org.slf4j.Logger;
@@ -9,6 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -20,6 +29,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @since 0.1
  */
 public class Processor implements Runnable {
+
+    private BaseHostDominate hostDominate;
 
     private Logger logger = LoggerFactory.getLogger(Processor.class);
 
@@ -43,9 +54,12 @@ public class Processor implements Runnable {
 
     private Thread asyncThread;
 
+    private PageHandlerChainFactory pageHandlerChainFactory = new PageHandlerChainFactory();
+
     private int threadNum = 1;
 
-    private Processor() {}
+    private Processor() {
+    }
 
     public static Processor create() {
         return new Processor();
@@ -78,7 +92,12 @@ public class Processor implements Runnable {
     }
 
     private void processPage(PageDTO page) {
+        processPage(page, hostDominate.getHostMap().get(page.getHostId()));
+    }
 
+    public void processPage(PageDTO page, Host host) {
+        AbstractPageHandler pageHandlerChain = pageHandlerChainFactory.getPageHandlerChain(host);
+        pageHandlerChain.handle(page);
     }
 
     private void waitNewPage() {
@@ -145,6 +164,47 @@ public class Processor implements Runnable {
     public Processor setPageScheduler(PageScheduler pageScheduler) {
         this.pageScheduler = pageScheduler;
         return this;
+    }
+
+    public void setHostDominate(BaseHostDominate hostDominate) {
+        this.hostDominate = hostDominate;
+    }
+
+    private class PageHandlerChainFactory {
+
+        private Map<String, AbstractPageHandler> handlerChainMap = new HashMap<>();
+
+        private AbstractPageHandler getPageHandlerChain(Host host) {
+            String hostId = host.getHostId();
+            if (handlerChainMap.get(hostId) != null) {
+                return handlerChainMap.get(hostId);
+            }
+            synchronized (PageHandlerChainFactory.class) {
+                if (handlerChainMap.get(hostId) != null) {
+                    return handlerChainMap.get(hostId);
+                } else {
+                    AbstractPageHandler headHandler = buildHandlerChain(host);
+                    handlerChainMap.put(hostId, headHandler);
+                    return headHandler;
+                }
+            }
+        }
+
+        private AbstractPageHandler buildHandlerChain(Host host) {
+            HandlerConfig handlerConfig = host.getHostConfig().getHandlerConfig();
+            List<AbstractPageHandler> handlers = ThirdPartyClassLoader.loadClasses(handlerConfig.getHandlerJarDir(), handlerConfig.getHandlerClassList(), AbstractPageHandler.class);
+            if (handlers.size() == 0) {
+                return new NullHandler();
+            }
+            if (handlers.size() == 1) {
+                return handlers.get(0);
+            }
+            for (int i = 0; i < handlers.size() - 1; ++i) {
+                handlers.get(i).setSuccessor(handlers.get(i + 1));
+            }
+            return handlers.get(0);
+        }
+
     }
 
 }

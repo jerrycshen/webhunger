@@ -25,6 +25,11 @@
         </dependency>
         <dependency>
             <groupId>me.shenchao.webhunger</groupId>
+            <artifactId>webhunger-client-api</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>me.shenchao.webhunger</groupId>
             <artifactId>webhunger-rpc-api</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>

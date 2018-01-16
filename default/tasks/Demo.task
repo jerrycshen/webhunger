@@ -31,7 +31,7 @@
                 <handlerConfig>
                     <handlerJarDir>D:\IdeaIU\IdeaProjects\webhunger\default\accessor</handlerJarDir>
                     <handlers>
-                        <handler>22</handler>
+                        <handler>me.shenchao.webhunger.client.processor.PrintHandler</handler>
                     </handlers>
                 </handlerConfig>
             </config>

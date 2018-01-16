@@ -1,5 +1,7 @@
 package me.shenchao.webhunger.crawler.pipeline;
 
+import me.shenchao.webhunger.dto.PageDTO;
+import me.shenchao.webhunger.processor.Processor;
 import us.codecraft.webmagic.LifeCycle;
 import me.shenchao.webhunger.entity.webmagic.ResultItems;
 import us.codecraft.webmagic.pipeline.Pipeline;
@@ -13,8 +15,11 @@ import us.codecraft.webmagic.pipeline.Pipeline;
  */
 public class LocalPipeline implements Pipeline {
 
-    @Override
-    public void process(ResultItems resultItems, LifeCycle task) {
+    private Processor processor = Processor.create();
 
+    @Override
+    public void process(ResultItems resultItems, LifeCycle lifeCycle) {
+        PageDTO page = resultItems.get("page");
+        processor.processPage(page, lifeCycle.getSites().get(page.getHostId()).getHost());
     }
 }

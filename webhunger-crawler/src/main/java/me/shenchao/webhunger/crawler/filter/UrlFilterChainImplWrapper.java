@@ -14,7 +14,7 @@ import java.util.Set;
  * @author Jerry Shen
  * @since 3.0
  */
-public class UrlFilterChainImplWrapper extends AbstractURLFilterChain {
+public class UrlFilterChainImplWrapper extends AbstractUrlFilterChain {
 
     private URLFilterChain urlFilterChain;
 

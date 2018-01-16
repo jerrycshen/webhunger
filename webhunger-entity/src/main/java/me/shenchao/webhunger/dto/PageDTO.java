@@ -12,9 +12,7 @@ public class PageDTO implements Serializable {
 
     private Long pageId;
 
-    private String siteId;
-
-    private String pageTitle;
+    private String hostId;
 
     private String url;
 
@@ -28,6 +26,32 @@ public class PageDTO implements Serializable {
 
     private String charset;
 
+    private boolean skip;
+
     // TODO 响应头
 
+
+    public boolean isSkip() {
+        return skip;
+    }
+
+    public void setSkip(boolean skip) {
+        this.skip = skip;
+    }
+
+    public String getHostId() {
+        return hostId;
+    }
+
+    public void setHostId(String hostId) {
+        this.hostId = hostId;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

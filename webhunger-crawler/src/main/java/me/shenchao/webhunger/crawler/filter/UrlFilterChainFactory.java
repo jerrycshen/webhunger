@@ -41,7 +41,7 @@ public class UrlFilterChainFactory {
     }
 
     private static URLFilterChain buildURLFilterChain(Site site) {
-        URLFilterChainImpl urlFilterChain = new URLFilterChainImpl();
+        UrlFilterChainImpl urlFilterChain = new UrlFilterChainImpl();
         // 添加内嵌的默认过滤器
         urlFilterChain.addFilter(new FormatUrlsFilter());
         // 添加自定义过滤器

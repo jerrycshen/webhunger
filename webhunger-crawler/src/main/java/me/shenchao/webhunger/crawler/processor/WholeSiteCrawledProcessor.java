@@ -47,7 +47,8 @@ public class WholeSiteCrawledProcessor implements PageProcessor {
 
     private PageDTO copyPageInfo(Page page) {
         PageDTO pageDTO = new PageDTO();
-
+        pageDTO.setHostId(page.getRequest().getSiteId());
+        pageDTO.setUrl(page.getRequest().getUrl());
         return pageDTO;
     }
 }
