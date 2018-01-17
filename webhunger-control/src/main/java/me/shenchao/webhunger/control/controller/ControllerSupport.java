@@ -2,6 +2,7 @@ package me.shenchao.webhunger.control.controller;
 
 import me.shenchao.webhunger.client.api.control.TaskAccessor;
 import me.shenchao.webhunger.config.ControlConfig;
+import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostSnapshot;
 import me.shenchao.webhunger.entity.HostState;
@@ -39,6 +40,17 @@ class ControllerSupport {
 
     Host loadHostById(String hostId) {
         return taskAccessor.loadHostById(hostId);
+    }
+
+    void saveCrawlingSnapshot(HostCrawlingSnapshotDTO eventualCrawlingSnapshot) {
+        taskAccessor.saveCrawlingSnapshot(eventualCrawlingSnapshot);
+    }
+
+    HostCrawlingSnapshotDTO encapsulateCrawlingSnapshot(Host host, HostCrawlingSnapshotDTO snapshot) {
+        snapshot.setHostName(host.getHostName());
+        snapshot.setHostIndex(host.getHostIndex());
+        snapshot.setStartTime(host.getLatestSnapshot().getCreateTime());
+        return snapshot;
     }
 
     /**

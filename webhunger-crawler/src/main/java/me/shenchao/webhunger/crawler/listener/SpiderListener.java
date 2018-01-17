@@ -1,5 +1,6 @@
 package me.shenchao.webhunger.crawler.listener;
 
+import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.webmagic.Request;
 
 /**
@@ -28,4 +29,13 @@ public interface SpiderListener {
      * 爬取完成时调用此方法
      */
     void onCompleted();
+
+    /**
+     * 当某一个站点爬取完毕后的操作
+     * @param siteId siteId
+     * @return 站点最后的爬取结果信息
+     */
+    default HostCrawlingSnapshotDTO onCompleted(String siteId) {
+        return null;
+    }
 }

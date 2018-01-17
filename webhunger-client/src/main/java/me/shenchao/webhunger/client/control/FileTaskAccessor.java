@@ -1,6 +1,7 @@
 package me.shenchao.webhunger.client.control;
 
 import me.shenchao.webhunger.client.api.control.TaskAccessor;
+import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostSnapshot;
 import me.shenchao.webhunger.entity.Task;
@@ -82,7 +83,7 @@ public class FileTaskAccessor implements TaskAccessor {
     }
 
     @Override
-    public void saveErrorPages(Host host) {
+    public void saveCrawlingSnapshot(HostCrawlingSnapshotDTO snapshot) {
 
     }
 

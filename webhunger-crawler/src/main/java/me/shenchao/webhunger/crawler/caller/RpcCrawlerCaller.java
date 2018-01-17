@@ -71,7 +71,7 @@ public class RpcCrawlerCaller implements CrawlerCallable {
      * 分布式爬取中，借助zookeeper监听来判断爬取是否结束，无须调用该方法
      */
     @Override
-    public boolean checkCrawledCompleted(String hostId) {
+    public HostCrawlingSnapshotDTO checkCrawledCompleted(String hostId) {
         throw new UnsupportedOperationException();
     }
 

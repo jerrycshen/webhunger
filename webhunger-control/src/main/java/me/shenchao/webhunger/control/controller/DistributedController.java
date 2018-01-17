@@ -72,9 +72,9 @@ public class DistributedController extends MasterController {
     }
 
     @Override
-    void crawlingCompleted(Host host) {
+    void crawlingCompleted(Host host, HostCrawlingSnapshotDTO eventualSnapshot) {
         releaseAfterCrawled(host);
-        super.crawlingCompleted(host);
+        super.crawlingCompleted(host, eventualSnapshot);
     }
 
     @Override
@@ -146,7 +146,7 @@ public class DistributedController extends MasterController {
         zookeeperSupport.deleteCrawlingHostNode(host);
         // 访问redis进一步确定站点URL队列为空
         if (redisSupport.getLeftRequestsCount(host) == 0) {
-            crawlingCompleted(host);
+            crawlingCompleted(host, null);
         } else {
             /*
              * 如果站点队列中仍有URL未被爬取，那么重新将该站点加入到待爬列表，该方法中通过删除与添加操作，会

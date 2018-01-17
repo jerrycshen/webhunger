@@ -2,6 +2,7 @@ package me.shenchao.webhunger.crawler.dominate;
 
 import me.shenchao.webhunger.constant.ZookeeperPathConsts;
 import me.shenchao.webhunger.crawler.listener.SiteUrlNumListener;
+import me.shenchao.webhunger.crawler.listener.SpiderListener;
 import me.shenchao.webhunger.entity.webmagic.Site;
 import me.shenchao.webhunger.util.common.ZookeeperUtils;
 import org.apache.zookeeper.KeeperException;
@@ -26,8 +27,8 @@ public class DistributedSiteDominate extends BaseSiteDominate {
 
     private SiteCrawledCompletedCheckThread siteCrawledCompletedCheckThread;
 
-    public DistributedSiteDominate(ZooKeeper zooKeeper, Spider spider) {
-        super(spider);
+    public DistributedSiteDominate(ZooKeeper zooKeeper, Spider spider, SpiderListener spiderListener) {
+        super(spider, spiderListener);
         this.zooKeeper = zooKeeper;
         // 启动站点检查线程
         siteCrawledCompletedCheckThread = new SiteCrawledCompletedCheckThread();
@@ -61,6 +62,7 @@ public class DistributedSiteDominate extends BaseSiteDominate {
     @Override
     void complete(String siteId) {
         super.complete(siteId);
+        spiderListener.onCompleted(siteId);
         // 移除检测线程中map中的相关记录
         siteCrawledCompletedCheckThread.remove(siteId);
 

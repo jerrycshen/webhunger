@@ -142,11 +142,7 @@ public abstract class MasterController {
         if ((crawlingHost = crawlingHostMap.get(hostId)) == null) {
             return null;
         }
-        HostCrawlingSnapshotDTO snapshot = createCrawlingSnapshot(hostId);
-        snapshot.setHostName(crawlingHost.getHostName());
-        snapshot.setHostIndex(crawlingHost.getHostIndex());
-        snapshot.setStartTime(crawlingHost.getLatestSnapshot().getCreateTime());
-        return snapshot;
+        return controllerSupport.encapsulateCrawlingSnapshot(crawlingHost, createCrawlingSnapshot(hostId));
     }
 
     /**
@@ -190,9 +186,13 @@ public abstract class MasterController {
      * 爬取完成操作
      * @param host host
      */
-    void crawlingCompleted(Host host) {
-        crawlingHostMap.remove(host.getHostId());
+    void crawlingCompleted(Host host, HostCrawlingSnapshotDTO eventualCrawlingSnapshot) {
+        removeCrawlingHost(host);
         controllerSupport.createSnapshot(host, HostState.Processing);
+        // 保存爬取结果
+        eventualCrawlingSnapshot = controllerSupport.encapsulateCrawlingSnapshot(host, eventualCrawlingSnapshot);
+        controllerSupport.saveCrawlingSnapshot(eventualCrawlingSnapshot);
+        logger.info("{} 爬取完毕......", host.getHostName());
         System.out.println(host.getHostName() + "爬取完毕");
     }
 
@@ -203,6 +203,19 @@ public abstract class MasterController {
             lock.lock();
             try {
                 crawlingHostMap.put(host.getHostId(), host);
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
+    private void removeCrawlingHost(Host host) {
+        if (isDistributed()) {
+            crawlingHostMap.remove(host.getHostId());
+        } else {
+            lock.lock();
+            try {
+                crawlingHostMap.remove(host.getHostId());
             } finally {
                 lock.unlock();
             }
@@ -249,7 +262,6 @@ public abstract class MasterController {
                             controllerSupport.createSnapshot(host, HostState.Crawling);
                             addCrawlingHost(host);
                             logger.info("站点：{} 开始爬取......", host.getHostName());
-
                             crawl(host);
                         }
                     });

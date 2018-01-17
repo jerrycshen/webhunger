@@ -3,6 +3,7 @@ package me.shenchao.webhunger.crawler.dominate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import me.shenchao.webhunger.crawler.listener.SiteUrlNumListener;
+import me.shenchao.webhunger.crawler.listener.SpiderListener;
 import me.shenchao.webhunger.entity.webmagic.Request;
 import me.shenchao.webhunger.entity.webmagic.Site;
 import us.codecraft.webmagic.Spider;
@@ -29,8 +30,11 @@ public abstract class BaseSiteDominate {
 
     protected Spider spider;
 
-    public BaseSiteDominate(Spider spider) {
+    protected SpiderListener spiderListener;
+
+    public BaseSiteDominate(Spider spider, SpiderListener spiderListener) {
         this.spider = spider;
+        this.spiderListener = spiderListener;
     }
 
 

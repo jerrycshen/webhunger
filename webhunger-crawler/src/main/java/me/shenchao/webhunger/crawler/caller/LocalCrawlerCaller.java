@@ -46,8 +46,8 @@ public class LocalCrawlerCaller implements CrawlerCallable {
     }
 
     @Override
-    public boolean checkCrawledCompleted(String hostId) {
-        return spiderListener.getSiteStatusStatistics(hostId).getLeftPageNum() == 0 && !siteDominate.getSiteMap().containsKey(hostId);
+    public HostCrawlingSnapshotDTO checkCrawledCompleted(String hostId) {
+        return siteDominate.checkCrawledCompleted(hostId);
     }
 
     @Override

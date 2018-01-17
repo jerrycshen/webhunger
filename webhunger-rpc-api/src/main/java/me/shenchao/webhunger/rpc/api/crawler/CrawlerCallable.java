@@ -30,7 +30,7 @@ public interface CrawlerCallable {
      * @param hostId hostId
      * @return if completed return true
      */
-    boolean checkCrawledCompleted(String hostId);
+    HostCrawlingSnapshotDTO checkCrawledCompleted(String hostId);
 
     /**
      * 创建站点当前快照信息

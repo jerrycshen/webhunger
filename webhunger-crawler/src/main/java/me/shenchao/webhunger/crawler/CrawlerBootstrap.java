@@ -86,7 +86,7 @@ public class CrawlerBootstrap {
             // 启动zookeeper,注册本爬虫节点
             ZooKeeper zooKeeper = initZookeeper();
             // 创建分布式站点管理类
-            siteDominate = new DistributedSiteDominate(zooKeeper, spider);
+            siteDominate = new DistributedSiteDominate(zooKeeper, spider, spiderListener);
             // 创建爬虫控制类
             crawlerCaller = new RpcCrawlerCaller((DistributedSiteDominate) siteDominate, spiderListener,zooKeeper);
             // 启动dubbo，暴露接口与控制器RPC通信
@@ -97,7 +97,7 @@ public class CrawlerBootstrap {
         } else {
             // 创建监听器
             spiderListener = new LocalSpiderListener(spider);
-            siteDominate = new LocalSiteDominate(spider);
+            siteDominate = new LocalSiteDominate(spider, spiderListener);
             crawlerCaller = new LocalCrawlerCaller((LocalSiteDominate) siteDominate, spiderListener);
             spider.addPipeline(new LocalPipeline());
             spider.setScheduler(new LocalQueueUrlScheduler(new RoundRobinSiteSelector(siteDominate)));

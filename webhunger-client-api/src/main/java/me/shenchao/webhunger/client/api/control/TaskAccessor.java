@@ -1,5 +1,6 @@
 package me.shenchao.webhunger.client.api.control;
 
+import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostSnapshot;
 import me.shenchao.webhunger.entity.Task;
@@ -43,8 +44,8 @@ public interface TaskAccessor {
     void createSnapshot(HostSnapshot snapshot);
 
     /**
-     * 爬取完毕后，保存爬取过程中错误的页面
-     * @param host host
+     * 爬取完毕后，保存爬取结果
+     * @param snapshot snapshot
      */
-    void saveErrorPages(Host host);
+    void saveCrawlingSnapshot(HostCrawlingSnapshotDTO snapshot);
 }

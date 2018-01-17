@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -83,23 +84,19 @@ class LocalController extends MasterController {
     @Override
     void processingCompleted(Host host) {
         controllerSupport.createSnapshot(host, HostState.Completed);
-        // TODO 保存结果
+        logger.info("{} 页面处理完毕......", host.getHostName());
     }
 
     @Override
-    void crawlingCompleted(Host host) {
-        super.crawlingCompleted(host);
-        /*
-         * 单机爬取中，由于爬取线程与页面处理线程在同一线程中，所以爬取结束也意味着所有页面处理结束，
-         * 接下来对站点全局做处理
-         */
-        processHost(host);
-    }
-
-    private void processHost(Host host) {
+    void crawlingCompleted(Host host, HostCrawlingSnapshotDTO eventualSnapshot) {
         hostProcessExecutor.execute(new Runnable() {
             @Override
             public void run() {
+                LocalController.super.crawlingCompleted(host, eventualSnapshot);
+                /*
+                 * 单机爬取中，由于爬取线程与页面处理线程在同一线程中，所以爬取结束也意味着所有页面处理结束，
+                 * 接下来对站点全局做处理
+                 */
                 processor.processHost(host);
                 processingCompleted(host);
             }
@@ -120,18 +117,19 @@ class LocalController extends MasterController {
         public void run() {
             while (true) {
                 lock.lock();
-                List<Host> completedHosts = new ArrayList<>();
+                Map<Host, HostCrawlingSnapshotDTO> completedHosts = new HashMap<>();
                 try {
                     for (Map.Entry<String, Host> entry : crawlingHostMap.entrySet()) {
-                        if (crawlerCallable.checkCrawledCompleted(entry.getKey())) {
-                            completedHosts.add(entry.getValue());
+                        HostCrawlingSnapshotDTO eventualSnapshot;
+                        if ((eventualSnapshot = crawlerCallable.checkCrawledCompleted(entry.getKey())) != null) {
+                            completedHosts.put(entry.getValue(), eventualSnapshot);
                         }
                     }
                 } finally {
                     lock.unlock();
                 }
-                for (Host host : completedHosts) {
-                    crawlingCompleted(host);
+                for (Map.Entry<Host, HostCrawlingSnapshotDTO> entry : completedHosts.entrySet()) {
+                    crawlingCompleted(entry.getKey(), entry.getValue());
                 }
                 try {
                     Thread.sleep(CHECK_INTERVAL);

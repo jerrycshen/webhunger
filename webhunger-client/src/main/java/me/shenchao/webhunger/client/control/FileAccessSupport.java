@@ -3,6 +3,7 @@ package me.shenchao.webhunger.client.control;
 import com.google.common.base.Charsets;
 import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
+import me.shenchao.webhunger.dto.ErrorPageDTO;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostSnapshot;
 
@@ -10,6 +11,7 @@ import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Jerry Shen
@@ -103,6 +105,14 @@ class FileAccessSupport {
             .append(formatPreciseDate(snapshot.getCreateTime()))
             .append("\n");
         Files.asCharSink(new File(snapshotPath), Charsets.UTF_8, FileWriteMode.APPEND).write(sb.toString());
+    }
+
+    static void saveErrorPages(String errorFilePath, List<ErrorPageDTO> errorPages) {
+
+    }
+
+    static void saveCrawlingResult(String hostId, int totalPageNum, int errorPageNum, Date startTime, Date endTime) {
+
     }
 
 }

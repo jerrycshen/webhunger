@@ -1,10 +1,15 @@
 package me.shenchao.webhunger.crawler.dominate;
 
+import com.google.common.collect.Maps;
+import me.shenchao.webhunger.crawler.listener.BaseSpiderListener;
 import me.shenchao.webhunger.crawler.listener.SiteUrlNumListener;
+import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 单机版站点管理器
@@ -14,18 +19,26 @@ import java.util.List;
  */
 public class LocalSiteDominate extends BaseSiteDominate {
 
-    public LocalSiteDominate(Spider spider) {
-        super(spider);
+    /**
+     * 保存最终的站点爬取结果
+     */
+    private Map<String, HostCrawlingSnapshotDTO> eventualCrawlingSnapshotMap = Maps.newConcurrentMap();
+
+    public LocalSiteDominate(Spider spider, BaseSpiderListener spiderListener) {
+        super(spider, spiderListener);
     }
 
     @Override
     public boolean checkCrawledCompleted(String siteId, SiteUrlNumListener siteListener) {
         if (!isLocalCrawlingNow(siteId)) {
-            removeSiteFromList(siteId);
             complete(siteId);
             return true;
         }
         return false;
+    }
+
+    public HostCrawlingSnapshotDTO checkCrawledCompleted(String siteId) {
+        return eventualCrawlingSnapshotMap.remove(siteId);
     }
 
     @Override
@@ -33,6 +46,10 @@ public class LocalSiteDominate extends BaseSiteDominate {
         super.complete(siteId);
         // 移除站点对应的相关URL队列
         spider.getScheduler().clean(siteId);
+        // 移除监听器中缓存，并保存站点最终爬取结果
+        HostCrawlingSnapshotDTO eventualSnapshot = spiderListener.onCompleted(siteId);
+        eventualSnapshot.setEndTime(new Date());
+        eventualCrawlingSnapshotMap.put(siteId, eventualSnapshot);
     }
 
     @Override
