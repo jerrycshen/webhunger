@@ -21,7 +21,7 @@ public abstract class AbstractHostHandler {
      * 业务处理方法
      * @param host page
      */
-    abstract void handleRequest(Host host);
+    protected abstract void handleRequest(Host host);
 
     public final void handle(Host host) {
         handleRequest(host);

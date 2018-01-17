@@ -117,7 +117,8 @@ class FileParser {
                 }
             }
             hostConfig.setUrlFilterConfig(parseUrlFilterConfig(configElement.element("urlFilterConfig")));
-            hostConfig.setHandlerConfig(parseHandlerConfig(configElement.element("handlerConfig")));
+            hostConfig.setPageHandlerConfig(parsePageHandlerConfig(configElement.element("pageHandlerConfig")));
+            hostConfig.setHostHandlerConfig(parseHostHandlerConfig(configElement.element("hostHandlerConfig")));
         }
         return hostConfig;
     }
@@ -141,23 +142,42 @@ class FileParser {
         return urlFilterConfig;
     }
 
-    private static HandlerConfig parseHandlerConfig(Element configElement) {
-        HandlerConfig handlerConfig = null;
+    private static PageHandlerConfig parsePageHandlerConfig(Element configElement) {
+        PageHandlerConfig pageHandlerConfig = null;
         if (configElement != null) {
-            handlerConfig = new HandlerConfig();
+            pageHandlerConfig = new PageHandlerConfig();
             Element jarPathElement = configElement.element("handlerJarDir");
             if (jarPathElement != null) {
-                handlerConfig.setHandlerJarDir(jarPathElement.getText());
+                pageHandlerConfig.setHandlerJarDir(jarPathElement.getText());
             }
             Element handlersElement = configElement.element("handlers");
             if (handlersElement != null && handlersElement.elements("handler").size() > 0) {
                 List<Element> handlerList = handlersElement.elements("handler");
                 for (Element handlerElement : handlerList) {
-                    handlerConfig.addHandlerClass(handlerElement.getText());
+                    pageHandlerConfig.addHandlerClass(handlerElement.getText());
                 }
             }
         }
-        return handlerConfig;
+        return pageHandlerConfig;
+    }
+
+    private static HostHandlerConfig parseHostHandlerConfig(Element configElement) {
+        HostHandlerConfig hostHandlerConfig = null;
+        if (configElement != null) {
+            hostHandlerConfig = new HostHandlerConfig();
+            Element jarPathElement = configElement.element("handlerJarDir");
+            if (jarPathElement != null) {
+                hostHandlerConfig.setHandlerJarDir(jarPathElement.getText());
+            }
+            Element handlersElement = configElement.element("handlers");
+            if (handlersElement != null && handlersElement.elements("handler").size() > 0) {
+                List<Element> handlerList = handlersElement.elements("handler");
+                for (Element handlerElement : handlerList) {
+                    hostHandlerConfig.addHandlerClass(handlerElement.getText());
+                }
+            }
+        }
+        return hostHandlerConfig;
     }
 
     private static List<Host> parseHost(Task task, Element hostsElement) {

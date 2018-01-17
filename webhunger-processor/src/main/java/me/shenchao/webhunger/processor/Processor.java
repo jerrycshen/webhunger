@@ -3,10 +3,12 @@ package me.shenchao.webhunger.processor;
 import me.shenchao.webhunger.client.api.processor.AbstractHostHandler;
 import me.shenchao.webhunger.client.api.processor.AbstractPageHandler;
 import me.shenchao.webhunger.dto.PageDTO;
-import me.shenchao.webhunger.entity.HandlerConfig;
+import me.shenchao.webhunger.entity.HostHandlerConfig;
+import me.shenchao.webhunger.entity.PageHandlerConfig;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.processor.dominate.BaseHostDominate;
-import me.shenchao.webhunger.processor.handler.NullHandler;
+import me.shenchao.webhunger.processor.handler.NullHostHandler;
+import me.shenchao.webhunger.processor.handler.NullPageHandler;
 import me.shenchao.webhunger.processor.scheduler.PageScheduler;
 import me.shenchao.webhunger.util.classloader.ThirdPartyClassLoader;
 import me.shenchao.webhunger.util.common.SystemUtils;
@@ -57,6 +59,8 @@ public class Processor implements Runnable {
 
     private PageHandlerChainFactory pageHandlerChainFactory = new PageHandlerChainFactory();
 
+    private HostHandlerChainFactory hostHandlerChainFactory = new HostHandlerChainFactory();
+
     private int threadNum = 1;
 
     private Processor() {
@@ -101,8 +105,13 @@ public class Processor implements Runnable {
         pageHandlerChain.handle(page);
     }
 
-    public void processHost(Host host) {
+    public void processHost(String hostId) {
+        processHost(hostDominate.getHostMap().get(hostId));
+    }
 
+    public void processHost(Host host) {
+        AbstractHostHandler hostHandlerChain = hostHandlerChainFactory.getHostHandlerChain(host);
+        hostHandlerChain.handle(host);
     }
 
     private void waitNewPage() {
@@ -196,13 +205,10 @@ public class Processor implements Runnable {
         }
 
         private AbstractPageHandler buildPageHandlerChain(Host host) {
-            HandlerConfig handlerConfig = host.getHostConfig().getHandlerConfig();
-            List<AbstractPageHandler> handlers = ThirdPartyClassLoader.loadClasses(handlerConfig.getHandlerJarDir(), handlerConfig.getHandlerClassList(), AbstractPageHandler.class);
+            PageHandlerConfig pageHandlerConfig = host.getHostConfig().getPageHandlerConfig();
+            List<AbstractPageHandler> handlers = ThirdPartyClassLoader.loadClasses(pageHandlerConfig.getHandlerJarDir(), pageHandlerConfig.getHandlerClassList(), AbstractPageHandler.class);
             if (handlers.size() == 0) {
-                return new NullHandler();
-            }
-            if (handlers.size() == 1) {
-                return handlers.get(0);
+                return new NullPageHandler();
             }
             for (int i = 0; i < handlers.size() - 1; ++i) {
                 handlers.get(i).setSuccessor(handlers.get(i + 1));
@@ -233,7 +239,15 @@ public class Processor implements Runnable {
         }
 
         private AbstractHostHandler buildHostHandlerChain(Host host) {
-            return null;
+            HostHandlerConfig hostHandlerConfig = host.getHostConfig().getHostHandlerConfig();
+            List<AbstractHostHandler> handlers = ThirdPartyClassLoader.loadClasses(hostHandlerConfig.getHandlerJarDir(), hostHandlerConfig.getHandlerClassList(), AbstractHostHandler.class);
+            if (handlers.size() == 0) {
+                return new NullHostHandler();
+            }
+            for (int i = 0; i < handlers.size() - 1; ++i) {
+                handlers.get(i).setSuccessor(handlers.get(i + 1));
+            }
+            return handlers.get(0);
         }
     }
 

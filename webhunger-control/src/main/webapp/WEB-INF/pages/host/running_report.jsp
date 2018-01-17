@@ -83,28 +83,6 @@
                 0%
             </div>
         </div>
-        <div>
-            <ul class="nav nav-pills" role="tablist">
-                <li style="margin-left: 5px">
-                    Success Pages: <strong id="success_pages">0</strong>
-                </li>
-                <li style="margin-left: 15px">
-                    Error Pages: <strong id="error_pages">0</strong>
-                </li>
-                <li style="margin-left: 15px">
-                    Error Rate: <strong id="error_rate">0</strong>%
-                </li>
-                <li class="navbar-right" style="margin-left: 15px; margin-right: 5px">
-                    Total Pages: <strong id="total_pages">0</strong>
-                </li>
-                <li class="navbar-right" style="margin-left: 15px; margin-right: 5px">
-                    Left Pages: <strong id="left_pages">0</strong>
-                </li>
-                <li class="navbar-right">
-                    Crawled Pages: <strong id="crawled_pages">0</strong>
-                </li>
-            </ul>
-        </div>
     </div>
 
     <div class="page-header">

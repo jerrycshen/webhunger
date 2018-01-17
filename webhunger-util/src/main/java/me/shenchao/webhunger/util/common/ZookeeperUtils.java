@@ -111,11 +111,21 @@ public class ZookeeperUtils {
             }
         }
 
-        private boolean tryLock() throws KeeperException, InterruptedException {
-            myZNode = zooKeeper.create(lockNode + "/" + SUB_NODE, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
-            logger.debug("{} is created", myZNode);
-            // 取出所有子节点，不要watch
-            List<String> subNodes = zooKeeper.getChildren(lockNode, false);
+        public boolean tryLock() {
+            List<String> subNodes = null;
+            try {
+                myZNode = zooKeeper.create(lockNode + "/" + SUB_NODE, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
+                logger.debug("{} is created", myZNode);
+                // 取出所有子节点，不要watch
+                subNodes = zooKeeper.getChildren(lockNode, false);
+                } catch (KeeperException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+            }
+            if (subNodes == null || subNodes.size() == 0) {
+                throw new RuntimeException("zookeeper连接出现问题......");
+            }
             // 如果列表中只有一个子节点，那肯定就是自己获得锁
             if (subNodes.size() == 1) {
                 return true;

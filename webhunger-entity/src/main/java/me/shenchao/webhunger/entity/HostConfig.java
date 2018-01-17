@@ -29,7 +29,9 @@ public class HostConfig {
 
     private UrlFilterConfig urlFilterConfig;
 
-    private HandlerConfig handlerConfig;
+    private PageHandlerConfig pageHandlerConfig;
+
+    private HostHandlerConfig hostHandlerConfig;
 
     public int getDepth() {
         return depth;
@@ -103,11 +105,19 @@ public class HostConfig {
         this.urlFilterConfig = urlFilterConfig;
     }
 
-    public HandlerConfig getHandlerConfig() {
-        return handlerConfig;
+    public PageHandlerConfig getPageHandlerConfig() {
+        return pageHandlerConfig;
     }
 
-    public void setHandlerConfig(HandlerConfig handlerConfig) {
-        this.handlerConfig = handlerConfig;
+    public void setPageHandlerConfig(PageHandlerConfig pageHandlerConfig) {
+        this.pageHandlerConfig = pageHandlerConfig;
+    }
+
+    public HostHandlerConfig getHostHandlerConfig() {
+        return hostHandlerConfig;
+    }
+
+    public void setHostHandlerConfig(HostHandlerConfig hostHandlerConfig) {
+        this.hostHandlerConfig = hostHandlerConfig;
     }
 }

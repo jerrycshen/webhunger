@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -37,6 +39,8 @@ public class BaseHostDominate {
 
     private HostProcessedCompletedCheckThread hostProcessedCompletedCheckThread;
 
+    private ExecutorService hostProcessExecutor;
+
     private Processor processor;
 
     private ZooKeeper zooKeeper;
@@ -44,6 +48,7 @@ public class BaseHostDominate {
     public BaseHostDominate(Processor processor, ZooKeeper zooKeeper) {
         this.processor = processor;
         this.zooKeeper = zooKeeper;
+        hostProcessExecutor = Executors.newSingleThreadExecutor();
         hostProcessedCompletedCheckThread = new HostProcessedCompletedCheckThread();
         Thread thread = new Thread(hostProcessedCompletedCheckThread);
         thread.setDaemon(true);
@@ -103,19 +108,34 @@ public class BaseHostDominate {
         // 更新zookeeper中该节点的值 + 1
         // 由于可能多个页面处理节点同时更新该值，所以这里使用分布式锁控制并发操作
         ZookeeperUtils.DistributedLock distributedLock = new ZookeeperUtils.DistributedLock(zooKeeper, ZookeeperPathConsts.PROCESSOR_LOCK);
-        distributedLock.lock();
+
+        boolean unlocked = distributedLock.tryLock();
         try {
-            try {
-                Stat exists = zooKeeper.exists(ZookeeperPathConsts.PROCESSING_HOST + "/" + hostId, false);
-                if (exists != null) {
-                    byte[] dataBytes = zooKeeper.getData(ZookeeperPathConsts.PROCESSING_HOST + "/" + hostId, false, null);
-                    int value = Integer.parseInt(new String(dataBytes));
-                    zooKeeper.setData(ZookeeperPathConsts.PROCESSING_HOST + "/" + hostId, String.valueOf(value + 1).getBytes(), -1);
+            if (unlocked) {
+                try {
+                    Stat exists = zooKeeper.exists(ZookeeperPathConsts.PROCESSING_HOST + "/" + hostId, false);
+                    if (exists != null) {
+                        hostProcessExecutor.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    processor.processHost(hostId);
+                                    byte[] dataBytes = zooKeeper.getData(ZookeeperPathConsts.PROCESSING_HOST + "/" + hostId, false, null);
+                                    int value = Integer.parseInt(new String(dataBytes));
+                                    zooKeeper.setData(ZookeeperPathConsts.PROCESSING_HOST + "/" + hostId, String.valueOf(value + 1).getBytes(), -1);
+                                } catch (KeeperException e) {
+                                    e.printStackTrace();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (KeeperException e) {
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (KeeperException e) {
-                e.printStackTrace();
             }
         } finally {
             distributedLock.unlock();

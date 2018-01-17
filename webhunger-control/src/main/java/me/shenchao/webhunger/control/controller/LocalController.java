@@ -8,13 +8,13 @@ import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostState;
 import me.shenchao.webhunger.processor.Processor;
 import me.shenchao.webhunger.rpc.api.crawler.CrawlerCallable;
-import me.shenchao.webhunger.util.thread.CountableThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.*;
 
 /**
  * 单机版站点调度控制器
@@ -30,7 +30,7 @@ class LocalController extends MasterController {
 
     private Processor processor;
 
-    private CountableThreadPool threadPool = new CountableThreadPool(1);
+    private ExecutorService hostProcessExecutor;
 
     LocalController(ControlConfig controlConfig) {
         super(controlConfig, false);
@@ -47,6 +47,8 @@ class LocalController extends MasterController {
         thread.setDaemon(true);
         thread.start();
         logger.info("启动站点爬取完成检测线程......");
+        // 初始化站点处理线程池
+        hostProcessExecutor = Executors.newSingleThreadExecutor();
     }
 
     @Override
@@ -95,7 +97,7 @@ class LocalController extends MasterController {
     }
 
     private void processHost(Host host) {
-        threadPool.execute(new Runnable() {
+        hostProcessExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 processor.processHost(host);
