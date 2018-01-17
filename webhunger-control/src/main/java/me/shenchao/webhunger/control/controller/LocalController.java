@@ -53,14 +53,14 @@ class LocalController extends MasterController {
     }
 
     @Override
-    public List<ErrorPageDTO> getErrorPages(String hostId, int startPos, int size) {
+    public List<ErrorPageDTO> getErrorPageWhenCrawling(String hostId, int startPos, int size) {
         HostCrawlingSnapshotDTO currentHostCrawlingSnapshot = createCrawlingSnapshot(hostId);
         List<ErrorPageDTO> allErrorPages = currentHostCrawlingSnapshot.getErrorPages();
         return allErrorPages.subList(startPos, Math.min(startPos + size, allErrorPages.size()));
     }
 
     @Override
-    public int getErrorPageNum(String hostId) {
+    public int getErrorPageNumWhenCrawling(String hostId) {
         HostCrawlingSnapshotDTO currentHostCrawlingSnapshot = createCrawlingSnapshot(hostId);
         List<ErrorPageDTO> allErrorPages = currentHostCrawlingSnapshot.getErrorPages();
         return allErrorPages.size();

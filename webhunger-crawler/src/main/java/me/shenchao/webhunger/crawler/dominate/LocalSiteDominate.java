@@ -48,7 +48,6 @@ public class LocalSiteDominate extends BaseSiteDominate {
         spider.getScheduler().clean(siteId);
         // 移除监听器中缓存，并保存站点最终爬取结果
         HostCrawlingSnapshotDTO eventualSnapshot = spiderListener.onCompleted(siteId);
-        eventualSnapshot.setEndTime(new Date());
         eventualCrawlingSnapshotMap.put(siteId, eventualSnapshot);
     }
 

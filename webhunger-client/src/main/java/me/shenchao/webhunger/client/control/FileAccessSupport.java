@@ -4,13 +4,13 @@ import com.google.common.base.Charsets;
 import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
 import me.shenchao.webhunger.dto.ErrorPageDTO;
+import me.shenchao.webhunger.entity.CrawledResult;
 import me.shenchao.webhunger.entity.Host;
 import me.shenchao.webhunger.entity.HostSnapshot;
+import me.shenchao.webhunger.entity.ProcessedResult;
 
 import java.io.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,49 +49,54 @@ class FileAccessSupport {
         return null;
     }
 
-    static Date parseDate(String dateStr) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            return formatter.parse(dateStr);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    static Date parsePreciseDate(String dateStr) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        try {
-            return formatter.parse(dateStr);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    static String formatPreciseDate(Date date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        return formatter.format(date);
-    }
-
     /**
      * 获取最新的快照记录
      */
     static HostSnapshot getLatestSnapshot(Host host, String snapshotPath) throws IOException {
-        File snapshotFile = new File(snapshotPath);
-        if (snapshotFile.exists()) {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(snapshotFile));
-            String line;
-            String prev = null;
-            while ((line = bufferedReader.readLine()) != null) {
-                prev = line;
-            }
-            if (prev == null) {
-                return null;
-            }
-            return FileParser.parseSnapshot(host, prev);
+        List<HostSnapshot> allSnapshots = getAllSnapshots(host, snapshotPath);
+        if (allSnapshots.size() == 0) {
+            return null;
         }
-        return null;
+        return allSnapshots.get(allSnapshots.size() - 1);
+    }
+
+    static List<HostSnapshot> getAllSnapshots(Host host, String snapshotPath) throws IOException {
+        List<HostSnapshot> snapshots = new ArrayList<>();
+        File snapshotFile = new File(snapshotPath);
+        assert snapshotFile.exists();
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(snapshotFile));
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            snapshots.add(FileParser.parseSnapshot(host, line));
+        }
+        return snapshots;
+    }
+
+    static CrawledResult getCrawledResult(Host host, String resultFilePath) throws IOException {
+        File file = new File(resultFilePath);
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+        return FileParser.parseCrawledResult(host, bufferedReader.readLine());
+    }
+
+    static ProcessedResult getProcessedResult(Host host, List<HostSnapshot> snapshots) {
+        return FileParser.parseProcessedResult(host, snapshots);
+    }
+
+    static List<ErrorPageDTO> getErrorPages(String hostId, String errorFilePath) throws IOException {
+        File file = new File(errorFilePath);
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+        List<ErrorPageDTO> errorPages = new ArrayList<>();
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            errorPages.add(FileParser.parseErrorPages(hostId, line));
+        }
+        return errorPages;
+    }
+
+    static int getErrorPageNum(String errorFilePath) throws IOException {
+        File file = new File(errorFilePath);
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+        return (int) bufferedReader.lines().count();
     }
 
     /**
@@ -102,17 +107,43 @@ class FileAccessSupport {
         StringBuilder sb = new StringBuilder();
         sb.append(snapshot.getHost().getHostId()).append("\t")
             .append(snapshot.getState()).append("\t")
-            .append(formatPreciseDate(snapshot.getCreateTime()))
+            .append(FileParser.formatPreciseDate(snapshot.getCreateTime()))
             .append("\n");
         Files.asCharSink(new File(snapshotPath), Charsets.UTF_8, FileWriteMode.APPEND).write(sb.toString());
     }
 
-    static void saveErrorPages(String errorFilePath, List<ErrorPageDTO> errorPages) {
-
+    static void saveErrorPages(String errorFilePath, List<ErrorPageDTO> errorPages) throws IOException {
+        StringBuilder builder = new StringBuilder();
+        for (ErrorPageDTO errorPage : errorPages) {
+            builder.append(errorPage.getDepth()).append('\t').append(errorPage.getResponseCode()).append('\t')
+                    .append(errorPage.getUrl()).append('\t').append(errorPage.getParentUrl()).append('\t')
+                    .append(errorPage.getErrorMsg()).append('\n');
+        }
+        write(builder.toString(), errorFilePath, false);
     }
 
-    static void saveCrawlingResult(String hostId, int totalPageNum, int errorPageNum, Date startTime, Date endTime) {
+    static void saveCrawlingResult(String resultFilePath, CrawledResult crawledResult) throws IOException {
+        StringBuilder builder = new StringBuilder();
+        builder.append(crawledResult.getHost().getHostId()).append('\t').append(crawledResult.getTotalPageNum()).append('\t')
+                .append(crawledResult.getErrorPageNum()).append('\t').append(FileParser.formatPreciseDate(crawledResult.getStartTime())).append('\t')
+                .append(FileParser.formatPreciseDate(crawledResult.getEndTime())).append('\t');
+        write(builder.toString(), resultFilePath, false);
+    }
 
+    private static void write(String content, String filePath, boolean isAppend) throws IOException {
+        initFilePath(filePath);
+        if (isAppend) {
+            Files.asCharSink(new File(filePath), Charsets.UTF_8, FileWriteMode.APPEND).write(content);
+        } else {
+            Files.asCharSink(new File(filePath), Charsets.UTF_8).write(content);
+        }
+    }
+
+    private static void initFilePath(String filePath) throws IOException {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            Files.createParentDirs(file);
+        }
     }
 
 }

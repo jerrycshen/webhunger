@@ -1,10 +1,8 @@
 package me.shenchao.webhunger.client.control;
 
 import me.shenchao.webhunger.client.api.control.TaskAccessor;
-import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
-import me.shenchao.webhunger.entity.Host;
-import me.shenchao.webhunger.entity.HostSnapshot;
-import me.shenchao.webhunger.entity.Task;
+import me.shenchao.webhunger.dto.ErrorPageDTO;
+import me.shenchao.webhunger.entity.*;
 import me.shenchao.webhunger.util.common.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +26,10 @@ public class FileTaskAccessor implements TaskAccessor {
     private static final String DEFAULT_RESULT_PATH = SystemUtils.getWebHungerDefaultDir() + File.separator + "result";
 
     private static final String SNAPSHOT_NAME = "host.snapshot";
+
+    private static final String ERROR_PAGES_NAME = "error_pages.txt";
+
+    private static final String RESULT_NAME = "result.txt";
 
     @Override
     public List<Task> loadTasks() {
@@ -83,8 +85,52 @@ public class FileTaskAccessor implements TaskAccessor {
     }
 
     @Override
-    public void saveCrawlingSnapshot(HostCrawlingSnapshotDTO snapshot) {
+    public void saveCrawledResult(CrawledResult crawledResult, List<ErrorPageDTO> errorPages) {
+        try {
+            FileAccessSupport.saveErrorPages(getErrorPagesPath(crawledResult.getHost()), errorPages);
+            FileAccessSupport.saveCrawlingResult(getResultPath(crawledResult.getHost()), crawledResult);
+        } catch (IOException e) {
+            logger.error("保存爬取结果失败......", e);
+        }
+    }
 
+    @Override
+    public HostResult getHostResult(String hostId) {
+        Host host = loadHostById(hostId);
+        try {
+            List<HostSnapshot> snapshots = FileAccessSupport.getAllSnapshots(host, getSnapshotPath(host));
+            CrawledResult crawledResult = FileAccessSupport.getCrawledResult(host, getResultPath(host));
+            ProcessedResult processedResult = FileAccessSupport.getProcessedResult(host, snapshots);
+            Date startTime = snapshots.get(0).getCreateTime();
+            Date endTime = snapshots.get(snapshots.size() - 1).getCreateTime();
+            return new HostResult(host, crawledResult, processedResult, startTime, endTime);
+        } catch (IOException e) {
+            logger.error("读取结果失败......", e);
+        }
+        return null;
+    }
+
+    @Override
+    public List<ErrorPageDTO> getErrorPages(String hostId, int startPos, int size) {
+        Host host = loadHostById(hostId);
+        try {
+            List<ErrorPageDTO> errorPages = FileAccessSupport.getErrorPages(hostId, getErrorPagesPath(host));
+            return errorPages.subList(startPos, Math.min(size + startPos, errorPages.size()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>(0);
+    }
+
+    @Override
+    public int getErrorPageNum(String hostId) {
+        Host host = loadHostById(hostId);
+        try {
+            return FileAccessSupport.getErrorPageNum(getErrorPagesPath(host));
+        } catch (IOException e) {
+            logger.error("读取结果失败......", e);
+        }
+        return 0;
     }
 
     /**
@@ -108,6 +154,14 @@ public class FileTaskAccessor implements TaskAccessor {
 
     private String getSnapshotPath(Host host) {
         return getHostDir(host) + File.separator + SNAPSHOT_NAME;
+    }
+
+    private String getErrorPagesPath(Host host) {
+        return getHostDir(host) + File.separator + ERROR_PAGES_NAME;
+    }
+
+    private String getResultPath(Host host) {
+        return getHostDir(host) + File.separator + RESULT_NAME;
     }
 
     private String getHostDir(Host host) {

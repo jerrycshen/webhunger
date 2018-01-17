@@ -83,12 +83,12 @@ public class DistributedController extends MasterController {
     }
 
     @Override
-    public List<ErrorPageDTO> getErrorPages(String hostId, int startPos, int size) {
+    public List<ErrorPageDTO> getErrorPageWhenCrawling(String hostId, int startPos, int size) {
         return redisSupport.getErrorPages(hostId, startPos, startPos + size -1);
     }
 
     @Override
-    public int getErrorPageNum(String hostId) {
+    public int getErrorPageNumWhenCrawling(String hostId) {
         return redisSupport.getErrorPageNum(hostId);
     }
 

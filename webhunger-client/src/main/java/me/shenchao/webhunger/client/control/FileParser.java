@@ -1,5 +1,6 @@
 package me.shenchao.webhunger.client.control;
 
+import me.shenchao.webhunger.dto.ErrorPageDTO;
 import me.shenchao.webhunger.entity.*;
 import me.shenchao.webhunger.client.exceptioin.TaskParseException;
 import me.shenchao.webhunger.util.common.FileUtils;
@@ -10,10 +11,9 @@ import org.dom4j.io.SAXReader;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created on 2017-11-22
@@ -55,11 +55,11 @@ class FileParser {
             }
             Element startTimeElement = root.element("startTime");
             if (startTimeElement != null) {
-                task.setStartTime(FileAccessSupport.parseDate(startTimeElement.getText()));
+                task.setStartTime(parseDate(startTimeElement.getText()));
             }
             Element finishTimeElement = root.element("finishTime");
             if (finishTimeElement != null) {
-                task.setFinishTime(FileAccessSupport.parseDate(finishTimeElement.getText()));
+                task.setFinishTime(parseDate(finishTimeElement.getText()));
             }
 
             if (needHostParsed) {
@@ -213,6 +213,56 @@ class FileParser {
     static HostSnapshot parseSnapshot(Host host, String snapshotStr) {
         String[] fields = snapshotStr.split("\t");
         return new HostSnapshot(host, Integer.parseInt(fields[1]),
-                FileAccessSupport.parsePreciseDate(fields[2]));
+                parsePreciseDate(fields[2]));
+    }
+
+    static CrawledResult parseCrawledResult(Host host, String crawledResultStr) {
+        String[] fields = crawledResultStr.split("\t");
+        return new CrawledResult(host, Integer.parseInt(fields[1]), Integer.parseInt(fields[2]),
+                parsePreciseDate(fields[3]),parsePreciseDate(fields[4]));
+    }
+
+    static ProcessedResult parseProcessedResult(Host host, List<HostSnapshot> snapshots) {
+        Date startTime = new Date(), endTime = new Date();
+        for (HostSnapshot snapshot : snapshots) {
+            if (snapshot.getState() == HostState.Crawling.getState()) {
+                startTime = snapshot.getCreateTime();
+            }
+            if (snapshot.getState() == HostState.Completed.getState()) {
+                endTime = snapshot.getCreateTime();
+            }
+        }
+        return new ProcessedResult(host, startTime, endTime);
+    }
+
+    static ErrorPageDTO parseErrorPages(String hostId, String errorPageStr) {
+        String[] fields = errorPageStr.split("\t");
+        return new ErrorPageDTO(hostId, fields[2], fields[3],
+                Integer.parseInt(fields[0]), Integer.parseInt(fields[1]), fields[4]);
+    }
+
+    static Date parseDate(String dateStr) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            return formatter.parse(dateStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    static Date parsePreciseDate(String dateStr) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        try {
+            return formatter.parse(dateStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    static String formatPreciseDate(Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        return formatter.format(date);
     }
 }

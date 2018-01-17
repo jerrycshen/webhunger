@@ -1,9 +1,7 @@
 package me.shenchao.webhunger.client.api.control;
 
-import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
-import me.shenchao.webhunger.entity.Host;
-import me.shenchao.webhunger.entity.HostSnapshot;
-import me.shenchao.webhunger.entity.Task;
+import me.shenchao.webhunger.dto.ErrorPageDTO;
+import me.shenchao.webhunger.entity.*;
 
 import java.util.List;
 
@@ -45,7 +43,32 @@ public interface TaskAccessor {
 
     /**
      * 爬取完毕后，保存爬取结果
-     * @param snapshot snapshot
+     * @param crawledResult crawledResult
+     * @param errorPages error pages
      */
-    void saveCrawlingSnapshot(HostCrawlingSnapshotDTO snapshot);
+    void saveCrawledResult(CrawledResult crawledResult, List<ErrorPageDTO> errorPages);
+
+    /**
+     * 获取站点爬取处理结果
+     * @param hostId hostId
+     * @return host result
+     */
+    HostResult getHostResult(String hostId);
+
+    /**
+     * 获取分页错误页面
+     *
+     * @param hostId hostId
+     * @param startPos start position
+     * @param size size
+     * @return 分页的错误页面
+     */
+    List<ErrorPageDTO> getErrorPages(String hostId, int startPos, int size);
+
+    /**
+     * 获得错误页面数量
+     * @param hostId hostId
+     * @return the error page num
+     */
+    int getErrorPageNum(String hostId);
 }

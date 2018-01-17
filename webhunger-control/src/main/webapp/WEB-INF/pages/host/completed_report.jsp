@@ -19,10 +19,7 @@
         }
     </style>
 
-    <!-- customized -->
-    <link rel="stylesheet" href="${AppContext}css/completed_report.css">
-    <%-- echarts --%>
-    <script src="${AppContext}/framework/echart/echarts.min.js"></script>
+    <link rel="stylesheet" href="${AppContext}css/completed_report.css"/>
 
 </head>
 <body>
@@ -35,84 +32,69 @@
 
         <ul class="nav nav-pills" role="tablist" style="margin-top: 20px">
             <li>
-                <span class="label label-default" id="status">Completed</span>
+                <span class="label label-default" id="crawler_state">Completed</span>
             </li>
             <li class="navbar-right" style="margin-right: 5px">
-                <span class="label label-primary" id="completed_time"></span>
+                <span class="label label-info" id="endTime"></span>
             </li>
 
             <li class="navbar-right">
-                <span class="label label-primary" id="started_time"></span>
+                <span class="label label-info" id="startTime"></span>
             </li>
         </ul>
+
     </div>
 
     <div class="page-header">
-        <h1>Progress </h1>
-        <%--<ul class="nav nav-pills" role="tablist">--%>
-        <%--<li class="navbar-right" style="margin-right: 5px">--%>
-        <%--<span class="label label-primary" id="left_time">0 minutes needed</span>--%>
-        <%--</li>--%>
-        <%--<li class="navbar-right" style="margin-right: 5px">--%>
-        <%--<span class="label label-primary" id="crawl_speed">0 pages per second</span>--%>
-        <%--</li>--%>
-        <%--</ul>--%>
+        <h1>Crawling Progress</h1>
+        <ul class="nav nav-pills" role="tablist">
+            <li class="navbar-right" style="margin-right: 5px">
+                <span class="label label-info" id="crawledTime"></span>
+            </li>
+        </ul>
         <div class="progress" style="margin-top: 20px">
-            <div id="progress_bar" class="progress-bar progress-bar-success progress-bar-striped" role="progress-bar"
-                 aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
-                100%
+            <div id="crawlingProgressBar" class="progress-bar progress-bar-success"
+                 role="progress-bar" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                0%
             </div>
         </div>
         <div>
             <ul class="nav nav-pills" role="tablist">
                 <li style="margin-left: 5px">
-                    Success Pages:
-                    <strong id="success_pages">0</strong>
+                    Success Pages: <strong id="successCrawlingPageNum">0</strong>
                 </li>
                 <li style="margin-left: 15px">
-                    Error Pages:
-                    <strong id="error_pages">0</strong>
+                    Error Pages: <strong id="errorCrawlingPageNum">0</strong>
                 </li>
                 <li style="margin-left: 15px">
-                    Error Rate:
-                    <strong id="error_rate">0</strong>%
+                    Error Rate: <strong id="crawlingErrorRate">0</strong>%
                 </li>
                 <li class="navbar-right" style="margin-left: 15px; margin-right: 5px">
-                    Total Pages:
-                    <strong id="total_pages">0</strong>
+                    Total Pages: <strong id="totalCrawlingPageNum">0</strong>
                 </li>
                 <li class="navbar-right" style="margin-left: 15px; margin-right: 5px">
-                    Left Pages:
-                    <strong id="left_pages">0</strong>
+                    Left Pages: <strong id="leftCrawlingPageNum">0</strong>
                 </li>
                 <li class="navbar-right">
-                    Crawled Pages:
-                    <strong id="crawled_pages">0</strong>
+                    Crawled Pages: <strong id="crawledPageNum">0</strong>
                 </li>
             </ul>
         </div>
     </div>
 
-    <div class="page-header">
-        <h1>Server Explorer</h1>
-        <div class="container">
-            <div class="row centered">
-                <div class="col-md-3">
-                    <div id="cpu_chart" style="width: 200px;height:200px;"></div>
-                </div>
-                <div class="col-md-3">
-                    <div id="memory_chart" style="width: 200px;height:200px;"></div>
-                </div>
-                <div class="col-md-3">
-                    <div id="swap_chart" style="width: 200px;height:200px;"></div>
-                </div>
-                <div class="col-md-3">
-                    <div id="disk_chart" style="width: 200px;height:200px;"></div>
-                </div>
-                <div class="col-md-3">
-                    <div id="net_chart" style="width: 200px;height:200px;"></div>
-                </div>
+    <br><br>
 
+    <div class="page-header">
+        <h1>Processing Progress</h1>
+        <ul class="nav nav-pills" role="tablist">
+            <li class="navbar-right" style="margin-right: 5px">
+                <span class="label label-info" id="processedTime"></span>
+            </li>
+        </ul>
+        <div class="progress" style="margin-top: 20px">
+            <div id="processingProgressBar" class="progress-bar progress-bar-success"
+                 role="progress-bar" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                0%
             </div>
         </div>
     </div>
@@ -120,13 +102,7 @@
     <div class="page-header">
         <ul class="nav nav-pills" role="tablist">
             <li>
-                <h1 id="error_num"></h1>
-            </li>
-            <li class="navbar-right" style="margin-top: 20px; margin-right: 5px">
-                <button onclick="window.open('${AppContext}host/${host_id}/error_log/download')" type="button"
-                        class="btn btn-default"><span class="glyphicon glyphicon-download-alt"
-                                                      aria-hidden="true"></span> Download Error Log
-                </button>
+                <h1 id="errorPageNum"></h1>
             </li>
         </ul>
         <div>
@@ -143,32 +119,110 @@
         </div>
     </div>
 
-    <%--<div class="page-header">--%>
-    <%--<h1>Page Category</h1>--%>
-    <%--<div class="container">--%>
-    <%--<div class="row" >--%>
-    <%--<div id="category_chart" style="width: 100%;height:460px;"></div>--%>
-    <%--</div>--%>
-    <%--</div>--%>
-    <%--</div>--%>
-
-    <%--<div class="page-header">--%>
-    <%--<h1>Site Directory (TODO)</h1>--%>
-    <%--<script src="http://d3js.org/d3.v3.min.js"></script>--%>
-    <%--<script src="/js/d3_tree.js"></script>--%>
-    <%--</div>--%>
-
 </div>
 
 <%@include file="../common/footer.jsp" %>
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="${AppContext}js/server_chart.js"></script>
-<%--<script src="${AppContext}js/page_category.js"></script>--%>
-<script src="${AppContext}js/completed_report.js"></script>
+<script src="${AppContext}js/datatable_extension.js"></script>
+<script type="text/javascript">
 
-<script>
-    running_statistics("${AppContext}host/${host_id}/running_statistics");
-    error_pages("${AppContext}host/${host_id}/error_pages");
+    $.ajax({
+        "url": "${AppContext}host/${hostId}/result",
+        "type": "POST",
+        "success": function (data) {
+            if (data.data === null || data.data == undefined) {
+                return;
+            }
+            var result = data.data;
+            var errorPageNum = result.crawledResult.errorPageNum;
+            var totalCrawlingPageNum = result.crawledResult.totalPageNum;
+            var successPageNum = totalCrawlingPageNum - errorPageNum;
+            var crawlingErrorRate = errorPageNum * 100 / (successPageNum + errorPageNum);
+
+            $("#hostName").html("<a target='_blank' href='" + result.host.hostIndex + "'>" + result.host.hostName + "</a>");
+            $("#title").text(result.host.hostName);
+            $("#startTime").text("Started: " + moment(result.startTime).format("YYYY-MM-DD HH:mm:ss"));
+            $("#endTime").text("Completed: " + moment(result.endTime).format("YYYY-MM-DD HH:mm:ss"));
+            $("#successCrawlingPageNum").text(successPageNum);
+            $("#errorCrawlingPageNum").text(errorPageNum);
+            $("#crawlingErrorRate").text(crawlingErrorRate.toFixed(3));
+            $("#crawledPageNum").text(successPageNum);
+            $("#leftCrawlingPageNum").text("0");
+            $("#totalCrawlingPageNum").text(totalCrawlingPageNum);
+            $("#crawlingProgressBar").text("100%");
+            $("#crawlingProgressBar").attr("style", "min-width: 2em; " + "width:" + 100 + "%");
+            $("#crawledTime").text(moment(result.crawledResult.startTime).format("YYYY-MM-DD HH:mm:ss") + "  ~  "
+                + moment(result.crawledResult.endTime).format("YYYY-MM-DD HH:mm:ss"));
+
+            $("#processingProgressBar").text("100%");
+            $("#processingProgressBar").attr("style", "min-width: 2em; " + "width:" + 100 + "%");
+            $("#processedTime").text(moment(result.processedResult.startTime).format("YYYY-MM-DD HH:mm:ss") + "  ~  "
+                + moment(result.processedResult.endTime).format("YYYY-MM-DD HH:mm:ss"));
+
+            // update error page table
+            if (errorPageNum === 0) {
+                $("#errorPageNum").text("No Error");
+            } else if (errorPageNum === 1) {
+                $("#errorPageNum").text("1 Error");
+            } else {
+                $("#errorPageNum").text(errorPageNum + " Errors");
+            }
+        }
+    });
+
+    var errorPageTable = $('#errorPageTable').DataTable({
+
+        "serverSide": true,
+
+        "ajax": {
+            "url": "${AppContext}host/${hostId}/error_pages",
+            "type": "POST",
+            "data": function (data) {
+                planify(data);
+            }
+        },
+        "columns": [
+            {
+                "data": "responseCode",
+                "render": function (data) {
+                    if (data === 0)
+                        return "<i>Unknown</i>";
+                    else
+                        return data;
+                }
+            },
+            {
+                "data": 'url',
+                "render": function (data) {
+                    return "<a target='_blank' href=\'" + data + "\'>" + data + "</a>"
+                }
+            },
+            {
+                "data": 'errorMsg',
+                "defaultContent": "<i>Unknown</i>"
+            },
+            {
+                "data": 'depth'
+            }
+        ],
+        "ordering": false,
+        "lengthChange": false,
+        "pageLength": 5,
+        "pagingType": "full_numbers",
+        "processing": true,
+        "searching": false
+    });
+
+    //处理datatables数据
+    function planify(data) {
+        var column;//对datatables某些特殊列（三维列）进行处理
+        for (var i = 0; i < data.columns.length; i++) {
+            column = data.columns[i];
+            column.searchRegex = column.search.regex;
+            column.searchValue = column.search.value;
+            delete(column.search);
+        }
+    }
+
 </script>
 
 </body>

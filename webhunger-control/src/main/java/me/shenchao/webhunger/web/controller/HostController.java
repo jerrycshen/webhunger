@@ -7,13 +7,13 @@ import me.shenchao.webhunger.control.util.DataTableCriterias;
 import me.shenchao.webhunger.dto.ErrorPageDTO;
 import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
+import me.shenchao.webhunger.entity.HostResult;
 import me.shenchao.webhunger.entity.HostState;
 import me.shenchao.webhunger.entity.Task;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -89,21 +89,20 @@ public class HostController {
         return result.toJSONString();
     }
 
+    @RequestMapping(value = "/host/{hostId}/result", method = RequestMethod.POST, produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public String getHostResult(@PathVariable String hostId) {
+        JSONObject result = new JSONObject();
+        HostResult hostResult = masterController.getHostResult(hostId);
+        result.put("data", hostResult);
+        return result.toJSONString();
+    }
+
     @RequestMapping(value = "/host/{hostId}/error_pages", method = RequestMethod.POST)
     @ResponseBody
     public String pullErrorPage(@ModelAttribute DataTableCriterias dataTableCriterias, @PathVariable String hostId) {
-        Host host = masterController.getHostById(hostId);
-        HostState hostState = HostState.valueOf(host.getLatestSnapshot().getState());
-        List<ErrorPageDTO> errorPages = new ArrayList<>();
-        int errorPageNum = 0;
-        switch (hostState) {
-            case Crawling:
-                errorPages = masterController.getErrorPages(hostId, dataTableCriterias.getStart(), dataTableCriterias.getLength());
-                errorPageNum = masterController.getErrorPageNum(hostId);
-                break;
-            default:
-                // TODO
-        }
+        List<ErrorPageDTO> errorPages = masterController.getErrorPages(hostId, dataTableCriterias.getStart(), dataTableCriterias.getLength());
+        int errorPageNum = masterController.getErrorPageNum(hostId);
         JSONObject result = new JSONObject();
         result.put("data", errorPages);
         result.put("draw", dataTableCriterias.getDraw());

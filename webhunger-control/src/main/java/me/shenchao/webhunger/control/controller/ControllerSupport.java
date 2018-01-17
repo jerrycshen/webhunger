@@ -2,11 +2,9 @@ package me.shenchao.webhunger.control.controller;
 
 import me.shenchao.webhunger.client.api.control.TaskAccessor;
 import me.shenchao.webhunger.config.ControlConfig;
+import me.shenchao.webhunger.dto.ErrorPageDTO;
 import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
-import me.shenchao.webhunger.entity.Host;
-import me.shenchao.webhunger.entity.HostSnapshot;
-import me.shenchao.webhunger.entity.HostState;
-import me.shenchao.webhunger.entity.Task;
+import me.shenchao.webhunger.entity.*;
 import me.shenchao.webhunger.util.classloader.ThirdPartyClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +40,24 @@ class ControllerSupport {
         return taskAccessor.loadHostById(hostId);
     }
 
-    void saveCrawlingSnapshot(HostCrawlingSnapshotDTO eventualCrawlingSnapshot) {
-        taskAccessor.saveCrawlingSnapshot(eventualCrawlingSnapshot);
+    void saveCrawledResult(Host host, HostCrawlingSnapshotDTO eventualCrawlingSnapshot) {
+        CrawledResult crawledResult = new CrawledResult(host, eventualCrawlingSnapshot.getTotalPageNum(),
+                eventualCrawlingSnapshot.getErrorPages().size(), eventualCrawlingSnapshot.getStartTime(),
+                eventualCrawlingSnapshot.getEndTime());
+        System.out.println(eventualCrawlingSnapshot.getStartTime());
+        taskAccessor.saveCrawledResult(crawledResult, eventualCrawlingSnapshot.getErrorPages());
+    }
+
+    HostResult getHostResult(String hostId) {
+        return taskAccessor.getHostResult(hostId);
+    }
+
+    List<ErrorPageDTO> getErrorPages(String hostId, int startPos, int size) {
+        return taskAccessor.getErrorPages(hostId, startPos, size);
+    }
+
+    int getErrorPageNum(String hostId) {
+        return taskAccessor.getErrorPageNum(hostId);
     }
 
     HostCrawlingSnapshotDTO encapsulateCrawlingSnapshot(Host host, HostCrawlingSnapshotDTO snapshot) {
@@ -72,4 +86,6 @@ class ControllerSupport {
         HostSnapshot snapshot = new HostSnapshot(host, hostState.getState(), new Date());
         taskAccessor.createSnapshot(snapshot);
     }
+
+
 }

@@ -6,12 +6,14 @@ import me.shenchao.webhunger.control.scheduler.HostScheduler;
 import me.shenchao.webhunger.dto.ErrorPageDTO;
 import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.Host;
+import me.shenchao.webhunger.entity.HostResult;
 import me.shenchao.webhunger.entity.HostState;
 import me.shenchao.webhunger.entity.Task;
 import me.shenchao.webhunger.util.thread.CountableThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Condition;
@@ -145,6 +147,10 @@ public abstract class MasterController {
         return controllerSupport.encapsulateCrawlingSnapshot(crawlingHost, createCrawlingSnapshot(hostId));
     }
 
+    public HostResult getHostResult(String hostId) {
+        return controllerSupport.getHostResult(hostId);
+    }
+
     /**
      * 分页获取错误请求页面
      *
@@ -153,21 +159,49 @@ public abstract class MasterController {
      * @param size list size
      * @return partition error pages
      */
-    public abstract List<ErrorPageDTO> getErrorPages(String hostId, int startPos, int size);
+    public List<ErrorPageDTO> getErrorPages(String hostId, int startPos, int size) {
+        // 如果已经爬取完毕, 那么从爬取结果中读取
+        if (crawlingHostMap.get(hostId) == null) {
+            return controllerSupport.getErrorPages(hostId, startPos, size);
+        }
+        return getErrorPageWhenCrawling(hostId, startPos, size);
+    }
 
     /**
      * 获得错误页面的总数量
      * @param hostId hostId
      * @return the total num of error pages
      */
-    public abstract int getErrorPageNum(String hostId);
+    public int getErrorPageNum(String hostId) {
+        if (crawlingHostMap.get(hostId) == null) {
+            return controllerSupport.getErrorPageNum(hostId);
+        }
+        return getErrorPageNumWhenCrawling(hostId);
+    }
+
+    /**
+     * 获取当站点正在爬取时候的分页错误页面
+     *
+     * @param hostId hostId
+     * @param startPos start index
+     * @param size list size
+     * @return partition error pages
+     */
+    abstract List<ErrorPageDTO> getErrorPageWhenCrawling(String hostId, int startPos, int size);
+
+    /**
+     * 获得当站点正在爬取时候的错误页面的总数量
+     * @param hostId hostId
+     * @return the total num of error pages
+     */
+    abstract int getErrorPageNumWhenCrawling(String hostId);
 
     /**
      * 创建站点快照
      * @param hostId hostId
      * @return snapshot of the host
      */
-    protected abstract HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId);
+    abstract HostCrawlingSnapshotDTO createCrawlingSnapshot(String hostId);
 
     /**
      * 向爬虫发送种子URL，开始爬取
@@ -187,13 +221,14 @@ public abstract class MasterController {
      * @param host host
      */
     void crawlingCompleted(Host host, HostCrawlingSnapshotDTO eventualCrawlingSnapshot) {
-        removeCrawlingHost(host);
-        controllerSupport.createSnapshot(host, HostState.Processing);
+        eventualCrawlingSnapshot.setStartTime(host.getLatestSnapshot().getCreateTime());
+        eventualCrawlingSnapshot.setEndTime(new Date());
         // 保存爬取结果
-        eventualCrawlingSnapshot = controllerSupport.encapsulateCrawlingSnapshot(host, eventualCrawlingSnapshot);
-        controllerSupport.saveCrawlingSnapshot(eventualCrawlingSnapshot);
+        controllerSupport.saveCrawledResult(host, eventualCrawlingSnapshot);
         logger.info("{} 爬取完毕......", host.getHostName());
         System.out.println(host.getHostName() + "爬取完毕");
+        removeCrawlingHost(host);
+        controllerSupport.createSnapshot(host, HostState.Processing);
     }
 
     private void addCrawlingHost(Host host) {
