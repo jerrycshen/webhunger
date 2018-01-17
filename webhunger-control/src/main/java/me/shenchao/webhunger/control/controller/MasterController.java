@@ -99,12 +99,14 @@ public abstract class MasterController {
      */
     public synchronized void start(String hostId) {
         Host host = controllerSupport.loadHostById(hostId);
+        start(host);
+    }
+
+    private synchronized void start(Host host) {
         if (!checkBeforeStart(host)) {
             return;
         }
         logger.info("准备对站点：{} 爬取......", host.getHostName());
-        // 清理数据，准备环境 todo
-//        crawlersControlSupport.rollbackHost(host);
         // 生成host快照，记录当前状态情况
         controllerSupport.createSnapshot(host, HostState.Waiting);
         hostScheduler.push(host);
@@ -112,12 +114,35 @@ public abstract class MasterController {
         signalNewHost();
     }
 
+    public void startTask(String taskName) {
+        Task task = getTaskByName(taskName);
+        logger.info("启动对任务: {} 下所有站点进行爬取......", taskName);
+        for (Host host : task.getHosts()) {
+            start(host);
+        }
+    }
+
+    public void reStart(String hostId) {
+        // 清楚之前爬取处理留下的足迹，准备重新爬取
+        controllerSupport.rollbackHost(hostId);
+        Host host = controllerSupport.loadHostById(hostId);
+        logger.info("站点：{} 重新开始爬取......", host.getHostName());
+        start(host);
+    }
+
+    /**
+     * 停止对该站点爬取，实现方案就是将该站点的待爬队列清空
+     *
+     * @param hostId hostId
+     */
+    public abstract void stop(String hostId);
+
     /**
      * 爬取之前进行验证是否可以进行爬取
      * @param host host
      * @return if pass the check return true
      */
-    boolean checkBeforeStart(Host host) {
+    private boolean checkBeforeStart(Host host) {
         // 检查是否已经开始爬取
         if (host.getLatestSnapshot().getState() != HostState.Ready.getState()) {
             logger.warn("站点：{} 已经开始爬取......", host.getHostName());
@@ -256,6 +281,7 @@ public abstract class MasterController {
             }
         }
     }
+
 
     private class SchedulerThread implements Runnable {
 

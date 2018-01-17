@@ -25,9 +25,9 @@ public class HostController {
 
     private MasterController masterController = ControllerFactory.getController();
 
-    @RequestMapping(value = "/task/{taskId}/host/list", method = RequestMethod.GET)
-    public String viewHostTable(@PathVariable("taskId") String taskId, Model model) {
-        model.addAttribute("taskName", masterController.getTaskByName(taskId).getTaskName());
+    @RequestMapping(value = "/task/{taskName}/host/list", method = RequestMethod.GET)
+    public String viewHostTable(@PathVariable("taskName") String taskName, Model model) {
+        model.addAttribute("taskName", masterController.getTaskByName(taskName).getTaskName());
         return "host/view_host.jsp";
     }
 
@@ -41,15 +41,53 @@ public class HostController {
     }
 
     /**
-     * 启动爬虫
+     * 开始对该站点进行爬取
      *
      * @param hostId 站点id
      * @return msg
      */
     @RequestMapping(value = "/host/{hostId}/start", method = RequestMethod.POST)
     @ResponseBody
-    public String startCrawler(@PathVariable String hostId) {
+    public String start(@PathVariable String hostId) {
         masterController.start(hostId);
+        return "success";
+    }
+
+    /**
+     * 启动对该任务下的所有站点进行爬取
+     *
+     * @param taskName task name
+     */
+    @RequestMapping(value = "/task/{taskName}/start", method = RequestMethod.POST)
+    @ResponseBody
+    public String startTask(@PathVariable String taskName) {
+        masterController.startTask(taskName);
+        return "success";
+    }
+
+    /**
+     * 重新对该站点进行爬取
+     *
+     * @param hostId 站点id
+     * @return msg
+     */
+    @RequestMapping(value = "/host/{hostId}/restart", method = RequestMethod.POST)
+    @ResponseBody
+    public String reStart(@PathVariable String hostId) {
+        masterController.reStart(hostId);
+        return "success";
+    }
+
+    /**
+     * 停止对该站点爬取
+     *
+     * @param hostId 站点id
+     * @return msg
+     */
+    @RequestMapping(value = "/host/{hostId}/stop", method = RequestMethod.POST)
+    @ResponseBody
+    public String stopCrawler(@PathVariable String hostId) {
+        masterController.stop(hostId);
         return "success";
     }
 

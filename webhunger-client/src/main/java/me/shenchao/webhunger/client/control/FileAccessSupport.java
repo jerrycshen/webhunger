@@ -63,11 +63,14 @@ class FileAccessSupport {
     static List<HostSnapshot> getAllSnapshots(Host host, String snapshotPath) throws IOException {
         List<HostSnapshot> snapshots = new ArrayList<>();
         File snapshotFile = new File(snapshotPath);
-        assert snapshotFile.exists();
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(snapshotFile));
-        String line;
-        while ((line = bufferedReader.readLine()) != null) {
-            snapshots.add(FileParser.parseSnapshot(host, line));
+        if (snapshotFile.exists()) {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(snapshotFile));
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                snapshots.add(FileParser.parseSnapshot(host, line));
+            }
+        } else {
+            Files.touch(snapshotFile);
         }
         return snapshots;
     }
@@ -128,6 +131,18 @@ class FileAccessSupport {
                 .append(crawledResult.getErrorPageNum()).append('\t').append(FileParser.formatPreciseDate(crawledResult.getStartTime())).append('\t')
                 .append(FileParser.formatPreciseDate(crawledResult.getEndTime())).append('\t');
         write(builder.toString(), resultFilePath, false);
+    }
+
+    static void clearSnapshot(String snapshotPath) {
+        new File(snapshotPath).delete();
+    }
+
+    static void clearResult(String resultPath) {
+        new File(resultPath).delete();
+    }
+
+    static void clearErrorPages(String errorFilePath) {
+        new File(errorFilePath).delete();
     }
 
     private static void write(String content, String filePath, boolean isAppend) throws IOException {

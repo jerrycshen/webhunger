@@ -48,15 +48,6 @@ public class LocalQueueUrlScheduler extends DuplicateRemovedScheduler implements
     }
 
     @Override
-    public void resetDuplicateCheck(LifeCycle task) {
-    }
-
-    @Override
-    public int getTotalRequestsCount(LifeCycle task) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public int getLeftRequestsNum(String siteId) {
         return queueMap.get(siteId).size();
     }
@@ -73,8 +64,13 @@ public class LocalQueueUrlScheduler extends DuplicateRemovedScheduler implements
     }
 
     @Override
-    public void clean(String siteId) {
+    public void remove(String siteId) {
         queueMap.remove(siteId);
         duplicateMap.remove(siteId);
+    }
+
+    @Override
+    public void clear(String siteId) {
+        queueMap.get(siteId).clear();
     }
 }

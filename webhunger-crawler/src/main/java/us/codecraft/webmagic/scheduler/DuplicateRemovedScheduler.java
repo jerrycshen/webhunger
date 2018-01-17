@@ -36,20 +36,11 @@ public abstract class DuplicateRemovedScheduler implements Scheduler {
         }
     }
 
-    /**
-     * 此方法用于判断是否需要保留，因为如果设置了循环爬取，不应该简单的丢弃此URL
-     * @param request
-     * @return
-     */
+
     protected boolean shouldReserved(Request request) {
         return request.getExtra(Request.CYCLE_TRIED_TIMES) != null;
     }
 
-    /**
-     * 可在此方法中进行自定义操作，当把一条URL加入到队列中，触发的操作
-     * @param request
-     * @param task
-     */
     protected void pushWhenNoDuplicate(Request request, LifeCycle task) {
 
     }

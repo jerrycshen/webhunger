@@ -54,17 +54,6 @@ public class RedisQueueUrlScheduler extends DuplicateRemovedScheduler implements
         }
     }
 
-
-    @Override
-    public void resetDuplicateCheck(LifeCycle task) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int getTotalRequestsCount(LifeCycle lifeCycle) {
-        throw new UnsupportedOperationException();
-    }
-
     @Override
     public Request poll(LifeCycle task) {
         Jedis jedis = pool.getResource();

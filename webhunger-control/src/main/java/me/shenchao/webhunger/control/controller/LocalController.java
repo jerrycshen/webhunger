@@ -82,6 +82,11 @@ class LocalController extends MasterController {
     }
 
     @Override
+    public void stop(String hostId) {
+        crawlerCallable.stop(hostId);
+    }
+
+    @Override
     void processingCompleted(Host host) {
         controllerSupport.createSnapshot(host, HostState.Completed);
         logger.info("{} 页面处理完毕......", host.getHostName());

@@ -71,4 +71,19 @@ public interface TaskAccessor {
      * @return the error page num
      */
     int getErrorPageNum(String hostId);
+
+    /**
+     * 清楚站点之前爬取处理过程中留下的足迹，回滚到最初状态，每次爬取/重爬取都会调用该方法<br>
+     *
+     *     现阶段，一旦调用回滚操作，需要进行如下操作<Br>
+     *     <ul>
+     *         <li>删除站点所有的快照信息</li>
+     *         <li>删除站点保存的所有错误页面</li>
+     *         <LI>删除站点保存的结果信息</LI>
+     *         <li>其他留下的足迹，例如存储的页面处理信息等; 根据需要进行回滚</li>
+     *     </ul>
+     *
+     * @param hostId hostId
+     */
+    void rollbackHost(String hostId);
 }

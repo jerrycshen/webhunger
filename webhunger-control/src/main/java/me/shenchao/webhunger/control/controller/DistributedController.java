@@ -58,17 +58,9 @@ public class DistributedController extends MasterController {
         zookeeperSupport.createHostNode(host, true);
     }
 
-    /**
-     * 分布式下，还要检查爬取节点、页面处理节点是否运行
-     * @param host host
-     * @return if pass the check return true
-     */
     @Override
-    boolean checkBeforeStart(Host host) {
-        if (super.checkBeforeStart(host)) {
+    public void stop(String hostId) {
 
-        }
-        return false;
     }
 
     @Override

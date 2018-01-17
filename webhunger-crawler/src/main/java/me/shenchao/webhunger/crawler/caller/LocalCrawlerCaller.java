@@ -46,6 +46,11 @@ public class LocalCrawlerCaller implements CrawlerCallable {
     }
 
     @Override
+    public void stop(String hostId) {
+
+    }
+
+    @Override
     public HostCrawlingSnapshotDTO checkCrawledCompleted(String hostId) {
         return siteDominate.checkCrawledCompleted(hostId);
     }

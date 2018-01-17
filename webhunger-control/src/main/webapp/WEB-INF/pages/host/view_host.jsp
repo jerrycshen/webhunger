@@ -63,7 +63,7 @@
                 </button>
             </li>
             <li class="navbar-right" style="margin-left: 5px; margin-right: 5px">
-                <button id="taskBtn" class="btn btn-primary" type="button" onclick="startTask('${task_id}')">
+                <button id="taskBtn" class="btn btn-primary" type="button" onclick="startTask('${taskName}')">
                     Start Task
                 </button>
             </li>
@@ -134,14 +134,14 @@
                         // 正在爬取
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Start</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' >Suspend</button> ";
-                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='stopCrawlingHost("+row.hostId+")'>Stop</button> ";
+                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='stopCrawlingHost(\""+row.hostId+"\")'>Stop</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>ReStart</button>";
                     } else if (data === 5) {
                         // 结束状态
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Start</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Suspend</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Stop</button> ";
-                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='reStartCrawlingHost("+row.hostId+")'>ReStart</button>";
+                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='reStartCrawlingHost(\""+row.hostId+"\")'>ReStart</button>";
                     } else if (data === -1) {
                         // Waiting
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Start</button> ";
@@ -269,13 +269,13 @@
         hostTable.search("Processing").draw();
     });
 
-    function startTask(task_id) {
+    function startTask(taskName) {
         $.ajax({
-            "url": "${AppContext}task/" + task_id + "/start",
+            "url": "${AppContext}task/" + taskName + "/start",
             "type": "POST",
             "success": function () {
                 updateHostTable();
-                $("#modalContent").html("You have started a task successfully~");
+                $("#modalContent").html("You have started crawling the task successfully~");
                 $("#commonModal").modal('show');
 
                 updateHostTableAfter2SecAgain();
@@ -317,7 +317,7 @@
             "type": "POST",
             "success": function () {
                 updateHostTable();
-                $("#modalContent").html("You have re-started a crawler successfully~");
+                $("#modalContent").html("You have re-started crawling the host successfully~");
                 $("#commonModal").modal('show');
 
                 updateHostTableAfter2SecAgain();

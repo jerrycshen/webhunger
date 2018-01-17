@@ -67,6 +67,11 @@ public class RpcCrawlerCaller implements CrawlerCallable {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void stop(String hostId) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * 分布式爬取中，借助zookeeper监听来判断爬取是否结束，无须调用该方法
      */

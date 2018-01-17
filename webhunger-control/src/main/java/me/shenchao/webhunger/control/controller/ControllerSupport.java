@@ -40,6 +40,10 @@ class ControllerSupport {
         return taskAccessor.loadHostById(hostId);
     }
 
+    void rollbackHost(String hostId) {
+        taskAccessor.rollbackHost(hostId);
+    }
+
     void saveCrawledResult(Host host, HostCrawlingSnapshotDTO eventualCrawlingSnapshot) {
         CrawledResult crawledResult = new CrawledResult(host, eventualCrawlingSnapshot.getTotalPageNum(),
                 eventualCrawlingSnapshot.getErrorPages().size(), eventualCrawlingSnapshot.getStartTime(),

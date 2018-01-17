@@ -24,13 +24,13 @@ public interface DuplicateRemover {
      * Reset duplicate extract.
      * @param task task
      */
-    public void resetDuplicateCheck(LifeCycle task);
+    default void resetDuplicateCheck(LifeCycle task) {}
 
     /**
      * Get TotalRequestsCount for Monitor.
      * @param task task
      * @return number of total request
      */
-    public int getTotalRequestsCount(LifeCycle task);
+    default int getTotalRequestsCount(LifeCycle task) {return 0;}
 
 }

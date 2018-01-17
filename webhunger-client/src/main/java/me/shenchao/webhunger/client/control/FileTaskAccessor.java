@@ -133,6 +133,14 @@ public class FileTaskAccessor implements TaskAccessor {
         return 0;
     }
 
+    @Override
+    public void rollbackHost(String hostId) {
+        Host host = loadHostById(hostId);
+        FileAccessSupport.clearSnapshot(getSnapshotPath(host));
+        FileAccessSupport.clearResult(getResultPath(host));
+        FileAccessSupport.clearErrorPages(getErrorPagesPath(host));
+    }
+
     /**
      * 根据站点的快照信息，设置其最新状态信息
      * @param host host

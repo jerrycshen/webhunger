@@ -60,6 +60,18 @@
                         <filter>me.shenchao.webhunger.client.crawler.filter.UrlsSuffixExcludeFilter</filter>
                     </filters>
                 </urlFilterConfig>
+                <pageHandlerConfig>
+                    <handlerJarDir>/Users/jerry/IdeaProjects/webhunger/default/accessor</handlerJarDir>
+                    <handlers>
+                        <handler>me.shenchao.webhunger.client.processor.PrintPageHandler</handler>
+                    </handlers>
+                </pageHandlerConfig>
+                <hostHandlerConfig>
+                    <handlerJarDir>/Users/jerry/IdeaProjects/webhunger/default/accessor</handlerJarDir>
+                    <handlers>
+                        <handler>me.shenchao.webhunger.client.processor.PrintHostHandler</handler>
+                    </handlers>
+                </hostHandlerConfig>
             </config>
         </host>
     </hosts>

@@ -7,7 +7,6 @@ import me.shenchao.webhunger.dto.HostCrawlingSnapshotDTO;
 import me.shenchao.webhunger.entity.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +44,7 @@ public class LocalSiteDominate extends BaseSiteDominate {
     void complete(String siteId) {
         super.complete(siteId);
         // 移除站点对应的相关URL队列
-        spider.getScheduler().clean(siteId);
+        spider.getScheduler().remove(siteId);
         // 移除监听器中缓存，并保存站点最终爬取结果
         HostCrawlingSnapshotDTO eventualSnapshot = spiderListener.onCompleted(siteId);
         eventualCrawlingSnapshotMap.put(siteId, eventualSnapshot);
