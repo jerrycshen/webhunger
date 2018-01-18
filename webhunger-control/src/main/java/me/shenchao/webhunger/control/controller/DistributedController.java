@@ -60,7 +60,11 @@ public class DistributedController extends MasterController {
 
     @Override
     public void stop(String hostId) {
-
+        List<DistributedNode> runningNodes = zookeeperSupport.getRunningNodes(DistributedNode.NodeType.CRAWLER);
+        for (DistributedNode runningNode : runningNodes) {
+            ReferenceConfig<CrawlerCallable> referenceConfig = crawlerRPCMap.get(runningNode.getIp());
+            referenceConfig.get().stop(hostId);
+        }
     }
 
     @Override
@@ -82,6 +86,15 @@ public class DistributedController extends MasterController {
     @Override
     public int getErrorPageNumWhenCrawling(String hostId) {
         return redisSupport.getErrorPageNum(hostId);
+    }
+
+    /**
+     * 获得所有的错误页面
+     * @param hostId hostId
+     * @return all error pages
+     */
+    private List<ErrorPageDTO> getAllErrorPages(String hostId) {
+        return redisSupport.getAllErrorPages(hostId);
     }
 
     @Override
@@ -138,7 +151,9 @@ public class DistributedController extends MasterController {
         zookeeperSupport.deleteCrawlingHostNode(host);
         // 访问redis进一步确定站点URL队列为空
         if (redisSupport.getLeftRequestsCount(host) == 0) {
-            crawlingCompleted(host, null);
+            HostCrawlingSnapshotDTO hostCrawlingSnapshot = createCrawlingSnapshot(host.getHostId());
+            hostCrawlingSnapshot.setErrorPages(getAllErrorPages(host.getHostId()));
+            crawlingCompleted(host, hostCrawlingSnapshot);
         } else {
             /*
              * 如果站点队列中仍有URL未被爬取，那么重新将该站点加入到待爬列表，该方法中通过删除与添加操作，会
@@ -184,7 +199,7 @@ public class DistributedController extends MasterController {
                 // 创建站点待爬取节点
                 zooKeeper.create(getCrawlingHostNodePath(host), "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
                 // 创建站点待处理节点
-                zooKeeper.create(getProcessingHostNodePath(host), "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+//                zooKeeper.create(getProcessingHostNodePath(host), "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
                 // 监控该站点的爬取状态
                 zookeeperSupport.watchHostCrawlingStatus(host);
                 // 监控该站点的页面处理状态
@@ -435,7 +450,8 @@ public class DistributedController extends MasterController {
             Jedis jedis = pool.getResource();
             try {
                 String hostId = host.getHostId();
-                jedis.del(RedisPrefixConsts.getQueueKey(hostId), RedisPrefixConsts.getSetKey(hostId), RedisPrefixConsts.getItemKey(hostId));
+                jedis.del(RedisPrefixConsts.getQueueKey(hostId), RedisPrefixConsts.getSetKey(hostId), RedisPrefixConsts.getItemKey(hostId),
+                        RedisPrefixConsts.getCountKey(hostId), RedisPrefixConsts.getErrorPrefix(hostId));
             } finally {
                 pool.returnResource(jedis);
             }
@@ -460,8 +476,22 @@ public class DistributedController extends MasterController {
             Jedis jedis = pool.getResource();
             try {
                 Long errorPageNum = jedis.llen(RedisPrefixConsts.getErrorPrefix(hostId));
-                System.out.println(errorPageNum);
                 return errorPageNum.intValue();
+            } finally {
+                pool.returnResource(jedis);
+            }
+        }
+
+        private List<ErrorPageDTO> getAllErrorPages(String hostId) {
+            Jedis jedis = pool.getResource();
+            try {
+                List<String> list = jedis.lrange(RedisPrefixConsts.getErrorPrefix(hostId), 0, -1);
+                List<ErrorPageDTO> errorPages = new ArrayList<>(list.size());
+                for (String errorPageStr : list) {
+                    ErrorPageDTO errorPage = JSON.parseObject(errorPageStr, ErrorPageDTO.class);
+                    errorPages.add(errorPage);
+                }
+                return errorPages;
             } finally {
                 pool.returnResource(jedis);
             }

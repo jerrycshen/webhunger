@@ -69,7 +69,7 @@ public class RpcCrawlerCaller implements CrawlerCallable {
 
     @Override
     public void stop(String hostId) {
-        throw new UnsupportedOperationException();
+        siteDominate.addToStoppingList(hostId);
     }
 
     /**

@@ -133,8 +133,8 @@
                     } else if (data === 1) {
                         // 正在爬取
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Start</button> ";
-                        buttonStr += "<button type='button' class='btn btn-default btn-sm' >Suspend</button> ";
-                        buttonStr += "<button type='button' class='btn btn-default btn-sm' onclick='stopCrawlingHost(\""+row.hostId+"\")'>Stop</button> ";
+                        buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>Suspend</button> ";
+                        buttonStr += "<button id='stopBtn' type='button' class='btn btn-default btn-sm' onclick='stopCrawlingHost(\""+row.hostId+"\")'>Stop</button> ";
                         buttonStr += "<button type='button' class='btn btn-default btn-sm' disabled>ReStart</button>";
                     } else if (data === 5) {
                         // 结束状态
@@ -238,7 +238,7 @@
     }
 
     // 该页面每隔一分钟刷新一次，获取最新各个站点的状态
-    window.setInterval(updateHostTable, 60000);
+//    window.setInterval(updateHostTable, 60000);
 
     // 2秒后再次获取各个站点的状态，因为可能有站点从waiting 变为running
     function updateHostTableAfter2SecAgain() {
@@ -298,15 +298,12 @@
     }
 
     function stopCrawlingHost(host_id) {
+        $("#stopBtn").text("Stopping");
+        $("#stopBtn").attr("disabled", true);
         $.ajax({
             "url": "${AppContext}host/" + host_id + "/stop",
             "type": "POST",
             "success": function () {
-                updateHostTable();
-                $("#modalContent").html("You have stopped crawling the host successfully~");
-                $("#commonModal").modal('show');
-
-                updateHostTableAfter2SecAgain();
             }
         });
     }

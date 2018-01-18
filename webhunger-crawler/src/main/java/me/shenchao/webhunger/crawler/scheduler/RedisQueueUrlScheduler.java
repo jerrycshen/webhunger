@@ -76,6 +76,16 @@ public class RedisQueueUrlScheduler extends DuplicateRemovedScheduler implements
     }
 
     @Override
+    public void clear(String siteId) {
+        Jedis jedis = pool.getResource();
+        try {
+            jedis.del(RedisPrefixConsts.getQueueKey(siteId));
+        } finally {
+            pool.returnResource(jedis);
+        }
+    }
+
+    @Override
     public int getLeftRequestsNum(String siteId) {
         Jedis jedis = pool.getResource();
         try {

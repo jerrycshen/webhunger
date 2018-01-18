@@ -323,6 +323,10 @@ public class Spider implements Runnable, LifeCycle {
         logger.info("Spider {} 启动完成......", SystemUtils.getHostName());
         while (!Thread.currentThread().isInterrupted() && stat.get() == STAT_RUNNING) {
             final Request request = scheduler.poll(this);
+            if (request != null && siteDominate.needStop(request.getSiteId())) {
+                getScheduler().clear(request.getSiteId());
+                continue;
+            }
             if (request == null) {
                 if (threadPool.getThreadAlive() == 0 && exitWhenComplete) {
                     break;

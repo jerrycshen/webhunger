@@ -48,7 +48,6 @@ class ControllerSupport {
         CrawledResult crawledResult = new CrawledResult(host, eventualCrawlingSnapshot.getTotalPageNum(),
                 eventualCrawlingSnapshot.getErrorPages().size(), eventualCrawlingSnapshot.getStartTime(),
                 eventualCrawlingSnapshot.getEndTime());
-        System.out.println(eventualCrawlingSnapshot.getStartTime());
         taskAccessor.saveCrawledResult(crawledResult, eventualCrawlingSnapshot.getErrorPages());
     }
 

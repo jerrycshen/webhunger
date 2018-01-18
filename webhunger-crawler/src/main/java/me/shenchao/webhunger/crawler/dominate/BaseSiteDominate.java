@@ -2,6 +2,7 @@ package me.shenchao.webhunger.crawler.dominate;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import me.shenchao.webhunger.crawler.listener.SiteUrlNumListener;
 import me.shenchao.webhunger.crawler.listener.SpiderListener;
 import me.shenchao.webhunger.entity.webmagic.Request;
@@ -27,6 +28,11 @@ public abstract class BaseSiteDominate {
      * 记录所有状态为state为Crawling的站点
      */
     protected volatile List<Site> siteList = Lists.newCopyOnWriteArrayList();
+
+    /**
+     * 需要停止爬取的站点集合
+     */
+    private volatile Set<String> stoppingSet = Sets.newConcurrentHashSet();
 
     protected Spider spider;
 
@@ -94,8 +100,18 @@ public abstract class BaseSiteDominate {
     void complete(String siteId) {
         // 彻底移除对该站点的所有缓存
         removeSite(siteId);
+        // 从停止列表中移除
+        stoppingSet.remove(siteId);
         // 移除正在爬取列表中的缓存
         spider.getCurrentCrawlingRequests().remove(siteId);
+    }
+
+    public void addToStoppingList(String siteId) {
+        stoppingSet.add(siteId);
+    }
+
+    public boolean needStop(String siteId) {
+        return stoppingSet.contains(siteId);
     }
 
     /**

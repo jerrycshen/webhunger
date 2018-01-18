@@ -101,6 +101,10 @@ public class HostCrawlingSnapshotDTO {
         this.endTime = endTime;
     }
 
+    public void setErrorPages(List<ErrorPageDTO> errorPages) {
+        this.errorPages = errorPages;
+    }
+
     @Override
     public String toString() {
         return "HostCrawlingSnapshotDTO{" +

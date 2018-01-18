@@ -41,7 +41,7 @@ public class LocalSiteDominate extends BaseSiteDominate {
     }
 
     @Override
-    void complete(String siteId) {
+    public void complete(String siteId) {
         super.complete(siteId);
         // 移除站点对应的相关URL队列
         spider.getScheduler().remove(siteId);

@@ -47,7 +47,7 @@ public class LocalCrawlerCaller implements CrawlerCallable {
 
     @Override
     public void stop(String hostId) {
-
+        siteDominate.addToStoppingList(hostId);
     }
 
     @Override
