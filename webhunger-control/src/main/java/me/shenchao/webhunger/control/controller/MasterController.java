@@ -251,7 +251,6 @@ public abstract class MasterController {
         // 保存爬取结果
         controllerSupport.saveCrawledResult(host, eventualCrawlingSnapshot);
         logger.info("{} 爬取完毕......", host.getHostName());
-        System.out.println(host.getHostName() + "爬取完毕");
         removeCrawlingHost(host);
         controllerSupport.createSnapshot(host, HostState.Processing);
     }

@@ -69,8 +69,8 @@ public class DistributedController extends MasterController {
 
     @Override
     void crawlingCompleted(Host host, HostCrawlingSnapshotDTO eventualSnapshot) {
-        releaseAfterCrawled(host);
         super.crawlingCompleted(host, eventualSnapshot);
+        releaseAfterCrawled(host);
     }
 
     @Override

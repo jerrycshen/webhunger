@@ -43,8 +43,6 @@ public class LocalSiteDominate extends BaseSiteDominate {
     @Override
     public void complete(String siteId) {
         super.complete(siteId);
-        // 移除站点对应的相关URL队列
-        spider.getScheduler().remove(siteId);
         // 移除监听器中缓存，并保存站点最终爬取结果
         HostCrawlingSnapshotDTO eventualSnapshot = spiderListener.onCompleted(siteId);
         eventualCrawlingSnapshotMap.put(siteId, eventualSnapshot);

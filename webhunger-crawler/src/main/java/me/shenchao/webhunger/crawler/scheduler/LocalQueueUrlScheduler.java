@@ -8,7 +8,6 @@ import me.shenchao.webhunger.entity.webmagic.Request;
 import me.shenchao.webhunger.entity.webmagic.Site;
 import us.codecraft.webmagic.LifeCycle;
 import us.codecraft.webmagic.scheduler.DuplicateRemovedScheduler;
-import us.codecraft.webmagic.scheduler.component.DuplicateRemover;
 
 import java.util.Map;
 import java.util.Set;
@@ -21,7 +20,7 @@ import java.util.concurrent.LinkedBlockingDeque;
  * @author Jerry Shen
  * @since 0.1
  */
-public class LocalQueueUrlScheduler extends DuplicateRemovedScheduler implements DuplicateRemover, SiteUrlNumListener {
+public class LocalQueueUrlScheduler extends BaseUrlScheduler implements SiteUrlNumListener {
 
     private Map<String, BlockingQueue<Request>> queueMap = Maps.newConcurrentMap();
 
@@ -31,7 +30,6 @@ public class LocalQueueUrlScheduler extends DuplicateRemovedScheduler implements
 
     public LocalQueueUrlScheduler(SiteSelector siteSelector) {
         this.siteSelector = siteSelector;
-        setDuplicateRemover(this);
     }
 
     /**

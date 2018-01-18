@@ -20,7 +20,7 @@ public interface Scheduler {
      * @param request request
      * @param lifeCycle lifeCycle
      */
-    public void push(Request request, LifeCycle lifeCycle);
+    void push(Request request, LifeCycle lifeCycle);
 
     /**
      * get an url to crawl
@@ -28,7 +28,7 @@ public interface Scheduler {
      * @param lifeCycle the task of spider
      * @return the url to crawl
      */
-    public Request poll(LifeCycle lifeCycle);
+    Request poll(LifeCycle lifeCycle);
 
     /**
      * 爬取完毕后删除该站点的缓存
@@ -42,8 +42,6 @@ public interface Scheduler {
      * 对该站点待爬URL队列进行清空操作，实现时需要注意某运行中的爬取线程加入新的待爬URL
      * @param siteId siteId
      */
-    default void clear(String siteId) {
-
-    }
+    void clear(String siteId);
 
 }

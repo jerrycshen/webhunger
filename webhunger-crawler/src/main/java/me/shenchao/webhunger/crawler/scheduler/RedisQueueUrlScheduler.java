@@ -10,8 +10,6 @@ import me.shenchao.webhunger.util.common.MD5Utils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import us.codecraft.webmagic.LifeCycle;
-import us.codecraft.webmagic.scheduler.DuplicateRemovedScheduler;
-import us.codecraft.webmagic.scheduler.component.DuplicateRemover;
 
 /**
  * 基于Redis存储的URL调度器，每个站点使用FIFO队列管理URL顺序
@@ -19,7 +17,7 @@ import us.codecraft.webmagic.scheduler.component.DuplicateRemover;
  * @author Jerry Shen
  * @since 0.1
  */
-public class RedisQueueUrlScheduler extends DuplicateRemovedScheduler implements SiteUrlNumListener, DuplicateRemover {
+public class RedisQueueUrlScheduler extends BaseUrlScheduler implements SiteUrlNumListener {
 
     private JedisPool pool;
 
@@ -28,7 +26,6 @@ public class RedisQueueUrlScheduler extends DuplicateRemovedScheduler implements
     public RedisQueueUrlScheduler(SiteSelector siteSelector, JedisPool pool) {
         this.siteSelector = siteSelector;
         this.pool = pool;
-        setDuplicateRemover(this);
     }
 
     @Override

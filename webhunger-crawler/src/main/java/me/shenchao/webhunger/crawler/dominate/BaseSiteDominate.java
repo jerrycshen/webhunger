@@ -100,6 +100,8 @@ public abstract class BaseSiteDominate {
     void complete(String siteId) {
         // 彻底移除对该站点的所有缓存
         removeSite(siteId);
+        // 移除站点对应的相关URL队列
+        spider.getScheduler().remove(siteId);
         // 从停止列表中移除
         stoppingSet.remove(siteId);
         // 移除正在爬取列表中的缓存
