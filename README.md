@@ -1,6 +1,6 @@
 ## Developing Now......
 
-[Readme in Chinese](https://note.youdao.com/)
+[Readme in Chinese](https://github.com/jerry-sc/webhunger/blob/master/README-ZH.md)
 
 ## Motivation
 
@@ -32,7 +32,7 @@ In order to making the user easy to monitor, WebHunger provides a web console. S
 
 In the page shown above, you can start crawling the site, pause, re-crawl and other operations.
 
-![image](https://github.com/jerry-sc/webhunger/blob/master/doc/screenshot/arch.png?raw=true)
+![image](https://raw.githubusercontent.com/jerry-sc/webhunger/master/doc/screenshot/host_progress.png)
 
 And here you can see the site crawled progress, page parsed progress and the wrong links which crawl failed.
 
