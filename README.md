@@ -4,7 +4,7 @@
 
 ## Motivation
 
-> Note: We call the crawler which crawl the whole site: A full-scale crawler.
+> Note: We call the crawler which crawl the entire site: A full-scale crawler.
 
 Firstly, let’s summarize the various types of crawlers, their characteristics and the corresponding open source framework.
 
